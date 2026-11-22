@@ -153,7 +153,14 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  ok('Ruleta: la flecha apunta a la opción 1',opts[0].startsWith((win||'').replace('…','')),`flecha: ${win} / opción 1: ${opts[0]}`);
  await p.click('[data-choose="1"]');await p.waitForTimeout(300);ok('Elegir una opción la destaca',await p.$eval('#rlOut',e=>e.classList.contains('picked'))&&await p.$eval('[data-opt="1"]',e=>e.classList.contains('win')));
  await p.screenshot({path:SP+'/av-ruleta.png'});
- await p.click('[data-pool="repeat"]');await p.waitForTimeout(200);ok('Ruleta «Para repetir»: solo nota 3,8+ (Enigma)',/1 opción/.test(await txt(p,'#rlInfo')),await txt(p,'#rlInfo'));
+ await p.click('[data-pool="repeat"]');await p.waitForTimeout(200);ok('Repetir: nota ≥3,5 por defecto (Enigma 3,9; Yako 3 queda fuera)',/^1 lugar con nota 3,5/.test(await txt(p,'#rlInfo')),await txt(p,'#rlInfo'));
+ await p.click('#lBtn');await p.waitForTimeout(400);await p.click('[data-rlmin="3"]');await p.waitForTimeout(200);
+ ok('Repetir: bajar la nota mínima a 3 suma a Yako',/^2 lugares con nota 3 o más/.test(await txt(p,'#rlInfo')),await txt(p,'#rlInfo'));
+ await p.evaluate(()=>{__S['reviews/p2__j'].again='no';__fire()});await p.waitForTimeout(200);
+ ok('Repetir: excluye los marcados «No volvemos»',/^1 lugar/.test(await txt(p,'#rlInfo')),await txt(p,'#rlInfo'));
+ await p.evaluate(()=>{__S['reviews/p2__j'].again='si';__fire()});await p.click('[data-rlmin="4"]');await p.waitForTimeout(200);
+ ok('Repetir: incluye «Volveríamos» aunque tenga menos nota',/^1 lugar/.test(await txt(p,'#rlInfo'))&&(await p.$$eval('#wheelG text',x=>x.map(e=>e.textContent))).includes('Yako'),await txt(p,'#rlInfo'));
+ await p.click('#lBtn');
  // pedir/evitar + nueva visita
  await p.click('#t-lista');await p.waitForTimeout(300);await p.click('.card[data-pid="p2"]');await p.waitForTimeout(400);
  ok('Detalle sin evaluación propia: solo «Agregar mi evaluación»',!(await p.$('[data-revisit]'))&&!!(await p.$('[data-rate="p2"]')));

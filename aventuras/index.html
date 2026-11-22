@@ -374,6 +374,7 @@ form{display:grid;gap:16px;padding-bottom:20px}
     <div class="row" style="justify-content:flex-end;margin-top:8px"><button type="button" class="ghost fbtn" id="lBtn" aria-expanded="false" aria-controls="lWrap">Filtros <span class="cnt" id="lCnt"></span><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M6 9l6 6 6-6"/></svg></button></div>
     <div class="fwrap" id="lWrap"><div><div class="fpanel glass">
       <div class="fsec"><span class="l">Categoría</span><div class="chips" id="rlCat"></div></div>
+      <div class="fsec"><span class="l">Nota mínima para «Repetir»</span><div class="chips" id="rlMin"></div></div>
       <div class="fsec"><span class="l">Costo máximo</span><div class="chips" id="rlCost"></div></div>
       <div class="fsec"><span class="l">Ciudad o lugar</span><div class="chips" id="rlCity"></div></div>
     </div></div></div>
@@ -916,14 +917,14 @@ $('#meBtn').onclick=()=>{openPid=null;openSheet(`<h2 style="font-size:28px">¿Qu
 function refresh(){if(M){renderList();renderRank();renderWishes();if(!spinning)renderRuleta(true)}else renderHome();if(openPid&&openMod)renderSheet(openMod,openPid,false)}
 
 /* ---------- ruleta ---------- */
-const RL={mesa:{pool:'wish',cat:'all',cost:0,city:'Todas'},salidas:{pool:'wish',cat:'all',cost:0,city:'Todas'}};
+const RL={mesa:{pool:'wish',cat:'all',cost:0,city:'Todas',min:3.5},salidas:{pool:'wish',cat:'all',cost:0,city:'Todas',min:3.5}};
 let spinning=false,rot=0,rlRes=[];
 const SEGC=['#ffd2c2','#dcd2ff','#c4f1df','#cfe4ff','#ffe7a8','#ffc8dd','#d9f2c4','#e6d7ff'];
 function rlPool(mod){
   const u=RL[mod],S=mod==='salidas';
   const vis=full(mod),wish=D[mod].places.filter(p=>p.status==='wish').map(p=>({...p,wish:true}));
   const noAgain=p=>!p.rs?.some(r=>r.again==='no');
-  let L=u.pool==='wish'?wish:u.pool==='repeat'?vis.filter(p=>p.total!=null&&p.total>=3.8&&noAgain(p)):[...wish,...vis.filter(noAgain)];
+  let L=u.pool==='wish'?wish:u.pool==='repeat'?vis.filter(p=>noAgain(p)&&(p.total!=null&&p.total>=u.min-1e-9||p.rs.some(r=>r.again==='si'))):[...wish,...vis.filter(noAgain)];
   return L.filter(p=>(!S||u.cat==='all'||p.cat===u.cat)&&(u.city==='Todas'||p.city===u.city)&&(!u.cost||!p.price||Math.round(p.price)<=u.cost));
 }
 function drawWheel(items){
@@ -945,10 +946,11 @@ function renderRuleta(keep){
   if(!M)return;const mod=M,u=RL[mod],S=mod==='salidas',disc=u.pool==='disc';
   $('#rlPool').innerHTML=[['wish','Por ir'],['repeat','Repetir'],['all','Todo'],['disc','Descubrir']].map(([k,t])=>`<button type="button" data-pool="${k}" class="${u.pool===k?'on':''}">${t}</button>`).join('');
   chipRow('#rlCat',S?[['all','Todas'],...Object.entries(CATS).map(([k,c])=>[k,c.n])]:[],u.cat,'rlcat');if(!S)$('#rlCat').innerHTML='';
+  chipRow('#rlMin',u.pool==='repeat'?[['3','3 o más'],['3.5','3,5 o más'],['4','4 o más']]:[],String(u.min),'rlmin');if(u.pool!=='repeat')$('#rlMin').innerHTML='';
   chipRow('#rlCost',[[0,'Cualquiera'],[1,'$'],[2,'$$'],[3,'$$$']].map(([k,t])=>[String(k),t]),String(u.cost),'rlcost');
   const cities=['Todas',...new Set(D[mod].places.map(p=>p.city).filter(Boolean))];if(!cities.includes(u.city))u.city='Todas';
   chipRow('#rlCity',cities.map(c=>[c,c]),u.city,'rlcity');
-  $('#lCnt').textContent=[S&&u.cat!=='all',u.cost,u.city!=='Todas'].filter(Boolean).length||'';
+  $('#lCnt').textContent=[S&&u.cat!=='all',u.cost,u.city!=='Todas',u.pool==='repeat'&&u.min!==3.5].filter(Boolean).length||'';
   $('#discBox').style.display=disc?'grid':'none';
   const dc=$('#discCity');if(disc&&!dc.value)dc.value=u.city!=='Todas'?u.city:topCity(mod);
   $('#discQ').placeholder=S?'Ej: cerro fácil con vista, termas, pueblo bonito':'Ej: sushi, bar con terraza, algo romántico';
@@ -961,7 +963,7 @@ function renderRuleta(keep){
     wheelItems=X.items.slice();drawWheel(wheelItems);if(!keep){$('#rlOut').innerHTML='';$('#rlOut').classList.remove('picked')}return;
   }
   const pool=rlPool(mod);
-  $('#rlInfo').textContent=pool.length?`${pool.length} ${pool.length===1?'opción':'opciones'} en la ruleta`:u.pool==='wish'?'No hay nada en «Por ir» con estos filtros. Agreguen lugares o prueben «Descubrir».':u.pool==='repeat'?'Aún no hay lugares con nota 3,8 o más para repetir.':'No hay opciones con estos filtros.';
+  $('#rlInfo').textContent=pool.length?(u.pool==='repeat'?`${pool.length} ${pool.length===1?'lugar':'lugares'} con nota ${fmt(u.min)} o más, o marcados «Volveríamos»`:`${pool.length} ${pool.length===1?'opción':'opciones'} en la ruleta`):u.pool==='wish'?'No hay nada en «Por ir» con estos filtros. Agreguen lugares o prueben «Descubrir».':u.pool==='repeat'?`Aún no hay lugares con nota ${fmt(u.min)} o más ni marcados «Volveríamos». Bajen la nota mínima en Filtros.`:'No hay opciones con estos filtros.';
   $('#spinBtn').disabled=!pool.length;
   if(keep&&wheelItems.length)return;
   wheelItems=pool.slice().sort(()=>Math.random()-.5).slice(0,10);drawWheel(wheelItems);
@@ -1045,7 +1047,7 @@ $('#v-ruleta').addEventListener('click',e=>{const b=e.target.closest('button');i
   if(b.id==='spinBtn'){spin();return}
   if(b.id==='discBtn'){discover(DISC[M].items.length>0);return}
   if(d.addwish){addWish(+d.addwish,b);return}
-  if(d.pool){u.pool=d.pool}else if(d.rlcat){u.cat=d.rlcat}else if(d.rlcost){u.cost=+d.rlcost}else if(d.rlcity){u.city=d.rlcity;if(u.pool==='disc'&&d.rlcity!=='Todas')$('#discCity').value=d.rlcity}
+  if(d.pool){u.pool=d.pool}else if(d.rlcat){u.cat=d.rlcat}else if(d.rlcost){u.cost=+d.rlcost}else if(d.rlmin){u.min=+d.rlmin}else if(d.rlcity){u.city=d.rlcity;if(u.pool==='disc'&&d.rlcity!=='Todas')$('#discCity').value=d.rlcity}
   else if(d.choose){const i=+d.choose,box=$('#rlOut');box.classList.add('picked');box.querySelectorAll('.opt').forEach((o,j)=>o.classList.toggle('win',j===i));const r=b.getBoundingClientRect();burst(r.left+r.width/2,r.top);toast(`¡Decidido: ${rlRes[i].name}!`);return}
   else if(d.optview){renderSheet(M,d.optview);return}else return;
   if(!spinning)renderRuleta()});
