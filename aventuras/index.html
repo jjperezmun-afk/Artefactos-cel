@@ -33,13 +33,45 @@ svg.st{width:1em;height:1em;flex:none}svg.ic{width:22px;height:22px;flex:none;fi
 .wrap{max-width:720px;margin:0 auto;padding:0 max(4vw,16px)}
 .glass{background:var(--glass);-webkit-backdrop-filter:blur(18px) saturate(170%);backdrop-filter:blur(18px) saturate(170%);border:1px solid var(--edge);box-shadow:var(--sh)}
 header{padding:20px 0 6px}
-.top{display:flex;align-items:center;gap:10px}
-header h1{font-size:clamp(28px,7.4vw,44px);font-weight:800;flex:1;letter-spacing:-.02em}
+.top{display:flex;align-items:center;gap:8px}.top .sp{flex:1}
+header h1{font-size:clamp(30px,8vw,44px);font-weight:800;letter-spacing:-.02em;margin-top:12px}
+.crumb{gap:4px;padding:0 14px 0 8px}
 .ibtn{border-radius:99px;min-height:44px;min-width:44px;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:0 14px;font-weight:700;font-size:14px;white-space:nowrap}
 body.home .modonly,body:not(.home) .homeonly{display:none!important}
-.stats{display:flex;gap:8px;margin-top:14px;overflow-x:auto;scrollbar-width:none}
-.stats>div{flex:none;border-radius:18px;padding:8px 14px}
-.stats b{display:block;font:800 20px/1.2 Outfit,sans-serif;max-width:52vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.stats span{font-size:12px;color:var(--mute)}
+.stats{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;margin-top:14px}
+.stats>*{border-radius:20px;padding:10px 14px}
+.cnts{display:grid;gap:4px;align-content:center;text-align:start;border:1px solid var(--edge)}
+.cnts div{display:flex;align-items:baseline;gap:6px;white-space:nowrap;font-size:13px;color:var(--mute)}
+.cnts b{font:800 20px/1 Outfit,sans-serif;color:var(--ink);min-width:1.2ch}
+.top3{display:grid;gap:3px;align-content:center}
+.top3 button{all:unset;cursor:pointer;display:grid;grid-template-columns:20px minmax(0,1fr) auto;gap:8px;align-items:center;border-radius:10px;padding:2px 4px;margin:0 -4px}
+.top3 button:active{background:var(--line)}.top3 button:focus-visible{outline:2px solid var(--g1)}
+.top3 .nm{font-weight:700;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.top3 .nm small{font-weight:600;color:var(--mute);font-size:12px}
+.top3 b{font:800 15px Outfit,sans-serif}
+.md{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:800 11px Outfit,sans-serif;color:#2b2640}
+.md1{background:linear-gradient(135deg,#ffd86b,#ffb13d)}.md2{background:linear-gradient(135deg,#e9e9f2,#c3c3d6)}.md3{background:linear-gradient(135deg,#f3c9a4,#d9935f)}
+.fbar{display:flex;gap:8px}.fbar input{flex:1}
+.fbtn{display:inline-flex;align-items:center;gap:6px;white-space:nowrap;min-height:48px}
+.fbtn .cnt{background:var(--inv);color:var(--invt);border-radius:99px;font-size:12px;min-width:20px;height:20px;display:inline-flex;align-items:center;justify-content:center;padding:0 6px}
+.fbtn .cnt:empty{display:none}
+.fbtn svg{transition:transform .35s}.fbtn.open svg{transform:rotate(180deg)}
+.fwrap{display:grid;grid-template-rows:0fr;transition:grid-template-rows .4s cubic-bezier(.2,.8,.2,1),margin .4s;margin-top:0}
+.fwrap.open{grid-template-rows:1fr;margin-top:10px}
+.fwrap>div{overflow:hidden}
+.fpanel{border-radius:22px;padding:14px 16px;display:grid;gap:12px}
+.fpanel .chips:empty,.fsec:has(.chips:empty){display:none}
+.fpanel .l{margin-bottom:6px;font-size:13px;color:var(--mute)}
+.fsum{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:10px;font-size:13px;color:var(--mute)}
+.fsum:empty{display:none}
+.fsum button{border:0;border-radius:99px;background:var(--inv);color:var(--invt);font-size:12px;font-weight:700;padding:5px 10px;min-height:30px}
+.dup{border-radius:16px;padding:10px 12px;background:var(--line);font-size:14px;display:grid;gap:8px}
+.dup:empty{display:none}
+.dup button{border:1px solid var(--edge);background:var(--glass2);border-radius:14px;padding:8px 12px;text-align:start;font-weight:700;min-height:44px}
+.dup button small{display:block;font-weight:600;color:var(--mute)}
+.mapl{display:inline-flex;align-items:center;gap:6px;font-weight:700;font-size:14px;color:var(--hl);text-decoration:none;min-height:36px}
+.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:end}
+@media(max-width:380px){.two{grid-template-columns:minmax(0,1fr)}}
 .view{display:none;padding-top:14px}.view.on{display:block;animation:vin .5s cubic-bezier(.2,.8,.2,1)}
 @keyframes vin{from{opacity:0;transform:translateY(16px);filter:blur(6px)}}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
@@ -174,11 +206,12 @@ form{display:grid;gap:16px;padding-bottom:20px}
 <linearGradient id="gM2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9d8ff"/><stop offset="1" stop-color="#8db8f5"/></linearGradient></svg>
 <header><div class="wrap">
   <div class="top">
-    <button class="ibtn glass modonly" id="backBtn" type="button" aria-label="Volver a Nuestras aventuras" style="padding:0"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg></button>
-    <h1 id="hTitle">Nuestras aventuras</h1>
+    <button class="ibtn glass modonly crumb" id="backBtn" type="button"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Aventuras</button>
+    <span class="sp"></span>
     <button class="ibtn glass" id="meBtn" type="button">¿Quién eres?</button>
     <button class="ibtn glass modonly" id="cfgBtn" type="button" aria-label="Pesos del promedio" style="padding:0"><svg class="ic" viewBox="0 0 24 24"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg></button>
   </div>
+  <h1 id="hTitle">Nuestras aventuras</h1>
   <div class="stats modonly" id="stats"></div>
 </div></header>
 
@@ -201,22 +234,28 @@ form{display:grid;gap:16px;padding-bottom:20px}
   </section>
 
   <section class="view" id="v-lista">
-    <input id="q" type="search" placeholder="Buscar por nombre, lugar o etiqueta" aria-label="Buscar">
-    <div class="scroll" id="cats" style="margin-top:12px"></div>
-    <div class="scroll" id="scales" style="margin-top:4px"></div>
-    <div class="scroll" id="cities" style="margin-top:4px"></div>
-    <div class="scroll" id="sorts" style="margin-top:4px"></div>
+    <div class="fbar"><input id="q" type="search" placeholder="Buscar" aria-label="Buscar por nombre, sector, ciudad o etiqueta"><button type="button" class="ghost fbtn" id="fBtn" aria-expanded="false" aria-controls="fWrap">Filtros <span class="cnt" id="fCnt"></span><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M6 9l6 6 6-6"/></svg></button></div>
+    <div class="fwrap" id="fWrap"><div><div class="fpanel glass">
+      <div class="fsec"><span class="l">Ordenar por</span><div class="chips" id="sorts"></div></div>
+      <div class="fsec"><span class="l">Categoría</span><div class="chips" id="cats"></div></div>
+      <div class="fsec"><span class="l">Escala</span><div class="chips" id="scales"></div></div>
+      <div class="fsec"><span class="l">Ciudad o lugar</span><div class="chips" id="cities"></div></div>
+    </div></div></div>
+    <div class="fsum" id="fSum"></div>
     <div class="list anim" id="list"></div>
     <p class="note glass" id="status" hidden></p>
   </section>
 
   <section class="view" id="v-ranking">
-    <h2 style="font-size:28px">Ranking</h2>
-    <div class="scroll" id="rkCat" style="margin-top:12px"></div>
-    <span class="l" style="margin:10px 0 6px">Mejor en</span><div class="scroll" id="rkCrit"></div>
-    <span class="l" style="margin:8px 0 6px" id="rkTagL">Qué buscan</span><div class="scroll" id="rkTag"></div>
-    <div class="scroll" id="rkScale" style="margin-top:4px"></div>
-    <div class="scroll" id="rkCity" style="margin-top:4px"></div>
+    <div class="row" style="justify-content:space-between"><h2 style="font-size:28px">Ranking</h2><button type="button" class="ghost fbtn" id="rBtn" aria-expanded="false" aria-controls="rWrap">Filtros <span class="cnt" id="rCnt"></span><svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M6 9l6 6 6-6"/></svg></button></div>
+    <div class="fwrap" id="rWrap"><div><div class="fpanel glass">
+      <div class="fsec"><span class="l">Categoría</span><div class="chips" id="rkCat"></div></div>
+      <div class="fsec"><span class="l">Qué buscan</span><div class="chips" id="rkTag"></div></div>
+      <div class="fsec"><span class="l">Escala</span><div class="chips" id="rkScale"></div></div>
+      <div class="fsec"><span class="l">Ciudad o lugar</span><div class="chips" id="rkCity"></div></div>
+    </div></div></div>
+    <div class="fsum" id="rSum"></div>
+    <span class="l" style="margin:12px 0 6px">Mejor en</span><div class="scroll" id="rkCrit"></div>
     <div id="rank" class="anim"></div>
   </section>
 
@@ -255,6 +294,7 @@ form{display:grid;gap:16px;padding-bottom:20px}
 </main>
 
 <nav class="glass" id="nav"><span class="ind" id="ind"></span>
+  <button id="t-inicio" type="button"><svg class="ic" viewBox="0 0 24 24"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z"/></svg>Inicio</button>
   <button id="t-lista" type="button"><svg class="ic" viewBox="0 0 24 24"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h0M3.5 12h0M3.5 18h0"/></svg>Evaluados</button>
   <button id="t-ranking" type="button"><svg class="ic" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0zM17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg>Ranking</button>
   <button id="t-por-ir" type="button"><svg class="ic" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg>Por ir</button>
@@ -305,7 +345,13 @@ let M=null,openPid=null,openMod=null,wishCat='naturaleza',wCat='naturaleza';
 const slotName=s=>s==='j'?'Los dos':(names[s]||'');
 const wts=(mod,cat)=>mod==='mesa'?W.mesa:(W.salidas[cat]||{});
 const visited=mod=>D[mod].places.filter(p=>p.status!=='wish');
-const catLine=p=>[p.sub||CATS[p.cat]?.n,p.city].filter(Boolean).join(' · ');
+const catLine=p=>[p.sub||CATS[p.cat]?.n,p.sector,p.city].filter(Boolean).join(' · ');
+const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+const mapsUrl=p=>/^https?:\/\//i.test(p.link||'')?p.link:'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent([p.name,p.sector,p.city].filter(Boolean).join(' '));
+const PIN='<svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
+const placeMeta=(mod,p)=>mod==='salidas'?catLine(p):[p.sector,p.city,p.type].filter(Boolean).join(' · ');
+const DEF={city:'Todas',cat:'all',scale:'all',rkT:'Todo',rkCity:'Todas',rkScale:'all',rkCat:'all'};
+const SORTS=[['nota','Mejor nota'],['reciente','Recientes'],['az','A–Z'],['pend','Me falta evaluar'],['diff','Opinamos distinto']];
 
 function scoreOf(mod,pid){
   const p=D[mod].places.find(x=>x.id===pid)||{};
@@ -342,19 +388,23 @@ function renderList(){
   const mod=M,u=U[mod],V=full(mod),S=mod==='salidas';
   const cities=['Todas',...new Set(V.map(p=>p.city).filter(Boolean))];if(!cities.includes(u.city))u.city='Todas';
   chipRow('#cities',cities.map(c=>[c,c]),u.city,'city');
-  if(S){chipRow('#cats',[['all','Todo'],...Object.entries(CATS).map(([k,c])=>[k,c.n])],u.cat,'cat');chipRow('#scales',[['all','Cualquier escala'],...SCALES],u.scale,'scale','tag')}
+  if(S){chipRow('#cats',[['all','Todo'],...Object.entries(CATS).map(([k,c])=>[k,c.n])],u.cat,'cat');chipRow('#scales',[['all','Cualquier escala'],...SCALES],u.scale,'scale')}
   else{$('#cats').innerHTML='';$('#scales').innerHTML=''}
-  chipRow('#sorts',[['nota','Mejor nota'],['reciente','Recientes'],['az','A–Z'],['pend','Me falta evaluar'],['diff','Opinamos distinto']],u.sort,'sort');
+  chipRow('#sorts',SORTS,u.sort,'sort');
+  const act=[u.cat!=='all'&&['cat',CATS[u.cat]?.n],u.scale!=='all'&&['scale',lbl(SCALES,u.scale)],u.city!=='Todas'&&['city',u.city],u.sort!=='nota'&&['sort',lbl(SORTS,u.sort)]].filter(Boolean);
+  $('#fCnt').textContent=act.length||'';
+  $('#fSum').innerHTML=act.map(([k,t])=>`<button type="button" data-clear="${k}" aria-label="Quitar filtro ${esc(t)}">${esc(t)} ×</button>`).join('');
   const ql=u.q.trim().toLowerCase();
-  let L=V.filter(p=>(u.city==='Todas'||p.city===u.city)&&(!S||u.cat==='all'||p.cat===u.cat)&&(!S||u.scale==='all'||(p.scale||'general')===u.scale)&&(!ql||[p.name,p.city,p.type,p.sub,CATS[p.cat]?.n,...p.tags].join(' ').toLowerCase().includes(ql)));
+  let L=V.filter(p=>(u.city==='Todas'||p.city===u.city)&&(!S||u.cat==='all'||p.cat===u.cat)&&(!S||u.scale==='all'||(p.scale||'general')===u.scale)&&(!ql||norm([p.name,p.sector,p.city,p.type,p.sub,CATS[p.cat]?.n,...p.tags].join(' ')).includes(norm(ql))));
   if(u.sort==='pend')L=L.filter(p=>!p.rs.some(r=>r.slot===me));
   if(u.sort==='diff')L=L.filter(p=>Object.keys(p.diff).length);
   L.sort(u.sort==='az'?(a,b)=>a.name.localeCompare(b.name):u.sort==='reciente'?(a,b)=>(b.createdAt||0)-(a.createdAt||0):(a,b)=>(b.total??-1)-(a.total??-1));
-  const best=V.filter(p=>p.total!=null).sort((a,b)=>b.total-a.total)[0];
-  $('#stats').innerHTML=`<div class="glass"><b>${V.length}</b><span>evaluados</span></div>${best?`<div class="glass"><b>${esc(best.name)}</b><span>favorito · ${fmt(best.total)} ★</span></div>`:''}<div class="glass"><b>${D[mod].places.length-V.length}</b><span>por ir</span></div>`;
+  const top=V.filter(p=>p.total!=null).sort((a,b)=>b.total-a.total).slice(0,3);
+  $('#stats').innerHTML=`<button type="button" class="glass cnts" id="cntBtn" aria-label="Ver por ir"><div><b>${V.length}</b>evaluados</div><div><b>${D[mod].places.length-V.length}</b>por ir</div></button>
+    <div class="glass top3">${top.length?top.map((p,i)=>`<button type="button" data-top="${esc(p.id)}"><span class="md md${i+1}">${i+1}</span><span class="nm">${esc(p.name)}${p.sector?` <small>${esc(p.sector)}</small>`:''}</span><b>${fmt(p.total)}</b></button>`).join(''):'<span class="meta" style="font-size:13px">Su top 3 aparecerá aquí</span>'}</div>`;
   $('#list').innerHTML=L.length?L.map((p,i)=>{
     const has=s=>p.rs.some(r=>r.slot===s),nd=Object.keys(p.diff).length;
-    const meta=S?catLine(p):[p.city,p.type].filter(Boolean).join(' · ');
+    const meta=placeMeta(mod,p);
     const extra=S?[p.scale&&p.scale!=='general'?`<span class="pill s">${lbl(SCALES,p.scale)}</span>`:'',p.dif?`<span class="pill s">${lbl(DIFS,p.dif)}</span>`:''].join(''):'';
     return `<button type="button" class="card glass" data-pid="${esc(p.id)}" style="--i:${i}">${thumb(p,p.name)}
       <div><h3>${esc(p.name)}</h3><div class="meta">${esc(meta)}${p.price?` · ${money(p.price)}`:''}</div></div>
@@ -367,7 +417,7 @@ function animate(sel){const l=$(sel);if(!l)return;l.classList.remove('anim');voi
 /* ---------- ranking ---------- */
 function renderRank(){
   const mod=M,u=U[mod],S=mod==='salidas';let V=full(mod);
-  if(S){chipRow('#rkCat',[['all','Todas las categorías'],...Object.entries(CATS).map(([k,c])=>[k,c.n])],u.rkCat,'rkcat');V=V.filter(p=>u.rkCat==='all'||p.cat===u.rkCat)}else $('#rkCat').innerHTML='';
+  if(S){chipRow('#rkCat',[['all','Todas'],...Object.entries(CATS).map(([k,c])=>[k,c.n])],u.rkCat,'rkcat');V=V.filter(p=>u.rkCat==='all'||p.cat===u.rkCat)}else $('#rkCat').innerHTML='';
   const C=S?(u.rkCat==='all'?[]:CATS[u.rkCat].crits):CM;
   if(!C.some(c=>c[0]===u.rkC))u.rkC='total';
   chipRow('#rkCrit',[['total','General'],...C.map(([k,t])=>[k,t])],u.rkC,'rkc');
@@ -377,12 +427,15 @@ function renderRank(){
   if(S)chipRow('#rkScale',[['all','Cualquier escala'],...SCALES],u.rkScale,'rkscale');else $('#rkScale').innerHTML='';
   const cities=['Todas',...new Set(V.map(p=>p.city).filter(Boolean))];if(!cities.includes(u.rkCity))u.rkCity='Todas';
   chipRow('#rkCity',cities.map(c=>[c,c]),u.rkCity,'rkcity');
+  const ract=[u.rkCat!=='all'&&['rkCat',CATS[u.rkCat]?.n],u.rkT!=='Todo'&&['rkT',u.rkT],u.rkScale!=='all'&&['rkScale',lbl(SCALES,u.rkScale)],u.rkCity!=='Todas'&&['rkCity',u.rkCity]].filter(Boolean);
+  $('#rCnt').textContent=ract.length||'';
+  $('#rSum').innerHTML=ract.map(([k,t])=>`<button type="button" data-rclear="${k}" aria-label="Quitar filtro ${esc(t)}">${esc(t)} ×</button>`).join('');
   const val=p=>u.rkC==='total'?p.total:p.crit[u.rkC];
   const L=V.filter(p=>(u.rkT==='Todo'||p.tags.includes(u.rkT)||p.type===u.rkT||p.sub===u.rkT)&&(u.rkCity==='Todas'||p.city===u.rkCity)&&(!S||u.rkScale==='all'||(p.scale||'general')===u.rkScale)&&val(p)!=null).sort((a,b)=>val(b)-val(a));
   if(!L.length){$('#rank').innerHTML='<div class="empty glass" style="margin-top:14px"><b>Sin candidatos</b>Nada evaluado calza con ese filtro.</div>';return}
   const top=L.slice(0,3),order=[top[1],top[0],top[2]];
   $('#rank').innerHTML=`<div class="pod">${order.map((p,j)=>{if(!p)return '<span></span>';const n=L.indexOf(p)+1;return `<div class="glass p${n}" data-pid="${esc(p.id)}" style="--i:${[1,0,2][j]}"><span class="n">${n}</span>${thumb(p,p.name)}<h3>${esc(p.name)}</h3><b>${fmt(val(p))}</b>${stars(val(p),11)}</div>`}).join('')}</div>`
-    +L.slice(3).map((p,i)=>`<div class="rk glass" data-pid="${esc(p.id)}"><span class="n">${i+4}</span><div><b style="font-size:17px">${esc(p.name)}</b><div class="meta">${esc(S?catLine(p):p.city||'')}</div></div><b>${fmt(val(p))}</b></div>`).join('');
+    +L.slice(3).map((p,i)=>`<div class="rk glass" data-pid="${esc(p.id)}"><span class="n">${i+4}</span><div><b style="font-size:17px">${esc(p.name)}</b><div class="meta">${esc(placeMeta(mod,p))}</div></div><b>${fmt(val(p))}</b></div>`).join('');
 }
 
 /* ---------- por ir ---------- */
@@ -394,8 +447,8 @@ function renderWishes(){
   const L=D[mod].places.filter(p=>p.status==='wish').sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   $('#wishes').innerHTML=L.length?L.map((p,i)=>{const link=/^https?:\/\//i.test(p.link||'')?p.link:'';return `<div class="wish glass" style="--i:${i}">
     <h3>${esc(p.name)}</h3><div class="meta">${esc([S?CATS[p.cat]?.n:'',p.city,p.addedBy?`lo agregó ${slotName(p.addedBy)}`:''].filter(Boolean).join(' · '))}</div>
-    ${p.reason?`<p>${esc(p.reason)}</p>`:''}${link?`<a href="${esc(link)}" target="_blank" rel="noopener">${esc(link.replace(/^https?:\/\/(www\.)?/,'').slice(0,48))}</a>`:p.link?`<p class="meta">${esc(p.link)}</p>`:''}
-    ${readOnly?'':`<div class="row" style="margin-top:12px"><button type="button" class="save" style="flex:1;min-height:48px;font-size:15px" data-went="${esc(p.id)}">¡Fuimos! Evaluar</button><button type="button" class="ghost" data-unwish="${esc(p.id)}">Quitar</button></div>`}</div>`}).join('')
+    ${p.reason?`<p>${esc(p.reason)}</p>`:''}${p.link&&!link?`<p class="meta">${esc(p.link)}</p>`:''}<a class="mapl" href="${esc(mapsUrl(p))}" target="_blank" rel="noopener">${PIN}${link?'Abrir link':'Buscar en Google Maps'}</a>
+    ${readOnly?'':`<div class="row" style="margin-top:8px"><button type="button" class="save" style="flex:1;min-height:48px;font-size:15px" data-went="${esc(p.id)}">¡Fuimos! Evaluar</button><button type="button" class="ghost" data-unwish="${esc(p.id)}">Quitar</button></div>`}</div>`}).join('')
    :`<div class="empty glass"><b>Nada pendiente</b>Agreguen arriba ${S?'la próxima salida':'el próximo lugar'} que les tinque.</div>`;
 }
 $('#wCats').addEventListener('click',e=>{const b=e.target.closest('[data-wcat]');if(b){wishCat=b.dataset.wcat;renderWishes()}});
@@ -430,9 +483,9 @@ function renderSheet(mod,pid,fresh=true){
   const comments=s.rs.filter(r=>r.comment).map(r=>`<div class="cm"><b>${esc(slotName(r.slot))}${r.date?` · ${esc(r.date)}`:''}</b><div>${esc(r.comment)}</div></div>`).join('');
   const mine=s.rs.some(r=>r.slot===me),nd=Object.keys(s.diff).length;
   const label=ind.length>1?`Promedio de ${esc(names.a)} y ${esc(names.b)}`:ind.length&&s.rs.some(r=>r.slot==='j')?`${esc(slotName(ind[0].slot))} + nota de los dos`:ind.length?`Solo evaluó ${esc(slotName(ind[0].slot))}`:s.rs.length?'Evaluación de los dos':'Sin evaluaciones';
-  const link=/^https?:\/\//i.test(p.link||'')?p.link:'';
-  const info=S?`<div class="info">${[p.scale?lbl(SCALES,p.scale):'',p.dif?'Dificultad '+lbl(DIFS,p.dif).toLowerCase():'',p.dur?'Duración: '+p.dur:'',...(p.ideal||[]).map(x=>'Ideal: '+x),...(p.epoca||[]).map(x=>x)].filter(Boolean).map(x=>`<span class="pill s">${esc(x)}</span>`).join('')}</div>${link?`<a class="lnk" href="${esc(link)}" target="_blank" rel="noopener">${esc(link.replace(/^https?:\/\/(www\.)?/,'').slice(0,48))}</a>`:''}`:'';
-  const html=`<h2 style="font-size:32px">${esc(p.name)}</h2><div class="meta">${esc(S?[CATS[p.cat]?.n,p.sub,p.city].filter(Boolean).join(' · '):[p.city,p.type].filter(Boolean).join(' · '))}</div>${info}
+  const info=S?`<div class="info">${[p.scale?lbl(SCALES,p.scale):'',p.dif?'Dificultad '+lbl(DIFS,p.dif).toLowerCase():'',p.dur?'Duración: '+p.dur:'',...(p.ideal||[]).map(x=>'Ideal: '+x),...(p.epoca||[]).map(x=>x)].filter(Boolean).map(x=>`<span class="pill s">${esc(x)}</span>`).join('')}</div>`:'';
+  const html=`<h2 style="font-size:32px">${esc(p.name)}</h2><div class="meta">${esc(S?[CATS[p.cat]?.n,p.sub,p.sector,p.city].filter(Boolean).join(' · '):[p.sector,p.city,p.type].filter(Boolean).join(' · '))}</div>${info}
+    <a class="mapl" href="${esc(mapsUrl(p))}" target="_blank" rel="noopener">${PIN}${/^https?:/i.test(p.link||'')?'Abrir en el mapa':'Buscar en Google Maps'}</a>
     ${s.photos.length?`<div class="gal">${s.photos.map((ph,i)=>`<button type="button" data-lb="${i}"><img src="${img(ph.id)}" alt="Foto ${i+1}" loading="lazy"></button>`).join('')}</div>`:''}
     <div class="big"><b id="bigN">${fmt(s.total)}</b><div>${stars(s.total,26)}<div class="meta">${label}</div></div></div>
     ${nd?`<div class="pill d" style="display:inline-block;margin-bottom:8px;white-space:normal">Opinan distinto en ${nd===1?'1 cosa':nd+' cosas'} (diferencia de ${fmt(DIFF)}★ o más)</div>`:''}
@@ -451,10 +504,10 @@ $('#lb').addEventListener('click',e=>{const x=e.clientX/innerWidth;if(gallery.le
 /* ---------- formulario ---------- */
 let F;
 function blankForm(mod,pid){
-  F={mod,pid:pid||null,name:'',city:'',type:'Restaurante',cat:'naturaleza',sub:'',scale:'general',dif:'',dur:'',ideal:new Set(),epoca:new Set(),link:'',
+  F={mod,pid:pid||null,name:'',sector:'',editPlace:false,city:'',type:'Restaurante',cat:'naturaleza',sub:'',scale:'general',dif:'',dur:'',ideal:new Set(),epoca:new Set(),link:'',
      slot:me,scores:{},na:{},notes:{},open:{},tags:new Set(),again:'',price:0,photos:[],saved:[],removed:[],uploading:0,date:new Date().toISOString().slice(0,10),comment:'',subOther:false};
   const p=pid&&D[mod].places.find(x=>x.id===pid);
-  if(p){Object.assign(F,{name:p.name,city:p.city||'',type:p.type||'Restaurante',cat:p.cat||'naturaleza',sub:p.sub||'',scale:p.scale||(p.cat==='viajes'?'viaje':'general'),dif:p.dif||'',dur:p.dur||'',ideal:new Set(p.ideal||[]),epoca:new Set(p.epoca||[]),link:p.link||''});
+  if(p){Object.assign(F,{name:p.name,sector:p.sector||'',city:p.city||'',type:p.type||'Restaurante',cat:p.cat||'naturaleza',sub:p.sub||'',scale:p.scale||(p.cat==='viajes'?'viaje':'general'),dif:p.dif||'',dur:p.dur||'',ideal:new Set(p.ideal||[]),epoca:new Set(p.epoca||[]),link:p.link||''});
     F.subOther=!!F.sub&&!(CATS[F.cat]?.subs||[]).includes(F.sub)}
   if(pid)prefill();
 }
@@ -466,15 +519,28 @@ function prefill(){
   for(const k in r.notes||{}){F.notes[k]=r.notes[k];F.open[k]=true}
   Object.assign(F,{tags:new Set(r.tags||[]),again:r.again||'',date:r.date||F.date,comment:r.comment||'',price:r.price||0,photos:[...(r.photos||[])],saved:[...(r.photos||[])]});
 }
+function updDup(){
+  const box=$('#dupBox');if(!box)return;const a=$('#mapsA');if(a)a.href=mapsUrl({name:F.name,sector:F.sector,city:F.city});
+  const n=norm(F.name);if(n.length<3){box.innerHTML='';return}
+  const m=D[F.mod].places.filter(p=>p.id!==F.pid&&(norm(p.name)===n||(n.length>=4&&norm(p.name).includes(n)))).slice(0,4);
+  box.innerHTML=m.length?`<span>¿Es alguno de estos? Si es otro local, escriban la sucursal o sector.</span>${m.map(p=>`<button type="button" data-pickplace="${esc(p.id)}">${esc(p.name)}<small>${esc(placeMeta(F.mod,p)||'sin ubicación')}${p.status==='wish'?' · en por ir':''}</small></button>`).join('')}`:'';
+}
 const chipsHTML=(list,isOn,attr)=>list.map(([k,t])=>`<button type="button" class="chip ${isOn(k)?'on':''}" data-${attr}="${esc(k)}">${esc(t)}</button>`).join('');
 function renderForm(){
   const mod=F.mod,S=mod==='salidas',p=F.pid&&D[mod].places.find(x=>x.id===F.pid);
   const isNew=!p,wish=p&&p.status==='wish';
   const cities=[...new Set(D[mod].places.map(x=>x.city).filter(Boolean))];
-  let h=isNew?`<h2 style="font-size:30px">${S?'Una salida nueva':'Un lugar nuevo'}</h2>
-     <div><label class="l" for="pname">Nombre</label><input id="pname" maxlength="80" placeholder="${S?'Ej: Cerro La Campana':'Ej: La Picá del Puerto'}" value="${esc(F.name)}"></div>
-     <div><label class="l" for="pcity">${S?'Lugar o región':'Ciudad'}</label><input id="pcity" maxlength="40" placeholder="${S?'Olmué, Cajón del Maipo…':'Santiago, Algarrobo…'}" value="${esc(F.city)}">${cities.length?`<div class="chips" style="margin-top:8px">${chipsHTML(cities.map(c=>[c,c]),k=>k===F.city,'pcity')}</div>`:''}</div>`
-   :`<span class="meta">${wish?'¡Por fin fueron a…':'Evaluando'}</span><h2 style="font-size:28px">${esc(p.name)}</h2><div class="meta">${esc(S?[CATS[p.cat]?.n,p.sub,p.city].filter(Boolean).join(' · '):[p.city,p.type].filter(Boolean).join(' · '))}</div>`;
+  const showEdit=isNew||F.editPlace;
+  const fields=`<div><label class="l" for="pname">Nombre</label><input id="pname" maxlength="80" placeholder="${S?'Ej: Cerro La Campana':'Ej: Mosai Café'}" value="${esc(F.name)}"></div>
+     <div class="dup" id="dupBox"></div>
+     <div class="two"><div><label class="l" for="psector">Sucursal o sector</label><input id="psector" maxlength="50" placeholder="${S?'Opcional, ej: Granizo':'Opcional, ej: Rotonda Atenas'}" value="${esc(F.sector)}"></div>
+     <div><label class="l" for="pcity">${S?'Lugar o región':'Ciudad'}</label><input id="pcity" maxlength="40" placeholder="${S?'Olmué, Cajón del Maipo…':'Santiago, Algarrobo…'}" value="${esc(F.city)}"></div></div>
+     ${cities.length?`<div class="chips" style="margin-top:-6px">${chipsHTML(cities.map(c=>[c,c]),k=>k===F.city,'pcity')}</div>`:''}
+     <a class="mapl" id="mapsA" href="${esc(mapsUrl({name:F.name,sector:F.sector,city:F.city}))}" target="_blank" rel="noopener">${PIN}Buscar en Google Maps para confirmar</a>
+     ${S?'':`<div><label class="l" for="linkIn">Link de Maps o Instagram <span class="meta" style="font-weight:600">(opcional)</span></label><input id="linkIn" maxlength="300" inputmode="url" placeholder="Pega aquí el link del local" value="${esc(F.link)}"></div>`}`;
+  let h=isNew?`<h2 style="font-size:30px">${S?'Una salida nueva':'Un lugar nuevo'}</h2>`+fields
+   :`<span class="meta">${wish?'¡Por fin fueron a…':'Evaluando'}</span><h2 style="font-size:28px">${esc(p.name)}</h2><div class="meta">${esc(placeMeta(mod,p))}</div>
+     <button type="button" class="mini ${F.editPlace?'on':''}" id="editPlace" style="justify-self:start">${F.editPlace?'Ocultar datos del lugar':'Editar nombre, sucursal o ciudad'}</button>${F.editPlace?fields:''}`;
   if(!S&&(isNew||wish))h+=`<div><span class="l">Tipo</span><div class="chips">${chipsHTML(TYPES.map(t=>[t,t]),k=>k===F.type,'type')}</div></div>`;
   if(S){
     if(isNew||wish)h+=`<div><span class="l">Categoría</span><div class="chips">${chipsHTML(Object.entries(CATS).map(([k,c])=>[k,c.n]),k=>k===F.cat,'cat')}</div></div>`;
@@ -485,10 +551,11 @@ function renderForm(){
       <div><label class="l" for="durIn">Duración</label><input id="durIn" maxlength="30" placeholder="Ej: 4 horas, 2 días" value="${esc(F.dur)}"></div>
       <div><span class="l">Ideal para</span><div class="chips">${chipsHTML(IDEAL.map(x=>[x,x]),k=>F.ideal.has(k),'ideal')}</div></div>
       <div><span class="l">Mejor época</span><div class="chips">${chipsHTML(EPOCA.map(x=>[x,x]),k=>F.epoca.has(k),'epoca')}</div></div>
-      <div><label class="l" for="linkIn">Link <span class="meta" style="font-weight:600">(Maps, Instagram… opcional)</span></label><input id="linkIn" maxlength="300" inputmode="url" value="${esc(F.link)}"></div>`;
+      <div><label class="l" for="linkIn2">Link <span class="meta" style="font-weight:600">(Maps, Instagram… opcional)</span></label><input id="linkIn2" maxlength="300" inputmode="url" value="${esc(F.link)}"></div>`;
   }
   if(!isNew)h+=`<button type="button" class="mini" id="otherPlace">Cambiar a ${S?'una salida nueva':'un lugar nuevo'}</button>`;
   $('#placeBox').innerHTML=`<div class="crit glass" style="display:grid;gap:14px">${h}</div>`;
+  updDup();
   $('#slotSeg').innerHTML=[['a',names.a],['b',names.b],['j','Los dos']].map(([s,t])=>`<button type="button" data-slot="${s}" class="${F.slot===s?'on':''}">${esc(t)}</button>`).join('');
   $('#crits').innerHTML=crits(mod,F.cat).map(([k,t,hh])=>{const v=F.scores[k];return `<div class="crit glass ${F.na[k]?'na':''}" data-k="${k}">
     <div class="ch"><div><h3>${t}</h3>${hh?`<small>${hh}</small>`:''}</div><span class="val">${F.na[k]?'N/A':v?fmt(v):'–'}</span></div>
@@ -544,7 +611,8 @@ $('#crits').addEventListener('pointerup',endDrag);$('#crits').addEventListener('
 function moveRate(e,first){const r=drag.getBoundingClientRect();const v=Math.max(.5,Math.min(5,Math.ceil((e.clientX-r.left)/r.width*10)/2));if(first||v!==F.scores[drag.dataset.k])setRate(drag,v,true)}
 $('#crits').addEventListener('keydown',e=>{const el=e.target.closest('.rate');if(!el)return;const d=e.key==='ArrowRight'||e.key==='ArrowUp'?.5:e.key==='ArrowLeft'||e.key==='ArrowDown'?-.5:0;if(!d)return;e.preventDefault();setRate(el,Math.max(.5,Math.min(5,(F.scores[el.dataset.k]||0)+d)),true)});
 $('#v-nuevo').addEventListener('input',e=>{const t=e.target,k=t.dataset.noteinput;if(k)F.notes[k]=t.value;
-  if(t.id==='pname')F.name=t.value;if(t.id==='pcity')F.city=t.value;if(t.id==='subIn')F.sub=t.value;if(t.id==='durIn')F.dur=t.value;if(t.id==='linkIn')F.link=t.value;if(t.id==='date')F.date=t.value;if(t.id==='comment')F.comment=t.value});
+  if(t.id==='pname'||t.id==='psector'||t.id==='pcity'){F[{pname:'name',psector:'sector',pcity:'city'}[t.id]]=t.value;updDup()}
+  if(t.id==='subIn')F.sub=t.value;if(t.id==='durIn')F.dur=t.value;if(t.id==='linkIn'||t.id==='linkIn2')F.link=t.value;if(t.id==='date')F.date=t.value;if(t.id==='comment')F.comment=t.value});
 const tog=(set,k)=>set.has(k)?set.delete(k):set.add(k);
 $('#v-nuevo').addEventListener('click',async e=>{
   const b=e.target.closest('button');if(!b)return;const d=b.dataset;
@@ -567,6 +635,8 @@ $('#v-nuevo').addEventListener('click',async e=>{
   else if(d.rmph){const id=d.rmph;F.photos=F.photos.filter(x=>x!==id);if(F.saved.includes(id))F.removed.push(id);else assets?.delete(id).catch(()=>{});renderPhotos()}
   else if(b.id==='addPh')$('#file').click();
   else if(b.id==='otherPlace'){blankForm(F.mod);renderForm()}
+  else if(b.id==='editPlace'){F.editPlace=!F.editPlace;renderForm()}
+  else if(d.pickplace){const slot=F.slot;blankForm(F.mod,d.pickplace);F.slot=slot;prefill();renderForm();window.scrollTo({top:0,behavior:RM?'auto':'smooth'})}
   else if(b.id==='addTag'){const t=$('#newTag').value.trim().slice(0,30);if(t){F.tags.add(t);$('#newTag').value='';renderForm()}}
 });
 $('#newTag').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#addTag').click()}});
@@ -576,16 +646,20 @@ $('#f').addEventListener('submit',async e=>{
   if(!db){toast('Sin conexión a la libreta');return}
   if(F.uploading){toast('Espera a que suban las fotos');return}
   const mod=F.mod,P=MODS[mod],S=mod==='salidas';
-  if(!F.pid&&!F.name.trim()){toast('Falta el nombre');$('#pname')?.focus();return}
+  if(!F.name.trim()){toast('Falta el nombre');$('#pname')?.focus();return}
+  const twin=D[mod].places.find(p=>p.id!==F.pid&&norm(p.name)===norm(F.name)&&norm(p.sector)===norm(F.sector));
+  if(twin){if(!F.pid||F.editPlace){toast(F.sector.trim()?'Ya existe con esa sucursal':'Ya lo tienen: agreguen la sucursal o sector');$('#psector')?.focus();updDup();return}}
   const C=crits(mod,F.cat);
   if(!C.some(([k])=>F.scores[k])){toast('Pon al menos una estrella');return}
   const btn=$('#saveBtn');btn.disabled=true;btn.textContent='Guardando…';
   try{
     const info=S?{cat:F.cat,sub:F.sub.trim(),scale:F.scale,dif:F.dif,dur:F.dur.trim(),ideal:[...F.ideal],epoca:[...F.epoca],link:F.link.trim()}:{};
     let pid=F.pid;const p=pid&&D[mod].places.find(x=>x.id===pid);
-    if(!pid){const ref=db.collection(P.p).doc();pid=ref.id;await ref.set({name:F.name.trim(),city:F.city.trim(),...(S?info:{type:F.type}),status:'visited',createdAt:Date.now()})}
-    else if(p?.status==='wish')await db.doc(P.p+'/'+pid).update({status:'visited',...(S?info:{type:F.type}),createdAt:Date.now()});
-    else if(S){const ch=Object.keys(info).some(k=>JSON.stringify(info[k])!==JSON.stringify(p[k]??(Array.isArray(info[k])?[]:'')));if(ch)await db.doc(P.p+'/'+pid).update(info)}
+    const want={name:F.name.trim(),sector:F.sector.trim(),city:F.city.trim(),...(S?info:{type:F.type,link:F.link.trim()})};
+    if(!pid){const ref=db.collection(P.p).doc();pid=ref.id;await ref.set({...want,status:'visited',createdAt:Date.now()})}
+    else{const ch={};for(const k in want)if(JSON.stringify(want[k])!==JSON.stringify(p[k]??(Array.isArray(want[k])?[]:'')))ch[k]=want[k];
+      if(p.status==='wish')Object.assign(ch,{status:'visited',createdAt:Date.now()});
+      if(Object.keys(ch).length)await db.doc(P.p+'/'+pid).update(ch)}
     const scores={},notes={};
     for(const [k] of C){if(F.scores[k])scores[k]=F.scores[k];else if(F.na[k])scores[k]=null}
     for(const k of [...C.map(c=>c[0]),'precio']){const n=(F.notes[k]||'').trim();if(n&&F.open[k])notes[k]=n}
@@ -633,15 +707,19 @@ addEventListener('hashchange',show);
 const navRO=new ResizeObserver(moveInd);navRO.observe($('#nav'));
 $('#t-lista').onclick=()=>go(M,'lista');$('#t-ranking').onclick=()=>go(M,'ranking');$('#t-por-ir').onclick=()=>go(M,'por-ir');
 $('#t-nuevo').onclick=()=>{closeSheet();if(F.pid||location.hash===`#${M}-nuevo`){blankForm(M);renderForm()}go(M,'nuevo')};
-$('#backBtn').onclick=()=>go(null);
+$('#backBtn').onclick=()=>go(null);$('#t-inicio').onclick=()=>go(null);
+const togPanel=(btn,wrap)=>{const o=!$(wrap).classList.contains('open');$(wrap).classList.toggle('open',o);$(btn).classList.toggle('open',o);$(btn).setAttribute('aria-expanded',o)};
+$('#fBtn').onclick=()=>togPanel('#fBtn','#fWrap');$('#rBtn').onclick=()=>togPanel('#rBtn','#rWrap');
+$('#stats').addEventListener('click',e=>{const t=e.target.closest('[data-top]');if(t){renderSheet(M,t.dataset.top);return}if(e.target.closest('#cntBtn'))go(M,'por-ir')});
 $('#heros').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(b.dataset.go)});
 $('#lastList').addEventListener('click',e=>{const b=e.target.closest('[data-pid]');if(b){const mod=b.dataset.mod,pid=b.dataset.pid;go(mod);setTimeout(()=>renderSheet(mod,pid),420)}});
 $('#q').addEventListener('input',e=>{U[M].q=e.target.value;renderList()});
 $('#v-lista').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset,u=U[M];
   if(d.pid){renderSheet(M,d.pid);return}
-  if(d.city)u.city=d.city;else if(d.sort)u.sort=d.sort;else if(d.cat)u.cat=d.cat;else if(d.scale)u.scale=d.scale;else return;renderList();animate('#list')});
-$('#v-ranking').addEventListener('click',e=>{const b=e.target.closest('[data-rkc],[data-rkt],[data-rkcity],[data-rkscale],[data-rkcat],[data-pid]');if(!b)return;const d=b.dataset,u=U[M];
-  if(d.pid){renderSheet(M,d.pid);return}if(d.rkc)u.rkC=d.rkc;if(d.rkt)u.rkT=d.rkt;if(d.rkcity)u.rkCity=d.rkcity;if(d.rkscale)u.rkScale=d.rkscale;if(d.rkcat){u.rkCat=d.rkcat;u.rkC='total'}renderRank();animate('#rank')});
+  if(d.clear){if(d.clear==='sort')u.sort='nota';else u[d.clear]=DEF[d.clear]}
+  else if(d.city)u.city=d.city;else if(d.sort)u.sort=d.sort;else if(d.cat)u.cat=d.cat;else if(d.scale)u.scale=d.scale;else return;renderList();animate('#list')});
+$('#v-ranking').addEventListener('click',e=>{const b=e.target.closest('[data-rkc],[data-rkt],[data-rkcity],[data-rkscale],[data-rkcat],[data-pid],[data-rclear]');if(!b)return;const d=b.dataset,u=U[M];
+  if(d.pid){renderSheet(M,d.pid);return}if(d.rclear){u[d.rclear]=DEF[d.rclear];if(d.rclear==='rkCat')u.rkC='total'}if(d.rkc)u.rkC=d.rkc;if(d.rkt)u.rkT=d.rkt;if(d.rkcity)u.rkCity=d.rkcity;if(d.rkscale)u.rkScale=d.rkscale;if(d.rkcat){u.rkCat=d.rkcat;u.rkC='total'}renderRank();animate('#rank')});
 $('#scrim').onclick=closeSheet;
 addEventListener('keydown',e=>{if(e.key==='Escape'){$('#lb').classList.remove('on');closeSheet()}});
 const reSheet=html=>{$('#sheet').innerHTML='<div class="grab"></div>'+html};

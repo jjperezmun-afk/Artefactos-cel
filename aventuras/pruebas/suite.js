@@ -42,7 +42,7 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  ok('Salidas: promedio ponderado por categoría',t===(Math.round(sv/sw*10)/10).toString().replace('.',','),`${t}`);
  ok('Salidas: marca «Opinan distinto» (acceso 2 vs 4)',/Opinan distinto/.test(await txt(p,'.card[data-pid="o1"]')));
  ok('Salidas: muestra escala y dificultad en la tarjeta',/Paseo grande/.test(await txt(p,'.card[data-pid="o1"]'))&&/Exigente/.test(await txt(p,'.card[data-pid="o1"]')));
- await p.click('[data-scale="viaje"]');let names=await p.$$eval('#list .card h3',x=>x.map(e=>e.textContent));
+ await p.click('#fBtn');await p.waitForTimeout(450);await p.click('[data-scale="viaje"]');let names=await p.$$eval('#list .card h3',x=>x.map(e=>e.textContent));
  ok('Filtro escala: Viaje',names.join()==='Chiloé',names.join());
  await p.click('[data-scale="general"]');names=await p.$$eval('#list .card h3',x=>x.map(e=>e.textContent));
  ok('Filtro escala: Actividad general',names.join()==='Termas de Colina',names.join());
@@ -52,7 +52,7 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  await p.screenshot({path:SP+'/av-salidas.png'});
  // detalle salidas
  await p.click('.card[data-pid="o1"]');await p.waitForTimeout(600);const sh=await txt(p,'#sheet');
- ok('Detalle salida: categoría, info, link y Δ',/Naturaleza · Cerro \/ trekking · Olmué/.test(sh)&&/Dificultad exigente/.test(sh)&&/7 horas/.test(sh)&&/Ideal: Pareja/.test(sh)&&/maps\.app/.test(sh)&&/Δ 2/.test(sh)&&/Costo/.test(sh));
+ ok('Detalle salida: categoría, info, link y Δ',/Naturaleza · Cerro \/ trekking · Olmué/.test(sh)&&/Dificultad exigente/.test(sh)&&/7 horas/.test(sh)&&/Ideal: Pareja/.test(sh)&&(await p.$eval("#sheet a.mapl",e=>e.href))==="https://maps.app/x"&&/Δ 2/.test(sh)&&/Costo/.test(sh));
  await p.screenshot({path:SP+'/av-detalle.png'});
  // editar salida: precarga info y notas
  await p.click('[data-rate="o1"]');await p.waitForTimeout(500);
@@ -63,7 +63,7 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  // ranking salidas
  await p.click('#t-ranking');await p.waitForTimeout(500);
  ok('Ranking salidas: «Mejor en» solo General si no hay categoría',(await p.$$('#rkCrit .chip')).length===1);
- await p.click('[data-rkcat="viajes"]');const crs=await p.$$eval('#rkCrit .chip',x=>x.map(e=>e.textContent));
+ await p.click('#rBtn');await p.waitForTimeout(450);await p.click('[data-rkcat="viajes"]');const crs=await p.$$eval('#rkCrit .chip',x=>x.map(e=>e.textContent));
  ok('Ranking salidas: al elegir Viajes muestra sus características',crs.includes('Alojamiento')&&crs.includes('Destino'),crs.join(','));
  await p.click('[data-rkc="alojamiento"]');ok('Ranking por Alojamiento',/Chiloé/.test(await txt(p,'#rank')));
  await p.click('[data-rkcat="all"]');await p.click('[data-rkscale="paseo"]');ok('Ranking filtrado por escala',/Cerro La Campana/.test(await txt(p,'#rank'))&&!/Chiloé/.test(await txt(p,'#rank')));
@@ -109,6 +109,35 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  const st=await p.evaluate(()=>({pl:!!__S['outings/o1'],r1:!!__S['oreviews/o1__a'],del:__del}));
  ok('Borrar salida: borra evaluaciones y fotos',!st.pl&&!st.r1&&st.del.includes('f1'));
  ok('Sin errores JS en todo el recorrido',!p.__errs.length,p.__errs.join('|'));await p.close()}
+// NUEVO: top3, inicio, filtros plegables, sucursal, duplicados, editar datos, maps
+{const p=await page(b,{seed:seed()},undefined,'#mesa');
+ const t3=await p.$$eval('.top3 [data-top] .nm',x=>x.map(e=>e.textContent));
+ ok('Top 3 arriba en orden',t3.length===2&&t3[0].startsWith('Enigma'),t3.join(','));
+ await p.click('.top3 [data-top]');await p.waitForTimeout(500);ok('Tocar el top 3 abre el detalle',/Enigma bar/.test(await txt(p,'#sheet')));await closeSheet(p);await p.waitForTimeout(300);
+ ok('Filtros parten ocultos',(await p.$eval('#fWrap',e=>e.getBoundingClientRect().height))<2);
+ await p.click('#fBtn');await p.waitForTimeout(500);ok('Botón Filtros los despliega',(await p.$eval('#fWrap',e=>e.getBoundingClientRect().height))>60);
+ await p.click('[data-city="Rancagua"]');await p.waitForTimeout(200);
+ ok('Filtro activo: contador y resumen',await txt(p,'#fCnt')==='1'&&/Rancagua ×/.test(await txt(p,'#fSum')));
+ await p.click('#fSum [data-clear="city"]');await p.waitForTimeout(200);ok('Quitar filtro desde el resumen',await txt(p,'#fCnt')===''&&(await p.$$('#list .card')).length===2);
+ await p.screenshot({path:SP+'/av-filtros.png'});
+ await p.click('#t-inicio');await p.waitForTimeout(400);ok('Botón Inicio en la barra vuelve a Aventuras',await txt(p,'#hTitle')==='Nuestras aventuras');
+ await p.click('[data-go="mesa"]');await p.waitForTimeout(400);ok('Botón «Aventuras» visible con texto',/Aventuras/.test(await txt(p,'#backBtn'))&&await p.isVisible('#backBtn'));
+ await p.click('#t-nuevo');await p.waitForTimeout(400);await p.fill('#pname','enigma BAR');await p.waitForTimeout(100);
+ ok('Aviso «¿Es alguno de estos?» al escribir un nombre existente',/Enigma bar/.test(await txt(p,'#dupBox')));
+ ok('Link a Google Maps con lo escrito',(await p.$eval('#mapsA',e=>e.href)).includes('enigma%20BAR'));
+ await tapStar(p,'comida',.9);await p.click('#saveBtn');await p.waitForTimeout(300);
+ ok('No deja crear duplicado sin sucursal',/sucursal/.test(await txt(p,'#toast'))&&!(await p.evaluate(()=>Object.values(__S).some(v=>v.name==='enigma BAR'))));
+ await p.fill('#psector','Providencia');await p.click('#saveBtn');await p.waitForTimeout(1500);
+ const nw=await p.evaluate(()=>Object.values(__S).find(v=>v.name==='enigma BAR'));ok('Con sucursal sí lo crea',nw&&nw.sector==='Providencia');
+ await closeSheet(p);await p.waitForTimeout(400);
+ ok('Tarjeta muestra la sucursal',(await p.$$eval('#list .card .meta',x=>x.map(e=>e.textContent))).some(t=>/Providencia/.test(t)));
+ await p.fill('#q','provi');await p.waitForTimeout(200);ok('Búsqueda por sucursal y sin tildes',(await p.$$('#list .card')).length===1);await p.fill('#q','');
+ await p.click('#t-nuevo');await p.waitForTimeout(300);await p.fill('#pname','Yako');await p.click('#dupBox [data-pickplace="p2"]');await p.waitForTimeout(300);
+ ok('Elegir el existente desde el aviso',/Yako/.test(await txt(p,'#placeBox h2'))&&/Evaluando/.test(await txt(p,'#placeBox')));
+ await p.click('#editPlace');await p.fill('#psector','Centro');await p.fill('#linkIn','https://maps.app.goo.gl/abc');await tapStar(p,'comida',.5);await p.click('#saveBtn');await p.waitForTimeout(1500);
+ const y=await p.evaluate(()=>__S['places/p2']);ok('Editar datos del lugar guarda sucursal y link',y.sector==='Centro'&&y.link==='https://maps.app.goo.gl/abc');
+ ok('Detalle: botón al mapa con su link',(await p.$eval('#sheet a.mapl',e=>e.href))==='https://maps.app.goo.gl/abc');
+ ok('Sin errores JS',!p.__errs.length,p.__errs.join('|'));await p.close()}
 // hash directo
 {const p=await page(b,{seed:seed()},undefined,'#salidas-ranking');ok('Link directo a #salidas-ranking',await txt(p,'#hTitle')==='Nuestras salidas'&&await p.$eval('#v-ranking',e=>e.classList.contains('on')));await p.close()}
 // fotos
