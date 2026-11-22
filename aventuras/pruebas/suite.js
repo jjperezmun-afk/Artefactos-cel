@@ -7,7 +7,9 @@ const fire=()=>subs.forEach(f=>f());window.__fire=fire;
 const doc=path=>({id:path.split('/')[1],set:async d=>{if(O.ro)throw{code:'invalid_argument'};S[path]=JSON.parse(JSON.stringify(d));setTimeout(fire)},update:async d=>{if(!S[path])throw{code:'invalid_argument'};S[path]={...S[path],...JSON.parse(JSON.stringify(d))};setTimeout(fire)},delete:async()=>{delete S[path];setTimeout(fire)},onSnapshot(n){const f=()=>n({exists:!!S[path],data:()=>S[path],metadata:{fromCache:false}});subs.push(f);f();return()=>{}}});
 let n=0;const db={doc,collection:c=>({doc:id=>doc(c+'/'+(id||'gen'+(++n))),onSnapshot(cb){const f=()=>cb(snapC(c));subs.push(f);setTimeout(f);return()=>{}}})};
 const assets={upload:async(b,o)=>{if(O.upFail)throw{code:'upstream_error'};let dims=null;try{const bm=await createImageBitmap(b);dims=[bm.width,bm.height]}catch(e){}window.__up.push({size:b.size,type:o?.type,dims});return{id:'asset'+window.__up.length}},delete:async id=>{window.__del.push(id);return{deleted:true}}};
-window.claude={use:async k=>k==='db'?(O.nodb?null:db):k==='assets'?(O.noassets?null:assets):{can:async()=>O.ro?false:true}}})()`;
+window.__prompts=[];const sample=Object.assign(async()=>({text:''}),{json:async(pr,op)=>{window.__prompts.push({pr,op});await new Promise(r=>setTimeout(r,O.sampleDelay||300));if(O.sampleErr)throw{code:O.sampleErr};return O.disc||[{name:'Ramblas',sector:'Lastarria',city:'Santiago',type:'Bar',price:2,why:'Bar con terraza como les gusta',confidence:'alta'},{name:'Enigma bar',city:'Santiago',type:'Bar',price:2,why:'ya lo conocen',confidence:'alta'},{name:'Peumayén',sector:'Bellavista',city:'Santiago',type:'Restaurante',price:3,why:'Cocina ancestral para una ocasión',confidence:'media'},{name:'Liguria',sector:'Providencia',city:'Santiago',type:'Restaurante',price:2,why:'Clásico',confidence:'alta'},{name:'<img src=x onerror=window.__x=9>',city:'Santiago',type:'Bar',price:9,why:'<b>xss</b>'}]}});
+window.__audio=0;const AC0=window.AudioContext;if(AC0)window.AudioContext=class extends AC0{constructor(){super();window.__audio++}};
+window.claude={use:async k=>k==='db'?(O.nodb?null:db):k==='assets'?(O.noassets?null:assets):k==='sample'?(O.nosample?null:sample):{can:async()=>O.ro?false:true}}})()`;
 const seed=()=>({'places/p1':{name:'Enigma bar',city:'Santiago',type:'Bar',status:'visited',createdAt:1},'places/p2':{name:'Yako',city:'Rancagua',type:'Restaurante',status:'visited',createdAt:2},
 'places/w1':{name:'Oculto bar',city:'Santiago',status:'wish',type:'',reason:'Recomendacion',link:'',addedBy:'a',createdAt:3},
 'reviews/p1__a':{pid:'p1',slot:'a',scores:{atencion:4,ambiente:4,comida:4,barra:2,pc:null,experiencia:5},notes:{barra:'jugos'},price:2,photos:['old1'],tags:['Sushi'],updatedAt:50},
@@ -177,13 +179,54 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  await p.click('#backBtn');await p.waitForTimeout(400);await p.click('[data-wrap="todo"]');await p.waitForTimeout(500);
  const n=await p.$$eval('#wrBars i',x=>x.length);const s1=await txt(p,'#wrSl');
  ok('Resumen: abre con varias láminas y los nombres',n>=6&&/Juanjo & Lore/.test(s1),`${n} láminas`);
- const seen=[];for(let i=0;i<n;i++){seen.push(await txt(p,'#wrSl'));await p.mouse.click(350,400);await p.waitForTimeout(250)}
+ const seen=[];for(let i=0;i<n+2;i++){const q=await p.$('#wrSl .sl:last-child [data-quiz]');if(q){await q.click();await p.waitForTimeout(300)}seen.push(await txt(p,'#wrSl .sl:last-child'));await p.mouse.click(350,400);await p.waitForTimeout(650)}
  const all=seen.join(' | ');
- ok('Resumen: favorito, mejor salida, lugar, discrepancia y por ir',/Su mesa favorita/.test(all)&&/Su mejor salida/.test(all)&&/Su lugar en el mapa/.test(all)&&/no se pusieron de acuerdo/.test(all)&&/Por ir/.test(all));
- ok('Resumen: se cierra al final',!(await p.$eval('#wr',e=>e.classList.contains('on'))));
+ ok('Resumen: favorito, mejor salida, lugar, discrepancia y por ir',/Su podio de la mesa/.test(all)&&/Su mejor salida/.test(all)&&/Su lugar en el mapa/.test(all)&&/no se pusieron de acuerdo/.test(all)&&/Por ir/.test(all));
+ ok('Resumen: termina con «Ver de nuevo» y «Cerrar»',!!(await p.$('#wrSl .sl:last-child [data-replay]')));await p.click('#wrSl .sl:last-child [data-close]');await p.waitForTimeout(300);
+ ok('Resumen: se cierra',!(await p.$eval('#wr',e=>e.classList.contains('on'))));
  await p.click('[data-wrap="anio"]');await p.waitForTimeout(800);await p.screenshot({path:SP+'/av-wrap1.png'});await p.mouse.click(350,400);await p.waitForTimeout(900);await p.screenshot({path:SP+'/av-wrap2.png'});await p.click('#wrX');
  await p.click('[data-wrap="mes"]');await p.waitForTimeout(300);ok('Resumen del mes funciona (aunque haya pocas fechas)',(await p.$$('#wrBars i')).length>=1);await p.click('#wrX');
+ // nuevo wrapped: música, auto avance, pausa, quiz, mute
+ await p.click('[data-wrap="todo"]');await p.waitForTimeout(400);
+ ok('Wrapped: arranca música (Web Audio)',(await p.evaluate(()=>window.__audio))>=1);
+ const i0=await p.evaluate(()=>[...document.querySelectorAll('#wrBars i b')].findIndex(b=>b.style.width==='100%'&&b.style.transition.includes('linear')));
+ await p.waitForTimeout(5200);const adv=await p.$$eval('#wrBars i b',x=>x.filter(b=>b.style.width==='100%').length);
+ ok('Wrapped: avanza solo',adv>=2,`barras llenas ${adv}`);
+ await p.mouse.move(200,450);await p.mouse.down();await p.waitForTimeout(1500);const t1=await txt(p,'#wrSl .sl:last-child');await p.waitForTimeout(5000);const t2=await txt(p,'#wrSl .sl:last-child');await p.mouse.up();
+ ok('Wrapped: mantener presionado pausa',t1===t2);
+ let qz=null;for(let k=0;k<14&&!qz;k++){qz=await p.$('#wrSl .sl:last-child [data-quiz]');if(!qz){await p.mouse.click(350,400);await p.waitForTimeout(700)}}
+ ok('Wrapped: aparece la pregunta «¿Quién es más exigente?»',!!qz);
+ if(qz){const before=await txt(p,'#wrSl .sl:last-child');await p.waitForTimeout(5000);ok('Wrapped: la pregunta espera la respuesta',before===await txt(p,'#wrSl .sl:last-child'));
+   await p.click('#wrSl .sl:last-child [data-quiz="a"]');await p.waitForTimeout(400);const rv=await txt(p,'#quizRev');
+   ok('Wrapped: revela quién es más exigente con sus promedios',/Es .*(Juanjo|Lore).*★/.test(rv),rv);await p.screenshot({path:SP+'/av-wquiz.png'})}
+ await p.click('#wrM');ok('Wrapped: botón para silenciar',/Activar música/.test(await p.$eval('#wrM',e=>e.getAttribute('aria-label'))));await p.click('#wrM');
+ await p.click('#wrX');
  ok('Sin errores JS',!p.__errs.length,p.__errs.join('|'));await p.close()}
+// DESCUBRIR
+{const p=await page(b,{seed:seed()},undefined,'#mesa-ruleta');
+ await p.click('[data-pool="disc"]');await p.waitForTimeout(200);
+ ok('Descubrir: muestra caja con ganas y ciudad (Santiago por defecto)',await p.isVisible('#discBox')&&await p.$eval('#discCity',e=>e.value)==='Santiago');
+ await p.fill('#discQ','bar con terraza');await p.click('#lBtn');await p.waitForTimeout(400);await p.click('[data-rlcost="2"]');await p.waitForTimeout(200);
+ await p.click('#discBtn');await p.waitForTimeout(100);
+ ok('Descubrir: muestra que está pensando',/pensando/.test(await txt(p,'#rlInfo'))&&await p.$eval('.wheelBox',e=>e.classList.contains('think')));
+ await p.waitForTimeout(5200);
+ const pr=await p.evaluate(()=>window.__prompts[0].pr);
+ ok('Descubrir: el pedido incluye ganas, ciudad, costo, favoritos y excluye conocidos',/bar con terraza/.test(pr)&&/Santiago/.test(pr)&&/\$\$ \(escala/.test(pr)&&/Enigma bar/.test(pr)&&/NO sugieras/.test(pr));
+ const op=await p.$$eval('#rlOut .opt h3',x=>x.map(e=>e.textContent));
+ ok('Descubrir: gira y entrega opciones nuevas, sin las que ya conocen',op.length===3&&!op.includes('Enigma bar'),op.join(', '));
+ ok('Descubrir: texto malicioso de la IA no se ejecuta',await p.evaluate(()=>window.__x)===undefined);
+ ok('Descubrir: aviso de verificar en Maps',/confirmen en Maps/.test(await txt(p,'#rlOut')));
+ const addB=await p.$('#rlOut [data-addwish]:not([disabled])');const nm=await addB.evaluate(b=>b.closest('.opt').querySelector('h3').textContent);await addB.click();await p.waitForTimeout(400);
+ const w=await p.evaluate(n=>Object.values(__S).find(v=>v.name===n),nm);
+ ok('Descubrir: «Agregar a Por ir» lo guarda como pendiente',w&&w.status==='wish'&&/^Descubierto/.test(w.reason),nm);
+ ok('Descubrir: el botón queda «En Por ir ✓»',/En Por ir/.test(await addB.textContent()));
+ await p.screenshot({path:SP+'/av-disc.png'});
+ await p.click('#discBtn');await p.waitForTimeout(100);ok('Descubrir: «Buscar otras ideas» pide respuestas nuevas (sin caché)',(await p.evaluate(()=>window.__prompts[1]?.op?.cache))===false);
+ ok('Sin errores JS',!p.__errs.length,p.__errs.join('|'));await p.close()}
+{const p=await page(b,{seed:seed(),sampleErr:'not_granted'},undefined,'#salidas-ruleta');await p.click('[data-pool="disc"]');await p.click('#discBtn');await p.waitForTimeout(800);
+ ok('Descubrir: si no dan permiso lo explica',/permiso/.test(await txt(p,'#rlInfo')));ok('Descubrir salidas: sin errores',!p.__errs.length,p.__errs.join('|'));await p.close()}
+{const p=await page(b,{seed:seed(),nosample:true},undefined,'#mesa-ruleta');await p.click('[data-pool="disc"]');await p.waitForTimeout(200);
+ ok('Descubrir no disponible: lo dice y desactiva el botón',/no está disponible/.test(await txt(p,'#rlInfo'))&&await p.$eval('#discBtn',e=>e.disabled));await p.close()}
 // hash directo
 {const p=await page(b,{seed:seed()},undefined,'#salidas-ranking');ok('Link directo a #salidas-ranking',await txt(p,'#hTitle')==='Nuestras salidas'&&await p.$eval('#v-ranking',e=>e.classList.contains('on')));await p.close()}
 // fotos
