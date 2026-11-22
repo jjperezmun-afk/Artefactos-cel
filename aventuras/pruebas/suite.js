@@ -120,7 +120,7 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  ok('Filtro activo: contador y resumen',await txt(p,'#fCnt')==='1'&&/Rancagua ×/.test(await txt(p,'#fSum')));
  await p.click('#fSum [data-clear="city"]');await p.waitForTimeout(200);ok('Quitar filtro desde el resumen',await txt(p,'#fCnt')===''&&(await p.$$('#list .card')).length===2);
  await p.screenshot({path:SP+'/av-filtros.png'});
- await p.click('#t-inicio');await p.waitForTimeout(400);ok('Botón Inicio en la barra vuelve a Aventuras',await txt(p,'#hTitle')==='Nuestras aventuras');
+ ok('Barra sin botón Inicio (5 botones con Ruleta)',(await p.$$eval('nav button',x=>x.map(e=>e.textContent.trim()))).join()==='Evaluados,Ranking,Ruleta,Por ir,Evaluar');await p.click('#backBtn');await p.waitForTimeout(400);ok('Botón Aventuras vuelve al inicio',await txt(p,'#hTitle')==='Nuestras aventuras');
  await p.click('[data-go="mesa"]');await p.waitForTimeout(400);ok('Botón «Aventuras» visible con texto',/Aventuras/.test(await txt(p,'#backBtn'))&&await p.isVisible('#backBtn'));
  await p.click('#t-nuevo');await p.waitForTimeout(400);await p.fill('#pname','enigma BAR');await p.waitForTimeout(100);
  ok('Aviso «¿Es alguno de estos?» al escribir un nombre existente',/Enigma bar/.test(await txt(p,'#dupBox')));
@@ -137,6 +137,52 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  await p.click('#editPlace');await p.fill('#psector','Centro');await p.fill('#linkIn','https://maps.app.goo.gl/abc');await tapStar(p,'comida',.5);await p.click('#saveBtn');await p.waitForTimeout(1500);
  const y=await p.evaluate(()=>__S['places/p2']);ok('Editar datos del lugar guarda sucursal y link',y.sector==='Centro'&&y.link==='https://maps.app.goo.gl/abc');
  ok('Detalle: botón al mapa con su link',(await p.$eval('#sheet a.mapl',e=>e.href))==='https://maps.app.goo.gl/abc');
+ ok('Sin errores JS',!p.__errs.length,p.__errs.join('|'));await p.close()}
+// RULETA, PEDIR/EVITAR, VISITAS, RESUMEN
+{const sd=seed();sd['places/w2']={name:'Boragó',city:'Santiago',status:'wish',reason:'Aniversario',createdAt:4};sd['places/w3']={name:'Liguria',city:'Santiago',status:'wish',createdAt:5};sd['places/w4']={name:'Fuente Alemana',city:'Santiago',status:'wish',createdAt:6};
+ const p=await page(b,{seed:sd},undefined,'#mesa-ruleta');
+ ok('Ruleta: cuenta opciones de Por ir',/4 opciones/.test(await txt(p,'#rlInfo')),await txt(p,'#rlInfo'));
+ ok('Ruleta: dibuja la rueda',(await p.$$('#wheelG path')).length===4);
+ await p.click('#spinBtn');await p.waitForTimeout(1500);await p.screenshot({path:SP+'/av-ruleta-gira.png'});await p.waitForTimeout(3300);
+ const opts=await p.$$eval('#rlOut .opt h3',x=>x.map(e=>e.textContent));
+ ok('Ruleta: entrega 3 opciones distintas',opts.length===3&&new Set(opts).size===3,opts.join(', '));
+ const ang=await p.evaluate(()=>{const m=getComputedStyle(document.querySelector('#wheelG')).transform.match(/matrix\(([^,]+), ([^,]+)/);let a=Math.atan2(+m[2],+m[1])*180/Math.PI;return (a+360)%360});
+ const win=await p.evaluate((a)=>{const n=document.querySelectorAll('#wheelG path').length;const seg=360/n;const top=((360-a)%360);const i=Math.floor(top/seg);return document.querySelectorAll('#wheelG > g text')[i]?.textContent},ang);
+ ok('Ruleta: la flecha apunta a la opción 1',opts[0].startsWith((win||'').replace('…','')),`flecha: ${win} / opción 1: ${opts[0]}`);
+ await p.click('[data-choose="1"]');await p.waitForTimeout(300);ok('Elegir una opción la destaca',await p.$eval('#rlOut',e=>e.classList.contains('picked'))&&await p.$eval('[data-opt="1"]',e=>e.classList.contains('win')));
+ await p.screenshot({path:SP+'/av-ruleta.png'});
+ await p.click('[data-pool="repeat"]');await p.waitForTimeout(200);ok('Ruleta «Para repetir»: solo nota 3,8+ (Enigma)',/1 opción/.test(await txt(p,'#rlInfo')),await txt(p,'#rlInfo'));
+ // pedir/evitar + nueva visita
+ await p.click('#t-lista');await p.waitForTimeout(300);await p.click('.card[data-pid="p2"]');await p.waitForTimeout(400);
+ ok('Detalle sin evaluación propia: solo «Agregar mi evaluación»',!(await p.$('[data-revisit]'))&&!!(await p.$('[data-rate="p2"]')));
+ await closeSheet(p);await p.click('.card[data-pid="p1"]');await p.waitForTimeout(400);
+ await p.click('[data-revisit="p1"]');await p.waitForTimeout(400);
+ ok('Nueva visita: formulario limpio con modo «Nueva visita (2ª)»',/Nueva visita \(la 2ª\)/.test(await txt(p,'#placeBox'))&&await p.$eval('.rate[data-k="barra"]',e=>e.getAttribute('aria-valuenow'))==='0');
+ await p.fill('#pedirIn','Pisco sour');await p.click('[data-peadd="pedir"]');await p.fill('#evitarIn','Jugo natural');await p.press('#evitarIn','Enter');
+ ok('Agregar a pedir y evitar',/Pisco sour/.test(await txt(p,'#pedirL'))&&/Jugo natural/.test(await txt(p,'#evitarL')));
+ await tapStar(p,'barra',.99);await tapStar(p,'comida',.99);await p.click('#saveBtn');await p.waitForTimeout(1500);
+ const r=await p.evaluate(()=>__S['reviews/p1__a']);
+ ok('Guarda la visita anterior en el historial',r.history.length===1&&r.history[0].scores.barra===2&&r.scores.barra===5&&r.pedir[0]==='Pisco sour'&&r.photos[0]==='old1',JSON.stringify(r.history[0].scores));
+ const sh=await txt(p,'#sheet');
+ ok('Detalle: muestra visitas, promedio y qué pedir/evitar',/2 visitas/.test(sh)&&/Pisco sour/.test(sh)&&/Jugo natural/.test(sh)&&/promedio de sus visitas/.test(sh));
+ const pers=await p.$$eval('#sheet .dr',x=>x.map(e=>e.textContent));const bl=pers.find(t=>/^Barra/.test(t.trim()));
+ ok('Barra = promedio(Juanjo 2 y 5 → 3,5 ; nota de los dos 2,5) = 3',/^Barra\s*3\s*$/.test(bl.trim()),bl.trim());
+ ok('Tarjeta muestra «2 visitas»',/2 visitas/.test(await txt(p,'.card[data-pid="p1"]')));
+ await p.screenshot({path:SP+'/av-visitas.png'});
+ // editar la última no duplica historial
+ await p.click('[data-rate="p1"]');await p.waitForTimeout(400);await tapStar(p,'barra',.7);await p.click('#saveBtn');await p.waitForTimeout(1500);
+ const r2=await p.evaluate(()=>__S['reviews/p1__a']);ok('Editar la última no agrega visitas',r2.history.length===1&&r2.scores.barra===3.5);
+ await closeSheet(p);
+ // resumen
+ await p.click('#backBtn');await p.waitForTimeout(400);await p.click('[data-wrap="todo"]');await p.waitForTimeout(500);
+ const n=await p.$$eval('#wrBars i',x=>x.length);const s1=await txt(p,'#wrSl');
+ ok('Resumen: abre con varias láminas y los nombres',n>=6&&/Juanjo & Lore/.test(s1),`${n} láminas`);
+ const seen=[];for(let i=0;i<n;i++){seen.push(await txt(p,'#wrSl'));await p.mouse.click(350,400);await p.waitForTimeout(250)}
+ const all=seen.join(' | ');
+ ok('Resumen: favorito, mejor salida, lugar, discrepancia y por ir',/Su mesa favorita/.test(all)&&/Su mejor salida/.test(all)&&/Su lugar en el mapa/.test(all)&&/no se pusieron de acuerdo/.test(all)&&/Por ir/.test(all));
+ ok('Resumen: se cierra al final',!(await p.$eval('#wr',e=>e.classList.contains('on'))));
+ await p.click('[data-wrap="anio"]');await p.waitForTimeout(800);await p.screenshot({path:SP+'/av-wrap1.png'});await p.mouse.click(350,400);await p.waitForTimeout(900);await p.screenshot({path:SP+'/av-wrap2.png'});await p.click('#wrX');
+ await p.click('[data-wrap="mes"]');await p.waitForTimeout(300);ok('Resumen del mes funciona (aunque haya pocas fechas)',(await p.$$('#wrBars i')).length>=1);await p.click('#wrX');
  ok('Sin errores JS',!p.__errs.length,p.__errs.join('|'));await p.close()}
 // hash directo
 {const p=await page(b,{seed:seed()},undefined,'#salidas-ranking');ok('Link directo a #salidas-ranking',await txt(p,'#hTitle')==='Nuestras salidas'&&await p.$eval('#v-ranking',e=>e.classList.contains('on')));await p.close()}
