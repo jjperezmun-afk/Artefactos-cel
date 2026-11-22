@@ -77,8 +77,13 @@ form,.stack{display:grid;gap:16px;padding-bottom:20px}
 .val{font:800 22px Outfit,sans-serif;min-width:2.4ch;text-align:right}
 .rate{display:flex;font-size:44px;color:var(--track);position:relative;touch-action:none;margin:6px 0 4px;width:max-content;cursor:pointer}
 .rate .f{position:absolute;inset:0 auto 0 0;display:flex;overflow:hidden;color:var(--star);width:var(--w);transition:width .18s ease-out;filter:drop-shadow(0 2px 6px #ffbf3377)}
-.rate.pop .f{animation:pop .3s}
-@keyframes pop{50%{transform:scale(1.08)}}
+.rate.pop{animation:pop .32s cubic-bezier(.3,1.6,.5,1)}
+@keyframes pop{40%{transform:scale(1.07)}}
+.rate .ring{position:absolute;top:50%;width:1em;height:1em;margin:-.5em 0 0 -.5em;border-radius:50%;pointer-events:none;background:radial-gradient(circle,#ffbf3366 0,#ffbf3300 70%);animation:ring .5s ease-out forwards}
+@keyframes ring{from{transform:scale(.3);opacity:1}to{transform:scale(1.8);opacity:0}}
+.thumb.rot{position:relative;overflow:hidden;display:block}
+.thumb.rot img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transform:scale(1.12);transition:opacity 1s ease,transform 4.5s ease-out}
+.thumb.rot img.on{opacity:1;transform:scale(1)}
 .mini{border:0;background:transparent;color:var(--mute);font-size:13px;font-weight:700;padding:8px 4px;min-height:36px}
 .mini.on{color:#e0567e}
 .crit input{margin-top:6px;padding:10px 12px}
@@ -248,7 +253,9 @@ function scoreOf(pid){
   const photos=rs.flatMap(r=>(r.photos||[]).map(id=>({id,slot:r.slot})));
   return {rs,use,crit,diff,photos,total:sw?sv/sw:null,price:mean(use.map(r=>r.price).filter(x=>typeof x==='number')),tags:[...new Set(rs.flatMap(r=>r.tags||[]))]};
 }
-const thumb=(s,name)=>s.photos[0]?`<img class="thumb" src="${img(s.photos[0].id)}" alt="" loading="lazy">`:`<span class="thumb">${esc((name||'?')[0].toUpperCase())}</span>`;
+let tick=0;
+const thumb=(s,name)=>s.photos.length?`<span class="thumb rot">${s.photos.map((ph,i)=>`<img class="${i===tick%s.photos.length?'on':''}" src="${img(ph.id)}" alt="" loading="lazy">`).join('')}</span>`:`<span class="thumb">${esc((name||'?')[0].toUpperCase())}</span>`;
+if(!RM)setInterval(()=>{if(document.hidden)return;tick++;for(const r of document.querySelectorAll('.thumb.rot')){const im=r.children;if(im.length<2)continue;for(let i=0;i<im.length;i++)im[i].classList.toggle('on',i===tick%im.length)}},3800);
 
 /* ---------- lista ---------- */
 function render(){
@@ -292,7 +299,7 @@ function renderRank(){
   const L=V.filter(p=>(rkT==='Todo'||p.tags.includes(rkT)||p.type===rkT)&&(rkCity==='Todas'||p.city===rkCity)&&val(p)!=null).sort((a,b)=>val(b)-val(a));
   if(!L.length){$('#rank').innerHTML='<div class="empty glass" style="margin-top:14px"><b>Sin candidatos</b>Ningún lugar evaluado calza con ese filtro.</div>';return}
   const top=L.slice(0,3),order=[top[1],top[0],top[2]];
-  const pod=`<div class="pod">${order.map((p,j)=>{if(!p)return '<span></span>';const n=L.indexOf(p)+1;return `<div class="glass p${n}" data-pid="${esc(p.id)}" style="--i:${[1,0,2][j]}"><span class="n">${n}</span>${p.photos[0]?`<img src="${img(p.photos[0].id)}" alt="" loading="lazy">`:`<span class="thumb">${esc(p.name[0].toUpperCase())}</span>`}<h3>${esc(p.name)}</h3><b>${fmt(val(p))}</b>${stars(val(p),11)}</div>`}).join('')}</div>`;
+  const pod=`<div class="pod">${order.map((p,j)=>{if(!p)return '<span></span>';const n=L.indexOf(p)+1;return `<div class="glass p${n}" data-pid="${esc(p.id)}" style="--i:${[1,0,2][j]}"><span class="n">${n}</span>${thumb(p,p.name)}<h3>${esc(p.name)}</h3><b>${fmt(val(p))}</b>${stars(val(p),11)}</div>`}).join('')}</div>`;
   $('#rank').innerHTML=pod+L.slice(3).map((p,i)=>`<div class="rk glass" data-pid="${esc(p.id)}"><span class="n">${i+4}</span><div><b style="font-size:17px">${esc(p.name)}</b><div class="meta">${esc(p.city||'')}</div></div><b>${fmt(val(p))}</b></div>`).join('');
 }
 
@@ -416,7 +423,9 @@ function setRate(el,v,pop){
   const k=el.dataset.k;F.scores[k]=v;delete F.na[k];
   el.style.setProperty('--w',v/5*100+'%');el.setAttribute('aria-valuenow',v);
   const card=el.closest('.crit');card.classList.remove('na');card.querySelector('.val').textContent=fmt(v);
-  if(pop){el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');try{navigator.vibrate?.(6)}catch(e){}}
+  if(pop){el.style.transformOrigin=`${(Math.ceil(v)-.5)/5*100}% 50%`;el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');
+    if(!RM){el.querySelector('.ring')?.remove();const g=document.createElement('span');g.className='ring';g.style.left=`${(Math.ceil(v)-.5)/5*100}%`;el.append(g);setTimeout(()=>g.remove(),520)}
+    try{navigator.vibrate?.(6)}catch(e){}}
 }
 let drag=null;
 $('#crits').addEventListener('pointerdown',e=>{const el=e.target.closest('.rate');if(!el)return;drag=el;el.setPointerCapture(e.pointerId);el.querySelector('.f').style.transition='none';moveRate(e,true)});
