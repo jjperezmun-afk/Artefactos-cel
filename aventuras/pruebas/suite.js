@@ -8,7 +8,7 @@ const doc=path=>({id:path.split('/')[1],set:async d=>{if(O.ro)throw{code:'invali
 let n=0;const db={doc,collection:c=>({doc:id=>doc(c+'/'+(id||'gen'+(++n))),onSnapshot(cb){const f=()=>cb(snapC(c));subs.push(f);setTimeout(f);return()=>{}}})};
 const assets={upload:async(b,o)=>{if(O.upFail)throw{code:'upstream_error'};let dims=null;try{const bm=await createImageBitmap(b);dims=[bm.width,bm.height]}catch(e){}window.__up.push({size:b.size,type:o?.type,dims});return{id:'asset'+window.__up.length}},delete:async id=>{window.__del.push(id);return{deleted:true}}};
 window.__prompts=[];const sample=Object.assign(async()=>({text:''}),{json:async(pr,op)=>{window.__prompts.push({pr,op});await new Promise(r=>setTimeout(r,O.sampleDelay||300));if(O.sampleErr)throw{code:O.sampleErr};return O.disc||[{name:'Ramblas',sector:'Lastarria',city:'Santiago',type:'Bar',price:2,why:'Bar con terraza como les gusta',confidence:'alta'},{name:'Enigma bar',city:'Santiago',type:'Bar',price:2,why:'ya lo conocen',confidence:'alta'},{name:'Peumayén',sector:'Bellavista',city:'Santiago',type:'Restaurante',price:3,why:'Cocina ancestral para una ocasión',confidence:'media'},{name:'Liguria',sector:'Providencia',city:'Santiago',type:'Restaurante',price:2,why:'Clásico',confidence:'alta'},{name:'<img src=x onerror=window.__x=9>',city:'Santiago',type:'Bar',price:9,why:'<b>xss</b>'}]}});
-window.__audio=0;const AC0=window.AudioContext;if(AC0)window.AudioContext=class extends AC0{constructor(){super();window.__audio++}};
+window.__audio=0;window.__wav=null;const AC0=window.AudioContext;if(AC0)window.AudioContext=class extends AC0{constructor(){super();window.__audio++}};const cou=URL.createObjectURL;URL.createObjectURL=o=>{if(o&&o.type==='audio/wav')window.__wav=o.size;return cou(o)};window.__plays=0;const pl=HTMLMediaElement.prototype.play;HTMLMediaElement.prototype.play=function(){window.__plays++;window.__lastMedia=this;return pl.call(this)};
 window.claude={use:async k=>k==='db'?(O.nodb?null:db):k==='assets'?(O.noassets?null:assets):k==='sample'?(O.nosample?null:sample):{can:async()=>O.ro?false:true}}})()`;
 const seed=()=>({'places/p1':{name:'Enigma bar',city:'Santiago',type:'Bar',status:'visited',createdAt:1},'places/p2':{name:'Yako',city:'Rancagua',type:'Restaurante',status:'visited',createdAt:2},
 'places/w1':{name:'Oculto bar',city:'Santiago',status:'wish',type:'',reason:'Recomendacion',link:'',addedBy:'a',createdAt:3},
@@ -188,7 +188,9 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  await p.click('[data-wrap="mes"]');await p.waitForTimeout(300);ok('Resumen del mes funciona (aunque haya pocas fechas)',(await p.$$('#wrBars i')).length>=1);await p.click('#wrX');
  // nuevo wrapped: música, auto avance, pausa, quiz, mute
  await p.click('[data-wrap="todo"]');await p.waitForTimeout(400);
- ok('Wrapped: arranca música (Web Audio)',(await p.evaluate(()=>window.__audio))>=1);
+ const au=await p.evaluate(()=>({wav:window.__wav,plays:window.__plays,paused:window.__lastMedia?.paused,loop:window.__lastMedia?.loop,dur:window.__lastMedia?.duration}));
+ ok('Wrapped: compone la canción como archivo de audio (~34 s, en bucle)',au.wav>1e6&&au.loop===true&&au.dur>30&&au.dur<40,JSON.stringify(au));
+ ok('Wrapped: la canción se reproduce al abrir',au.plays>=1&&au.paused===false,JSON.stringify(au));
  const i0=await p.evaluate(()=>[...document.querySelectorAll('#wrBars i b')].findIndex(b=>b.style.width==='100%'&&b.style.transition.includes('linear')));
  await p.waitForTimeout(5200);const adv=await p.$$eval('#wrBars i b',x=>x.filter(b=>b.style.width==='100%').length);
  ok('Wrapped: avanza solo',adv>=2,`barras llenas ${adv}`);
@@ -199,7 +201,7 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  if(qz){const before=await txt(p,'#wrSl .sl:last-child');await p.waitForTimeout(5000);ok('Wrapped: la pregunta espera la respuesta',before===await txt(p,'#wrSl .sl:last-child'));
    await p.click('#wrSl .sl:last-child [data-quiz="a"]');await p.waitForTimeout(400);const rv=await txt(p,'#quizRev');
    ok('Wrapped: revela quién es más exigente con sus promedios',/Es .*(Juanjo|Lore).*★/.test(rv),rv);await p.screenshot({path:SP+'/av-wquiz.png'})}
- await p.click('#wrM');ok('Wrapped: botón para silenciar',/Activar música/.test(await p.$eval('#wrM',e=>e.getAttribute('aria-label'))));await p.click('#wrM');
+ await p.click('#wrM');ok('Wrapped: botón para silenciar',/Activar música/.test(await p.$eval('#wrM',e=>e.getAttribute('aria-label')))&&await p.evaluate(()=>window.__lastMedia.muted));await p.click('#wrM');
  await p.click('#wrX');
  ok('Sin errores JS',!p.__errs.length,p.__errs.join('|'));await p.close()}
 // DESCUBRIR
