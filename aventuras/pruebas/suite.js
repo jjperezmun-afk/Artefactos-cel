@@ -23,7 +23,7 @@ const seed=()=>({'places/p1':{name:'Enigma bar',city:'Santiago',type:'Bar',statu
 'oreviews/o2__j':{pid:'o2',slot:'j',scores:{destino:5,alojamiento:4,logistica:3,comida:4.5,actividades:4,pc:3.5},price:3,photos:[],tags:[],updatedAt:80},
 'oreviews/o3__j':{pid:'o3',slot:'j',scores:{diversion:3,organizacion:4,guia:4,instalaciones:4.5,pc:3},price:2,photos:[],tags:[],updatedAt:70},
 'config/pareja':{a:'Juanjo',b:'Lore'},'config/pesos':{atencion:1.5,ambiente:1,comida:1,barra:1,pc:1,experiencia:1},'config/pesos-salidas':{naturaleza:{paisaje:2,experiencia:1,estado:1,acceso:1,tranquilidad:1}}});
-async function page(b,opts,vp={width:390,height:844},hash=''){const p=await b.newPage({viewport:vp});p.__errs=[];p.on('pageerror',e=>p.__errs.push(e.message));p.on('console',m=>m.type()==='error'&&!/Failed to load resource|ERR_FILE/.test(m.text())&&p.__errs.push(m.text()));await p.addInitScript(mock(opts));await p.goto(FILE+hash);await p.waitForTimeout(700);return p}
+async function page(b,opts,vp={width:390,height:844},hash=''){const p=await b.newPage({viewport:vp});p.__errs=[];p.on('pageerror',e=>p.__errs.push(e.message));p.on('console',m=>m.type()==='error'&&!/Failed to load resource|ERR_FILE|fonts\.gstatic|CORS policy/.test(m.text())&&p.__errs.push(m.text()));await p.addInitScript(mock(opts));await p.goto(FILE+hash);await p.waitForTimeout(700);return p}
 const overflow=p=>p.evaluate(()=>document.documentElement.scrollWidth-innerWidth);
 const txt=(p,s)=>p.$eval(s,e=>e.textContent);
 const tapStar=async(p,k,fr)=>{const r=await p.$(`.rate[data-k="${k}"]`);await r.scrollIntoViewIfNeeded();const bb=await r.boundingBox();await p.mouse.click(bb.x+bb.width*fr,bb.y+bb.height/2)};
@@ -329,6 +329,14 @@ const seed2=()=>{const sd=seed();Object.assign(sd,{
  let all='';for(let i=0;i<16;i++){const q=await p.$('#wrSl .sl:last-child [data-quiz]');if(q){await q.click();await p.waitForTimeout(250)}all+=await txt(p,'#wrSl .sl:last-child');if(await p.$('#wrSl .sl:last-child [data-close]'))break;await p.mouse.click(350,400);await p.waitForTimeout(450)}
  ok('Wrapped: incluye «Su pantalla favorita»',/Su pantalla favorita/.test(all));await p.click('#wrX');
  ok('Sin errores JS (v7)',!p.__errs.length,p.__errs.join('|'));await p.close()}
+{const p=await page(b,{seed:seed2()});
+ const vis=()=>p.$$eval('#wrSl .sl',x=>x.filter(e=>!e.classList.contains('out')).length);const tot=()=>p.$$eval('#wrSl .sl',x=>x.length);
+ await p.click('[data-wrap="todo"]');await p.waitForTimeout(600);await p.mouse.click(350,400);await p.waitForTimeout(700);await p.click('#wrX');await p.waitForTimeout(300);
+ await p.click('[data-wrap="anio"]');await p.waitForTimeout(600);const a1=await tot();await p.mouse.click(350,400);await p.waitForTimeout(700);const a2=await tot();
+ ok('Wrapped: al reabrir no quedan láminas superpuestas',a1===1&&a2===1,`al abrir ${a1}, tras avanzar ${a2}`);
+ for(let i=0;i<5;i++){await p.mouse.click(350,400);await p.waitForTimeout(60)}const v=await vis();await p.waitForTimeout(600);const t=await tot();
+ ok('Wrapped: tocando rápido solo queda una lámina visible',v===1&&t===1,`visibles ${v}, total ${t}`);
+ await p.click('#wrX');ok('Wrapped: al cerrar se limpian las láminas',(await tot())===0);await p.close()}
 {const p=await page(b,{seed:seed2()},{width:320,height:640},'#historia');await p.waitForTimeout(800);ok('Línea de tiempo a 320px: nada se sale',(await overflow(p))<=0);await p.close()}
 // hash directo
 {const p=await page(b,{seed:seed()},undefined,'#salidas-ranking');ok('Link directo a #salidas-ranking',await txt(p,'#hTitle')==='Nuestras salidas'&&await p.$eval('#v-ranking',e=>e.classList.contains('on')));await p.close()}

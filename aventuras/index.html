@@ -1303,15 +1303,15 @@ $('#wrM').addEventListener('click',e=>{e.stopPropagation();MUS.on=!MUS.on;try{lo
 /* reproductor de láminas */
 let WR={S:[],i:0,tm:null,until:0,rem:0,paused:false,answered:false,per:'anio'};
 function floaters(){$('#wrFlo').innerHTML=RM?'':Array.from({length:14},(_,i)=>`<i style="left:${Math.random()*100}%;width:${10+Math.random()*16}px;height:${10+Math.random()*16}px;animation-duration:${7+Math.random()*7}s;animation-delay:${-Math.random()*10}s">${S1}</i>`).join('')}
-function openWrap(per){WR={S:buildSlides(wrapData(per)),i:0,tm:null,paused:false,answered:false,per};$('#wrBars').innerHTML=WR.S.map(()=>'<i><b></b></i>').join('');floaters();paintMute();$('#wr').classList.add('on');musStart();wrShow(0,true)}
-function closeWrap(){clearTimeout(WR.tm);$('#wr').classList.remove('on');musStop()}
+function openWrap(per){clearTimeout(WR.tm);$('#wrSl').innerHTML='';WR={S:buildSlides(wrapData(per)),i:0,tm:null,paused:false,answered:false,per};$('#wrBars').innerHTML=WR.S.map(()=>'<i><b></b></i>').join('');floaters();paintMute();$('#wr').classList.add('on');musStart();wrShow(0,true)}
+function closeWrap(){clearTimeout(WR.tm);$('#wr').classList.remove('on');$('#wrSl').innerHTML='';musStop()}
 function wrTimer(ms){clearTimeout(WR.tm);const bar=$('#wrBars').children[WR.i]?.firstChild;if(!ms||!bar)return;WR.until=performance.now()+ms;
   bar.style.transition='none';bar.style.width=(bar.dataset.p||0)+'%';void bar.offsetWidth;bar.style.transition=`width ${ms}ms linear`;bar.style.width='100%';WR.tm=setTimeout(()=>wrShow(WR.i+1),ms)}
 function wrPause(){if(WR.paused)return;WR.paused=true;clearTimeout(WR.tm);WR.rem=Math.max(0,WR.until-performance.now());const bar=$('#wrBars').children[WR.i]?.firstChild;if(bar){const p=bar.getBoundingClientRect().width/bar.parentElement.getBoundingClientRect().width*100;bar.style.transition='none';bar.style.width=p+'%';bar.dataset.p=p}}
 function wrResume(){if(!WR.paused)return;WR.paused=false;const sl=WR.S[WR.i];if(sl.quiz&&!WR.answered)return;if(WR.rem>0)wrTimer(WR.rem)}
 function wrShow(i,first){
   if(i>=WR.S.length){return}
-  clearTimeout(WR.tm);i=Math.max(0,i);const prev=$('#wrSl .sl');if(prev&&!first){prev.classList.remove('in');prev.classList.add('out');setTimeout(()=>prev.remove(),450)}
+  clearTimeout(WR.tm);i=Math.max(0,i);for(const prev of [...$('#wrSl').children]){if(first){prev.remove();continue}if(prev.classList.contains('out'))continue;prev.classList.remove('in');prev.classList.add('out');prev.setAttribute('aria-hidden','true');setTimeout(()=>prev.remove(),450)}
   WR.i=i;WR.answered=false;WR.paused=false;const sl=WR.S[i],pal=PAL[i%PAL.length];
   const w=$('#wr');w.style.setProperty('--c1',pal[0]);w.style.setProperty('--c2',pal[1]);w.style.setProperty('--c3',pal[2]);
   const el=document.createElement('div');el.className='sl in';el.innerHTML=sl.html;$('#wrSl').append(el);
