@@ -7,7 +7,7 @@ const fire=()=>subs.forEach(f=>f());window.__fire=fire;
 const doc=path=>({id:path.split('/')[1],set:async d=>{if(O.ro)throw{code:'invalid_argument'};S[path]=JSON.parse(JSON.stringify(d));setTimeout(fire)},update:async d=>{if(!S[path])throw{code:'invalid_argument'};S[path]={...S[path],...JSON.parse(JSON.stringify(d))};setTimeout(fire)},delete:async()=>{delete S[path];setTimeout(fire)},onSnapshot(n){const f=()=>n({exists:!!S[path],data:()=>S[path],metadata:{fromCache:false}});subs.push(f);f();return()=>{}}});
 let n=0;const db={doc,collection:c=>({doc:id=>doc(c+'/'+(id||'gen'+(++n))),onSnapshot(cb){const f=()=>cb(snapC(c));subs.push(f);setTimeout(f);return()=>{}}})};
 const assets={upload:async(b,o)=>{if(O.upFail)throw{code:'upstream_error'};let dims=null;try{const bm=await createImageBitmap(b);dims=[bm.width,bm.height]}catch(e){}window.__up.push({size:b.size,type:o?.type,dims});return{id:'asset'+window.__up.length}},delete:async id=>{window.__del.push(id);return{deleted:true}}};
-window.__noReveal=!O.reveal;window.__prompts=[];const sample=Object.assign(async()=>({text:''}),{json:async(pr,op)=>{window.__prompts.push({pr,op});await new Promise(r=>setTimeout(r,O.sampleDelay||300));if(O.sampleErr)throw{code:O.sampleErr};return O.disc||[{name:'Ramblas',sector:'Lastarria',city:'Santiago',type:'Bar',price:2,why:'Bar con terraza como les gusta',confidence:'alta'},{name:'Enigma bar',city:'Santiago',type:'Bar',price:2,why:'ya lo conocen',confidence:'alta'},{name:'Peumayén',sector:'Bellavista',city:'Santiago',type:'Restaurante',price:3,why:'Cocina ancestral para una ocasión',confidence:'media'},{name:'Liguria',sector:'Providencia',city:'Santiago',type:'Restaurante',price:2,why:'Clásico',confidence:'alta'},{name:'<img src=x onerror=window.__x=9>',city:'Santiago',type:'Bar',price:9,why:'<b>xss</b>'}]}});
+window.__noReveal=!O.reveal;try{if(O.me)localStorage.setItem('mesa-yo',O.me)}catch(e){}window.__prompts=[];const sample=Object.assign(async()=>({text:''}),{json:async(pr,op)=>{window.__prompts.push({pr,op});await new Promise(r=>setTimeout(r,O.sampleDelay||300));if(O.sampleErr)throw{code:O.sampleErr};return O.disc||[{name:'Ramblas',sector:'Lastarria',city:'Santiago',type:'Bar',price:2,why:'Bar con terraza como les gusta',confidence:'alta'},{name:'Enigma bar',city:'Santiago',type:'Bar',price:2,why:'ya lo conocen',confidence:'alta'},{name:'Peumayén',sector:'Bellavista',city:'Santiago',type:'Restaurante',price:3,why:'Cocina ancestral para una ocasión',confidence:'media'},{name:'Liguria',sector:'Providencia',city:'Santiago',type:'Restaurante',price:2,why:'Clásico',confidence:'alta'},{name:'<img src=x onerror=window.__x=9>',city:'Santiago',type:'Bar',price:9,why:'<b>xss</b>'}]}});
 window.__audio=0;window.__wav=null;const AC0=window.AudioContext;if(AC0)window.AudioContext=class extends AC0{constructor(){super();window.__audio++}};const cou=URL.createObjectURL;URL.createObjectURL=o=>{if(o&&o.type==='audio/wav')window.__wav=o.size;return cou(o)};window.__plays=0;const pl=HTMLMediaElement.prototype.play;HTMLMediaElement.prototype.play=function(){window.__plays++;window.__lastMedia=this;return pl.call(this)};
 window.claude={use:async k=>k==='db'?(O.nodb?null:db):k==='assets'?(O.noassets?null:assets):k==='sample'?(O.nosample?null:sample):{can:async()=>O.ro?false:true}}})()`;
 const seed=()=>({'places/p1':{name:'Enigma bar',city:'Santiago',type:'Bar',status:'visited',createdAt:1},'places/p2':{name:'Yako',city:'Rancagua',type:'Restaurante',status:'visited',createdAt:2},
@@ -28,6 +28,7 @@ const overflow=p=>p.evaluate(()=>document.documentElement.scrollWidth-innerWidth
 const txt=(p,s)=>p.$eval(s,e=>e.textContent);
 const tapStar=async(p,k,fr)=>{const r=await p.$(`.rate[data-k="${k}"]`);await r.scrollIntoViewIfNeeded();const bb=await r.boundingBox();await p.mouse.click(bb.x+bb.width*fr,bb.y+bb.height/2)};
 const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
+const seeSent=async p=>{const b=await p.$('#sheet [data-seepid]');if(b&&await b.isVisible()){await b.click();await p.waitForTimeout(500)}};
 (async()=>{const b=await chromium.launch();
 // INICIO
 {const p=await page(b,{seed:seed()});
@@ -59,7 +60,7 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  // editar salida: precarga info y notas
  await p.click('[data-rate="o1"]');await p.waitForTimeout(500);
  ok('Editar salida: precarga estrellas de Juanjo y datos del lugar',await p.$eval('.rate[data-k="acceso"]',e=>e.getAttribute('aria-valuenow'))==='2'&&await p.$eval('#durIn',e=>e.value)==='7 horas'&&await p.$eval('[data-dif="exigente"]',e=>e.classList.contains('on')));
- await p.fill('#durIn','6 horas');await p.click('#saveBtn');await p.waitForTimeout(1500);
+ await p.fill('#durIn','6 horas');await p.click('#saveBtn');await p.waitForTimeout(1500);await seeSent(p);
  ok('Editar salida: guarda cambios de datos del lugar',(await p.evaluate(()=>__S['outings/o1'].dur))==='6 horas');
  await closeSheet(p);await p.waitForTimeout(300);
  // ranking salidas
@@ -77,7 +78,7 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  await p.click(`[data-went="${wid.split('/')[1]}"]`);await p.waitForTimeout(400);
  const cr=await p.$$eval('#crits .crit h3',x=>x.map(e=>e.textContent));
  ok('¡Fuimos!: el formulario usa las características de Pueblos',cr.join()==='Encanto,Qué hacer,Comida,Limpieza y seguridad,Experiencia',cr.join());
- await p.click('[data-sub="Pueblo"]');await tapStar(p,'encanto',.9);await p.click('#saveBtn');await p.waitForTimeout(1500);
+ await p.click('[data-sub="Pueblo"]');await tapStar(p,'encanto',.9);await p.click('#saveBtn');await p.waitForTimeout(1500);await seeSent(p);
  const z=await p.evaluate(k=>__S[k],wid);ok('¡Fuimos!: pasa a evaluados con subcategoría',z.status==='visited'&&z.sub==='Pueblo');
  await closeSheet(p);await p.waitForTimeout(300);
  // nueva salida: cambiar categoría a viajes ajusta escala y criterios; puntajes de otra categoría no se guardan
@@ -86,7 +87,7 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  ok('Elegir Viajes pone escala Viaje',await p.$eval('[data-scl="viaje"]',e=>e.classList.contains('on')));
  await p.click('#saveBtn');ok('No guarda si solo hay estrellas de otra categoría',await txt(p,'#toast')==='Pon al menos una estrella');
  await tapStar(p,'destino',.7);await p.click('[data-subother="1"]');await p.fill('#subIn','Desierto');await p.click('[data-ideal="Amigos"]');await p.click('[data-epoca="Invierno"]');
- await p.click('#saveBtn');await p.waitForTimeout(1500);
+ await p.click('#saveBtn');await p.waitForTimeout(1500);await seeSent(p);
  const sp=await p.evaluate(()=>{const k=Object.keys(__S).find(k=>k.startsWith('outings/')&&__S[k].name==='San Pedro');return {p:__S[k],r:__S['oreviews/'+k.split('/')[1]+'__a']}});
  ok('Nueva salida: guarda categoría, subcategoría propia, escala, ideal y época',sp.p.cat==='viajes'&&sp.p.sub==='Desierto'&&sp.p.scale==='viaje'&&sp.p.ideal[0]==='Amigos'&&sp.p.epoca[0]==='Invierno');
  ok('Nueva salida: solo guarda puntajes de su categoría',JSON.stringify(sp.r.scores)==='{"destino":3.5}',JSON.stringify(sp.r.scores));
@@ -102,7 +103,7 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  ok('Mesa: no muestra filtros de salidas',!(await p.$('#cats .chip'))&&!(await p.$('#scales .chip')));
  await p.click('.card[data-pid="p1"]');await p.waitForTimeout(400);await p.click('[data-rate="p1"]');await p.waitForTimeout(400);
  ok('Mesa: editar precarga como antes',await p.$eval('.rate[data-k="barra"]',e=>e.getAttribute('aria-valuenow'))==='2'&&!(await p.$('#durIn')));
- await p.click('[data-slot="b"]');await tapStar(p,'barra',.9);await p.click('#saveBtn');await p.waitForTimeout(1500);
+ await p.click('[data-slot="b"]');await tapStar(p,'barra',.9);await p.click('#saveBtn');await p.waitForTimeout(1500);await seeSent(p);
  ok('Mesa: guardar evaluación de Lore',!!(await p.evaluate(()=>__S['reviews/p1__b'])));
  // borrar en salidas borra fotos
  await closeSheet(p);await p.click('#backBtn');await p.waitForTimeout(400);await p.click('#lastList [data-pid="o1"]');await p.waitForTimeout(900);
@@ -129,14 +130,14 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  ok('Link a Google Maps con lo escrito',(await p.$eval('#mapsA',e=>e.href)).includes('enigma%20BAR'));
  await tapStar(p,'comida',.9);await p.click('#saveBtn');await p.waitForTimeout(300);
  ok('No deja crear duplicado sin sucursal',/sucursal/.test(await txt(p,'#toast'))&&!(await p.evaluate(()=>Object.values(__S).some(v=>v.name==='enigma BAR'))));
- await p.fill('#psector','Providencia');await p.click('#saveBtn');await p.waitForTimeout(1500);
+ await p.fill('#psector','Providencia');await p.click('#saveBtn');await p.waitForTimeout(1500);await seeSent(p);
  const nw=await p.evaluate(()=>Object.values(__S).find(v=>v.name==='enigma BAR'));ok('Con sucursal sí lo crea',nw&&nw.sector==='Providencia');
  await closeSheet(p);await p.waitForTimeout(400);
  ok('Tarjeta muestra la sucursal',(await p.$$eval('#list .card .meta',x=>x.map(e=>e.textContent))).some(t=>/Providencia/.test(t)));
  await p.fill('#q','provi');await p.waitForTimeout(200);ok('Búsqueda por sucursal y sin tildes',(await p.$$('#list .card')).length===1);await p.fill('#q','');
  await p.click('#t-nuevo');await p.waitForTimeout(300);await p.fill('#pname','Yako');await p.click('#dupBox [data-pickplace="p2"]');await p.waitForTimeout(300);
  ok('Elegir el existente desde el aviso',/Yako/.test(await txt(p,'#placeBox h2'))&&/Evaluando/.test(await txt(p,'#placeBox')));
- await p.click('#editPlace');await p.fill('#psector','Centro');await p.fill('#linkIn','https://maps.app.goo.gl/abc');await tapStar(p,'comida',.5);await p.click('#saveBtn');await p.waitForTimeout(1500);
+ await p.click('#editPlace');await p.fill('#psector','Centro');await p.fill('#linkIn','https://maps.app.goo.gl/abc');await tapStar(p,'comida',.5);await p.click('#saveBtn');await p.waitForTimeout(1500);await seeSent(p);
  const y=await p.evaluate(()=>__S['places/p2']);ok('Editar datos del lugar guarda sucursal y link',y.sector==='Centro'&&y.link==='https://maps.app.goo.gl/abc');
  ok('Detalle: botón al mapa con su link',(await p.$eval('#sheet a.mapl',e=>e.href))==='https://maps.app.goo.gl/abc');
  ok('Sin errores JS',!p.__errs.length,p.__errs.join('|'));await p.close()}
@@ -169,7 +170,7 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  ok('Nueva visita: formulario limpio con modo «Nueva visita (2ª)»',/Nueva visita \(la 2ª\)/.test(await txt(p,'#placeBox'))&&await p.$eval('.rate[data-k="barra"]',e=>e.getAttribute('aria-valuenow'))==='0');
  await p.fill('#pedirIn','Pisco sour');await p.click('[data-peadd="pedir"]');await p.fill('#evitarIn','Jugo natural');await p.press('#evitarIn','Enter');
  ok('Agregar a pedir y evitar',/Pisco sour/.test(await txt(p,'#pedirL'))&&/Jugo natural/.test(await txt(p,'#evitarL')));
- await tapStar(p,'barra',.99);await tapStar(p,'comida',.99);await p.click('#saveBtn');await p.waitForTimeout(1500);
+ await tapStar(p,'barra',.99);await tapStar(p,'comida',.99);await p.click('#saveBtn');await p.waitForTimeout(1500);await seeSent(p);
  const r=await p.evaluate(()=>__S['reviews/p1__a']);
  ok('Guarda la visita anterior en el historial',r.history.length===1&&r.history[0].scores.barra===2&&r.scores.barra===5&&r.pedir[0]==='Pisco sour'&&r.photos[0]==='old1',JSON.stringify(r.history[0].scores));
  const sh=await txt(p,'#sheet');
@@ -179,7 +180,7 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  ok('Tarjeta muestra «2 visitas»',/2 visitas/.test(await txt(p,'.card[data-pid="p1"]')));
  await p.screenshot({path:SP+'/av-visitas.png'});
  // editar la última no duplica historial
- await p.click('[data-rate="p1"]');await p.waitForTimeout(400);await tapStar(p,'barra',.7);await p.click('#saveBtn');await p.waitForTimeout(1500);
+ await p.click('[data-rate="p1"]');await p.waitForTimeout(400);await tapStar(p,'barra',.7);await p.click('#saveBtn');await p.waitForTimeout(1500);await seeSent(p);
  const r2=await p.evaluate(()=>__S['reviews/p1__a']);ok('Editar la última no agrega visitas',r2.history.length===1&&r2.scores.barra===3.5);
  await closeSheet(p);
  // resumen
@@ -281,7 +282,7 @@ const seed2=()=>{const sd=seed();Object.assign(sd,{
  ok('Pregunta de la cita: viene del banco (general o de pantallas)',q1.length>10);
  await p.click('#qShuffle');const q2=await txt(p,'#qaQ');ok('«Otra pregunta» la cambia',q2!==q1,`${q1} → ${q2}`);
  await p.fill('#bestIn','Ver el capítulo final juntos');await p.fill('#qaIn','Mark, sin duda');
- await p.click('#saveBtn');await p.waitForTimeout(1600);
+ await p.click('#saveBtn');await p.waitForTimeout(1600);await seeSent(p);
  const sv=await p.evaluate(()=>{const k=Object.keys(__S).find(k=>k.startsWith('screens/')&&__S[k].name==='Severance');return {pl:__S[k],r:__S['sreviews/'+k.split('/')[1]+'__a']}});
  ok('Guarda serie con género, plataforma y respuestas',sv.pl.cat==='serie'&&sv.pl.sub==='Ciencia ficción'&&sv.pl.city==='Apple TV+'&&sv.r.qa.best==='Ver el capítulo final juntos'&&sv.r.qa.a==='Mark, sin duda'&&sv.r.qa.q===q2&&sv.r.price===null);
  await closeSheet(p);await p.waitForTimeout(300);
@@ -338,6 +339,44 @@ const seed2=()=>{const sd=seed();Object.assign(sd,{
  ok('Wrapped: tocando rápido solo queda una lámina visible',v===1&&t===1,`visibles ${v}, total ${t}`);
  await p.click('#wrX');ok('Wrapped: al cerrar se limpian las láminas',(await tot())===0);await p.close()}
 {const p=await page(b,{seed:seed2()},{width:320,height:640},'#historia');await p.waitForTimeout(800);ok('Línea de tiempo a 320px: nada se sale',(await overflow(p))<=0);await p.close()}
+// AVISOS
+{const p=await page(b,{seed:seed2()},undefined,'#mesa-nuevo');
+ await p.fill('#pname','Bocanáriz');await tapStar(p,'comida',.9);await p.click('#saveBtn');await p.waitForTimeout(1600);
+ const nz=await p.evaluate(()=>Object.entries(__S).filter(([k])=>k.startsWith('nudges/')).map(([k,v])=>v));
+ ok('Aviso: al evaluar primero se le avisa a la pareja',nz.length===1&&nz[0].to==='b'&&nz[0].from==='a'&&nz[0].kind==='turn'&&nz[0].name==='Bocanáriz',JSON.stringify(nz));
+ const sh=await txt(p,'#sheet');ok('Aviso: pantalla «¡Listo! Ahora le toca a Lore»',/Ahora le toca a Lore/.test(sh));
+ const wa=await p.$eval('#waLink',e=>e.href);
+ ok('Aviso: botón de WhatsApp con mensaje y link',wa.startsWith('https://wa.me/?text=')&&decodeURIComponent(wa).includes('Bocanáriz')&&decodeURIComponent(wa).includes('https://claude.ai/artifact/'),decodeURIComponent(wa).slice(0,120));
+ ok('Aviso: «Copiar mensaje»',!!(await p.$('[data-copymsg]')));
+ await p.screenshot({path:SP+'/v8-sent.png'});
+ ok('Aviso: el que envía no ve su propio aviso',!(await p.$eval('#nb',e=>e.classList.contains('on'))));
+ await p.click('[data-seepid]');await p.waitForTimeout(400);await p.click('[data-rate]');await p.waitForTimeout(400);await tapStar(p,'ambiente',.5);await p.click('#saveBtn');await p.waitForTimeout(1600);
+ ok('Aviso: editar la última evaluación no vuelve a avisar',(await p.evaluate(()=>Object.keys(__S).filter(k=>k.startsWith('nudges/')).length))===1);
+ ok('Sin errores JS (avisos, envía)',!p.__errs.length,p.__errs.join('|'));await p.close()}
+{const sd=seed2();sd['places/x9']={name:'Bocanáriz',city:'Santiago',type:'Bar',status:'visited',createdAt:20};sd['reviews/x9__a']={pid:'x9',slot:'a',scores:{comida:4.5,ambiente:4},photos:[],tags:[],date:today,updatedAt:500};
+ sd['nudges/n1']={to:'b',from:'a',mod:'mesa',pid:'x9',name:'Bocanáriz',kind:'turn',at:Date.now()-120000};
+ const p=await page(b,{seed:sd,me:'b',reveal:true});await p.waitForTimeout(1200);
+ ok('Aviso (teléfono de Lore): aparece el aviso animado',await p.$eval('#nb',e=>e.classList.contains('on'))&&/Juanjo evaluó «Bocanáriz»/.test(await txt(p,'#nb'))&&/te toca/.test(await txt(p,'#nb')));
+ ok('Aviso: campana con pendientes',/^\d+$/.test(await txt(p,'#bellN'))&&+(await txt(p,'#bellN'))>=1,await txt(p,'#bellN'));
+ await p.screenshot({path:SP+'/v8-banner.png'});
+ await p.click('#nb [data-nbgo]');await p.waitForTimeout(900);
+ ok('Aviso: «Evaluar» abre el lugar a ciegas',await txt(p,'#hTitle')==='Nuestra mesa'&&/Evaluación a ciegas/.test(await txt(p,'#sheet')));
+ ok('Aviso: se borra al usarlo',!(await p.evaluate(()=>!!__S['nudges/n1'])));
+ await p.click('#sheet [data-rate="x9"]');await p.waitForTimeout(400);await tapStar(p,'comida',.8);await p.click('#saveBtn');await p.waitForTimeout(2400);
+ const nz=await p.evaluate(()=>Object.values(Object.fromEntries(Object.entries(__S).filter(([k])=>k.startsWith('nudges/')))));
+ ok('Aviso: al completar, a Juanjo le llega «ya pueden ver la revelación»',nz.some(n=>n.to==='a'&&n.from==='b'&&n.kind==='reveal'&&n.pid==='x9'),JSON.stringify(nz));
+ ok('Al completar se revela para Lore',await p.$eval('#rv',e=>e.classList.contains('on')));await p.click('#rvX');await p.waitForTimeout(300);await closeSheet(p);await p.waitForTimeout(300);
+ await p.click('#bellBtn');await p.waitForTimeout(300);const bs=await txt(p,'#sheet');
+ ok('Campana: abre la lista de avisos',/^Avisos/.test(bs.trim())&&(/Te toca|Nada pendiente/.test(bs)),bs.slice(0,140));
+ ok('Sin errores JS (avisos, recibe)',!p.__errs.length,p.__errs.join('|'));await p.close()}
+{const sd=seed2();sd['nudges/n2']={to:'a',from:'b',mod:'pantallas',pid:'s1',name:'Intensamente 2',kind:'reveal',at:Date.now()-60000};
+ const p=await page(b,{seed:sd,reveal:true});await p.waitForTimeout(1200);
+ ok('Aviso de revelación: aparece',/Lore también evaluó «Intensamente 2»/.test(await txt(p,'#nb'))&&/revelación/.test(await txt(p,'#nb')));
+ await p.click('#nb [data-nbgo]');await p.waitForTimeout(1400);ok('Aviso de revelación: abre la revelación',await p.$eval('#rv',e=>e.classList.contains('on'))&&/Intensamente 2/.test(await txt(p,'#rvIn')));
+ await p.click('#rvX');await p.close()}
+{const sd=seed2();sd['nudges/n3']={to:'a',from:'b',mod:'pantallas',pid:'s1',name:'Intensamente 2',kind:'reveal',at:Date.now()};
+ const p=await page(b,{seed:sd});await p.waitForTimeout(1300);const on1=await p.$eval('#nb',e=>e.classList.contains('on'));await p.waitForTimeout(8500);
+ ok('Aviso: se esconde solo a los 8 segundos (queda en la campana)',on1&&!(await p.$eval('#nb',e=>e.classList.contains('on')))&&(await txt(p,'#bellN'))!=='');await p.close()}
 // hash directo
 {const p=await page(b,{seed:seed()},undefined,'#salidas-ranking');ok('Link directo a #salidas-ranking',await txt(p,'#hTitle')==='Nuestras salidas'&&await p.$eval('#v-ranking',e=>e.classList.contains('on')));await p.close()}
 // fotos
