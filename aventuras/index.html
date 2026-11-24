@@ -14,6 +14,7 @@
    LAYOUT: una columna móvil, cabecera de vidrio, barra flotante de 4 pestañas, hojas que suben. */
 :root{color-scheme:light dark;--bg:light-dark(#fbf6fb,#14111c);--ink:light-dark(#2b2640,#f1edff);--mute:light-dark(#6c6684,#aca5c6);--glass:light-dark(rgba(255,255,255,.55),rgba(40,35,58,.55));--glass2:light-dark(rgba(255,255,255,.86),rgba(28,24,40,.9));--edge:light-dark(rgba(255,255,255,.95),rgba(255,255,255,.1));--line:light-dark(rgba(43,38,64,.08),rgba(255,255,255,.08));--track:light-dark(rgba(43,38,64,.13),rgba(255,255,255,.16));--star:#ffbf33;--pink:#ff8fb1;--peach:#ffb48c;--mint:#8fe3c3;--sky:#9cc8ff;--sh:light-dark(0 10px 30px rgba(110,90,150,.14),0 10px 30px rgba(0,0,0,.4));--inv:light-dark(#2b2640,#f1edff);--invt:light-dark(#fff,#1b1726);--b1:light-dark(#ffd2c2,#ff8fb140);--b2:light-dark(#dcd2ff,#9d8cff38);--b3:light-dark(#c4f1df,#5fd6a92e);--b4:light-dark(#cfe4ff,#6aa8ff33);--g1:var(--pink);--g2:var(--peach);--t1:#ff6f9c;--t2:#ff9a62;--glow:#ff8fb155;--hl:#d4507a}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+body[data-mod=pantallas]{--g1:#c7b8ff;--g2:var(--peach);--t1:#7b5cff;--t2:#ff8a5c;--glow:#a993ff55;--hl:#6a4fd0;--b1:light-dark(#e4dcff,#7b5cff33);--b3:light-dark(#ffe1cf,#ff8a5c2e)}
 body[data-mod=salidas]{--g1:var(--mint);--g2:var(--sky);--t1:#26b487;--t2:#4d8ff0;--glow:#6fc9e055;--hl:#1f8f86;--b1:light-dark(#c8f3e3,#3fcf9a33);--b3:light-dark(#d6ecff,#6aa8ff33)}
 *{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
 html{overflow-x:hidden;overscroll-behavior-x:none;-webkit-text-size-adjust:100%}
@@ -293,6 +294,65 @@ form{display:grid;gap:16px;padding-bottom:20px}
 @keyframes thinkSpin{to{transform:rotate(1turn)}}
 .disc{display:grid;gap:10px;margin-top:10px}
 .aiNote{font-size:12px;color:var(--mute);margin:0}
+.hero.p .go{background:linear-gradient(135deg,#c7b8ff,var(--peach))}
+#hTitle.swap{animation:tSwap .5s cubic-bezier(.2,.9,.2,1)}
+@keyframes tSwap{from{opacity:0;transform:translateY(12px);filter:blur(4px)}}
+.score.seal{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.lock{width:26px;height:26px;animation:wig 2.6s ease-in-out infinite;transform-origin:50% 20%}
+@keyframes wig{0%,80%,100%{transform:rotate(0)}84%{transform:rotate(-12deg)}88%{transform:rotate(10deg)}92%{transform:rotate(-6deg)}96%{transform:rotate(3deg)}}
+.pill.bl{background:linear-gradient(135deg,#ffd86b66,#ff8fb155);color:var(--ink)}
+.sealbox{border-radius:24px;padding:22px 18px;text-align:center;display:grid;gap:10px;justify-items:center;background:linear-gradient(135deg,#ffd2c299,#dcd2ff99);margin:14px 0}
+.sealbox svg{width:84px;height:84px;animation:env 2.4s ease-in-out infinite}
+@keyframes env{50%{transform:translateY(-6px) rotate(-3deg)}}
+.sealbox b{font:800 20px Outfit,sans-serif}
+.qcard textarea{min-height:64px}
+.qcard .qq{font:700 16px Outfit,sans-serif;line-height:1.25}
+.qbox{border-radius:18px;padding:12px 14px;margin-top:10px;background:linear-gradient(135deg,#ffe7a855,#ffc8dd55)}
+.qbox h4{margin:0 0 6px;font:700 15px Outfit,sans-serif}
+.qbox p{margin:4px 0;font-size:14px}.qbox p i{font-style:normal;font-weight:700}
+.rv{position:fixed;inset:0;z-index:48;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;background:radial-gradient(circle at 30% 20%,#ffd2c2,transparent 60%),radial-gradient(circle at 80% 70%,#cfe4ff,transparent 60%),linear-gradient(160deg,#dcd2ff,#ffc8dd);color:#2b2640;padding:calc(26px + env(safe-area-inset-top)) 18px calc(30px + env(safe-area-inset-bottom))}
+.rv.on{display:flex;animation:wrIn .5s cubic-bezier(.2,.9,.2,1)}
+.rv .in{width:min(520px,100%);display:grid;gap:16px;text-align:center}
+.rv .x{position:fixed;top:calc(14px + env(safe-area-inset-top));right:14px;width:44px;height:44px;border-radius:50%;border:0;background:#ffffffaa;font-size:22px;font-weight:800;color:#2b2640;z-index:2}
+.rv .k{font:800 14px Manrope,sans-serif;opacity:.75;animation:wUp .6s backwards}
+.rv h2{font-size:clamp(28px,8vw,40px);animation:wUp .7s .1s backwards cubic-bezier(.2,1.3,.4,1)}
+.fcs{display:grid;grid-template-columns:1fr 1fr;gap:12px;perspective:900px}
+.fc{height:190px;position:relative;transform-style:preserve-3d;animation:flip .9s cubic-bezier(.3,1.4,.4,1) forwards;animation-delay:calc(.7s + var(--d)*.55s);transform:rotateY(180deg)}
+@keyframes flip{to{transform:rotateY(0)}}
+@media(prefers-reduced-motion:reduce){.fc{transform:none!important}}
+.fc>div{position:absolute;inset:0;border-radius:24px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;box-shadow:0 14px 30px rgba(60,40,110,.18)}
+.fc .fr{background:#fff;font:700 15px Outfit,sans-serif}
+.fc .bk{background:linear-gradient(160deg,#2b2640,#5b47a0);color:#fff;transform:rotateY(180deg);font:800 56px Outfit,sans-serif}
+.fc .fr b{font:800 54px/1 Outfit,sans-serif;background:linear-gradient(135deg,var(--t1,#ff6f9c),var(--t2,#ff9a62));-webkit-background-clip:text;background-clip:text;color:transparent}
+.cmp{display:flex;align-items:center;justify-content:center;gap:14px;animation:wUp .7s 2.1s backwards cubic-bezier(.2,1.3,.4,1)}
+.cmp svg{width:86px;height:86px;transform:rotate(-90deg)}
+.cmp circle{fill:none;stroke-width:9}.cmp .tr{stroke:#ffffff88}.cmp .vl{stroke:#2b2640;stroke-linecap:round;stroke-dasharray:226;stroke-dashoffset:226;transition:stroke-dashoffset 1.4s cubic-bezier(.2,.8,.2,1)}
+.cmp b{font:800 40px Outfit,sans-serif}.cmp span{display:block;font-size:13px;opacity:.75;text-align:start}
+.rbars{display:grid;gap:9px;background:#ffffff99;border-radius:22px;padding:14px}
+.rb{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center;animation:wUp .6s backwards;animation-delay:calc(2.7s + var(--i)*.12s)}
+.rb .t{grid-column:1/-1;display:flex;justify-content:center;gap:6px;font:700 13px Manrope,sans-serif}
+.rb .ba,.rb .bb{height:12px;border-radius:9px;background:#2b264014;overflow:hidden;display:flex}
+.rb .ba{justify-content:flex-end}
+.rb .ba i,.rb .bb i{display:block;height:100%;border-radius:9px;width:0;transition:width 1s cubic-bezier(.2,.9,.2,1)}
+.rb .ba i{background:linear-gradient(90deg,#ffb48c,#ff6f9c)}.rb .bb i{background:linear-gradient(90deg,#7bb7ff,#9d8cff)}
+.rb small{font:800 12px Outfit,sans-serif;min-width:5.5ch}
+.badge{border-radius:99px;padding:2px 8px;font-size:11px;font-weight:800}.badge.m{background:#8fe3c3}.badge.dd{background:#ff8fb1}
+.rqa{display:grid;gap:10px;animation:wUp .7s backwards;animation-delay:calc(3.2s + var(--n)*.12s)}
+.rqa .qbox{margin:0;background:#ffffffb3;text-align:start}
+.rv .go2{border:0;border-radius:18px;min-height:52px;font:800 17px Outfit,sans-serif;background:#2b2640;color:#fff;animation:wUp .6s backwards;animation-delay:calc(3.6s + var(--n)*.12s)}
+#v-historia .tl{position:relative;margin-top:16px;padding-left:34px}
+#v-historia .tl::before{content:"";position:absolute;left:13px;top:6px;bottom:6px;width:3px;border-radius:3px;background:linear-gradient(180deg,var(--pink),#c7b8ff,var(--mint),var(--sky));transform-origin:top;animation:lineIn 1.4s cubic-bezier(.2,.8,.2,1)}
+@keyframes lineIn{from{transform:scaleY(0)}}
+.tlm{font:800 15px Outfit,sans-serif;margin:20px 0 8px -34px;padding:6px 12px;border-radius:99px;display:inline-block}
+.tli{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 12px;align-items:center;border-radius:20px;padding:12px 14px;margin-bottom:10px;cursor:pointer;text-align:start;width:100%;opacity:0;transform:translateX(24px);transition:opacity .6s,transform .6s cubic-bezier(.2,.9,.2,1)}
+.tli.seen{opacity:1;transform:none}
+.tli .dot{position:absolute;left:-29px;top:20px;width:17px;height:17px;border-radius:50%;border:3px solid var(--bg);box-shadow:0 0 0 2px currentColor;background:currentColor}
+.tli.m .dot{color:#ff8fb1}.tli.s .dot{color:#5fcf9f}.tli.p .dot{color:#9d8cff}
+.tli .thumb{width:52px;height:52px;border-radius:14px;font-size:18px}
+.tli b.sc{font:800 22px Outfit,sans-serif}
+.tli q{grid-column:1/-1;display:block;font-size:14px;color:var(--mute);quotes:none;font-style:italic}
+.tli .dt{font-size:12px;color:var(--mute);font-weight:700}
+.tlf{margin-top:12px}
 .spark{position:absolute;font-size:22px;pointer-events:none;line-height:0}
 @media(max-width:380px){.hero{grid-template-columns:minmax(0,1fr) 36%;padding:16px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
@@ -327,12 +387,26 @@ form{display:grid;gap:16px;padding-bottom:20px}
         <div><h2>Nuestras salidas</h2><p id="hs">Cerros, pueblos, actividades y viajes</p><span class="go">Entrar ›</span></div>
         <svg class="art float" viewBox="0 0 200 170" aria-hidden="true" style="animation-delay:-3s"><ellipse cx="100" cy="155" rx="80" ry="9" fill="#2b264018"/><circle cx="148" cy="42" r="20" fill="#ffd27a"/><circle cx="148" cy="42" r="30" fill="#ffd27a" opacity=".25"/><path d="M10 150L78 52l40 52 22-26 50 72z" fill="url(#gM2)"/><path d="M60 150l58-86 70 86z" fill="url(#gM)"/><path d="M118 64l-14 20 10-4 6 10 6-12 8 6z" fill="#fff" opacity=".85"/><path d="M90 150c8-14 30-18 26-32s16-16 24-26" stroke="#fff" stroke-width="4" stroke-dasharray="3 7" stroke-linecap="round" fill="none" opacity=".9"/><path d="M78 52l-12 17 9-3 5 8 5-10z" fill="#fff" opacity=".8"/></svg>
       </button>
+      <button type="button" class="hero glass p" data-go="pantallas" style="--i:2">
+        <div><h2>Nuestras pantallas</h2><p id="hp">Películas y series</p><span class="go">Entrar ›</span></div>
+        <svg class="art float" viewBox="0 0 200 170" aria-hidden="true" style="animation-delay:-1.5s"><defs><linearGradient id="gTv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dcd2ff"/><stop offset="1" stop-color="#cfe4ff"/></linearGradient></defs><ellipse cx="100" cy="156" rx="78" ry="9" fill="#2b264018"/><path d="M78 26l22 20 22-20" stroke="#b9a9d6" stroke-width="5" stroke-linecap="round" fill="none"/><rect x="28" y="44" width="144" height="96" rx="20" fill="#fff"/><rect x="40" y="55" width="120" height="74" rx="12" fill="url(#gTv)"/><path d="M92 76v32l26-16z" fill="#fff"/><rect x="62" y="140" width="10" height="12" rx="3" fill="#b9a9d6"/><rect x="128" y="140" width="10" height="12" rx="3" fill="#b9a9d6"/><g transform="translate(140 96)"><path d="M0 18l6 40h30l6-40z" fill="#fff"/><path d="M8 18l3 40h6l-1-40zM26 18l-1 40h6l3-40z" fill="#ff8fb1"/><circle cx="6" cy="16" r="8" fill="#ffe7a8"/><circle cx="18" cy="10" r="9" fill="#fff3d1"/><circle cx="31" cy="14" r="8" fill="#ffe7a8"/><circle cx="40" cy="19" r="6" fill="#fff3d1"/></g></svg>
+      </button>
     </div>
+    <div class="wrapCard glass"><h2>Su historia</h2><p class="meta" style="margin:4px 0 0">Todas sus salidas, comidas y pantallas en una línea de tiempo.</p>
+      <div class="chips"><button type="button" class="save" style="min-height:44px;padding:0 18px;font-size:15px" data-hist="1">Ver línea de tiempo ›</button></div></div>
     <div class="wrapCard glass"><h2>Su resumen</h2><p class="meta" style="margin:4px 0 0">Como un «Wrapped»: sus números, favoritos y momentos, en láminas.</p>
       <div class="chips"><button type="button" class="chip" data-wrap="mes">Este mes</button><button type="button" class="chip" data-wrap="anio">Este año</button><button type="button" class="chip" data-wrap="todo">Toda su historia</button></div></div>
     <h2 style="font-size:22px;margin-top:26px">Lo último que hicimos</h2>
     <div id="lastList" class="anim"></div>
     <p class="note glass" id="status0" hidden></p>
+  </section>
+
+  <section class="view" id="v-historia">
+    <button type="button" class="ibtn glass crumb" data-home="1"><svg class="ic" viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7"/></svg>Aventuras</button>
+    <h2 style="font-size:30px;margin-top:14px">Su historia</h2>
+    <p class="meta" style="margin:4px 0 0">Cada visita, función y salida, en orden. Toquen una para ver el detalle.</p>
+    <div class="chips tlf" id="tlF"></div>
+    <div class="tl" id="tl"></div>
   </section>
 
   <section class="view" id="v-lista">
@@ -402,20 +476,24 @@ form{display:grid;gap:16px;padding-bottom:20px}
       <div id="placeBox"></div>
       <div><span class="l">¿Quién evalúa?</span><div class="seg glass" id="slotSeg"></div></div>
       <div id="crits" style="display:grid;gap:12px"></div>
-      <div class="crit glass"><div class="ch"><div><h3 id="priceT">Precio</h3><small>Cuánto se gasta, no suma a la nota</small></div></div>
+      <div class="crit glass" id="priceCard"><div class="ch"><div><h3 id="priceT">Precio</h3><small>Cuánto se gasta, no suma a la nota</small></div></div>
         <div class="seg price" id="priceSeg" style="margin-top:10px;background:var(--line)"></div>
         <div class="row" style="gap:4px"><button type="button" class="mini" data-note="precio" id="pnBtn">＋ Nota</button></div><div id="pnBox"></div></div>
       <div class="crit glass"><div class="ch"><div><h3>Fotos</h3><small id="phHint"></small></div></div>
         <div class="ph" id="photos" style="margin-top:10px"></div><input type="file" id="file" accept="image/*" multiple hidden></div>
       <div><span class="l">Lo que tiene (toca para marcar)</span><div class="chips" id="tags"></div>
         <div class="row" style="margin-top:10px"><input id="newTag" placeholder="Otra etiqueta…"><button type="button" class="ghost" id="addTag">Añadir</button></div></div>
-      <div class="crit glass" style="display:grid;gap:8px"><div class="ch"><div><h3 id="peT">Qué pedir y qué evitar</h3><small id="peH">Para acordarse la próxima vez</small></div></div>
+      <div class="crit glass" id="peCard" style="display:grid;gap:8px"><div class="ch"><div><h3 id="peT">Qué pedir y qué evitar</h3><small id="peH">Para acordarse la próxima vez</small></div></div>
         <span class="l" id="peL1" style="margin:4px 0 0">Pedir de nuevo</span><div class="chips" id="pedirL"></div>
         <div class="row"><input id="pedirIn" maxlength="50" placeholder="Ej: ceviche, pisco sour"><button type="button" class="ghost" data-peadd="pedir">Añadir</button></div>
         <span class="l" id="peL2" style="margin:6px 0 0">Evitar</span><div class="chips" id="evitarL"></div>
         <div class="row"><input id="evitarIn" maxlength="50" placeholder="Ej: postre, jugo natural"><button type="button" class="ghost" data-peadd="evitar">Añadir</button></div></div>
-      <div><span class="l">¿Volverían?</span><div class="seg glass" id="againSeg"></div></div>
+      <div><span class="l" id="againL">¿Volverían?</span><div class="seg glass" id="againSeg"></div></div>
       <div><label class="l" for="date">Fecha</label><input id="date" type="date"></div>
+      <div class="crit glass qcard" style="display:grid;gap:8px"><div class="ch"><div><h3>La pregunta de la cita</h3><small>Tu pareja verá tus respuestas cuando también responda</small></div></div>
+        <label class="l qq" for="bestIn" style="margin:4px 0 0">¿Qué fue lo mejor de hoy?</label><textarea id="bestIn" rows="2" maxlength="220" placeholder="Un momento, un sabor, una risa…"></textarea>
+        <div class="row" style="justify-content:space-between;align-items:flex-end;margin-top:4px"><label class="l qq" for="qaIn" id="qaQ" style="margin:0"></label><button type="button" class="mini" id="qShuffle">Otra pregunta</button></div>
+        <textarea id="qaIn" rows="2" maxlength="260" placeholder="Tu respuesta (opcional)"></textarea></div>
       <div><label class="l" for="comment">Opinión general</label><textarea id="comment" rows="3" placeholder="Lo mejor, lo peor, qué harían distinto la próxima vez…"></textarea></div>
       <button class="save" id="saveBtn" type="submit">Guardar evaluación</button>
     </form>
@@ -434,6 +512,7 @@ form{display:grid;gap:16px;padding-bottom:20px}
 <div class="lb" id="lb"><img id="lbImg" alt=""><span id="lbTxt"></span></div>
 <div class="toast" id="toast"></div>
 <div class="fx" id="fx" aria-hidden="true"></div>
+<div class="rv" id="rv" role="dialog" aria-modal="true" aria-label="Revelación"><button type="button" class="x" id="rvX" aria-label="Cerrar">×</button><div class="in" id="rvIn"></div></div>
 <div class="wr" id="wr" role="dialog" aria-modal="true" aria-label="Resumen"><div class="bgw" id="wrBg"><span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span></div><div class="flo" id="wrFlo"></div><div class="bars" id="wrBars"></div><div class="ctl"><button type="button" id="wrM" aria-label="Silenciar música"></button><button type="button" id="wrX" aria-label="Cerrar resumen">×</button></div><div class="stage" id="wrSl"></div><div class="hint">Toca a la derecha para seguir · mantén presionado para pausar</div></div>
 
 <script>
@@ -446,6 +525,8 @@ const CATS={
   naturaleza:{n:'Naturaleza',subs:['Cerro / trekking','Playa','Lago, río o cascada','Parque o reserva','Mirador'],crits:[['paisaje','Paisaje'],['experiencia','Experiencia'],['estado','Estado del lugar','Limpieza, señalización, mantención'],['acceso','Acceso','Llegar, estacionar, caminos'],['tranquilidad','Tranquilidad','Poca gente, sin ruido']]},
   pueblos:{n:'Pueblos y ciudades',subs:['Pueblo','Barrio / ciudad','Ruta (costera, del vino…)'],crits:[['encanto','Encanto'],['quehacer','Qué hacer'],['comida','Comida'],['limpieza','Limpieza y seguridad'],['experiencia','Experiencia']]},
   actividades:{n:'Actividades',subs:['Aventura','Cultura','Bienestar','Experiencias','Eventos'],crits:[['diversion','Diversión'],['organizacion','Organización'],['guia','Guía / atención'],['instalaciones','Instalaciones'],['pc','Precio / calidad']]},
+  pelicula:{m:'pantallas',n:'Película',subs:['Comedia','Drama','Romance','Acción','Suspenso','Terror','Ciencia ficción','Fantasía','Animación','Documental','Crimen','Aventura','Histórica','Musical'],crits:[['historia','Historia y guion'],['actuaciones','Actuaciones'],['visual','Visual y producción'],['musica','Música y sonido'],['entretencion','Entretención'],['final','Final']]},
+  serie:{m:'pantallas',n:'Serie',subs:['Comedia','Drama','Romance','Acción','Suspenso','Terror','Ciencia ficción','Fantasía','Animación','Documental','Crimen','Aventura','Histórica','Reality'],crits:[['historia','Historia'],['personajes','Personajes'],['actuaciones','Actuaciones'],['produccion','Producción'],['enganche','Enganche','¿Daban ganas de ver el siguiente capítulo?'],['final','Final de temporada']]},
   viajes:{n:'Viajes',subs:['Escapada (1–2 noches)','Viaje largo'],crits:[['destino','Destino'],['alojamiento','Alojamiento'],['logistica','Logística y transporte'],['comida','Comida'],['actividades','Actividades'],['pc','Precio / calidad']]}
 };
 const SCALES=[['general','Actividad general'],['paseo','Paseo grande'],['viaje','Viaje']];
@@ -454,8 +535,32 @@ const IDEAL=['Pareja','Amigos','Familia','Con perro'];
 const EPOCA=['Verano','Otoño','Invierno','Primavera','Todo el año'];
 const MODS={
   mesa:{name:'Nuestra mesa',p:'places',r:'reviews',w:'config/pesos',noun:'lugar',price:'Precio',tags:['Vista al mar','Terraza','Romántico','Tranquilo','Ruidoso','Con amigos','Pet friendly','Tragos de autor','Sin alcohol','Sushi','Mariscos','Carnes','Pizza','Vegetariano','Brunch','Dulces','Música en vivo','Reservar antes','Caro pero vale','Joya escondida']},
-  salidas:{name:'Nuestras salidas',p:'outings',r:'oreviews',w:'config/pesos-salidas',noun:'salida',price:'Costo',tags:['Necesita auto','Gratis','Reservar antes','Llevar agua','Hay baños','Sin señal','Para la foto','Atardecer','Picnic','Camping','Pet friendly','Con niños','Accesible','Joya escondida']}
+  salidas:{name:'Nuestras salidas',p:'outings',r:'oreviews',w:'config/pesos-salidas',noun:'salida',price:'Costo',tags:['Necesita auto','Gratis','Reservar antes','Llevar agua','Hay baños','Sin señal','Para la foto','Atardecer','Picnic','Camping','Pet friendly','Con niños','Accesible','Joya escondida']},
+  pantallas:{name:'Nuestras pantallas',p:'screens',r:'sreviews',w:'config/pesos-pantallas',noun:'título',price:null,tags:['Para reír','Para llorar','Con palomitas','Maratón','Plot twist','Basada en hechos reales','Para ver de nuevo','Mejor que el libro','Para ver con amigos','Te deja pensando','Buena música','Final abierto']}
 };
+const MODLIST=['mesa','salidas','pantallas'];
+const DEFCAT={salidas:'naturaleza',pantallas:'pelicula'};
+const ML={
+  mesa:{wl:'por ir',wTab:'Por ir',went:'¡Fuimos! Evaluar',cityL:'Ciudad',cityPh:'Santiago, Algarrobo…',sectorL:'Sucursal o sector',sectorPh:'Opcional, ej: Rotonda Atenas',namePh:'Ej: Mosai Café',maps:true,pe:['Pedir de nuevo','Evitar'],againL:'¿Volverían?',newT:'Un lugar nuevo',wishIntro:'Los lugares que les tincan. Cuando vayan, tocan «¡Fuimos!» y lo evalúan.',edit:'Editar nombre, sucursal o ciudad',ph:'Del lugar, los platos o ustedes'},
+  salidas:{wl:'por ir',wTab:'Por ir',went:'¡Fuimos! Evaluar',cityL:'Lugar o región',cityPh:'Olmué, Cajón del Maipo…',sectorL:'Sucursal o sector',sectorPh:'Opcional, ej: Granizo',namePh:'Ej: Cerro La Campana',maps:true,pe:['Recomendamos','Evitaríamos'],againL:'¿Volverían?',newT:'Una salida nueva',wishIntro:'Las salidas que les tincan. Cuando vayan, tocan «¡Fuimos!» y la evalúan.',edit:'Editar nombre, sector o lugar',ph:'Del paisaje, el camino o ustedes'},
+  pantallas:{wl:'por ver',wTab:'Por ver',went:'¡La vimos! Evaluar',cityL:'Plataforma',cityPh:'Netflix, Max, cine…',sectorL:'Año o temporada',sectorPh:'Opcional, ej: 2024 · T2',namePh:'Ej: Intensamente 2',maps:false,pe:null,againL:'¿La volverían a ver?',newT:'Un título nuevo',wishIntro:'Lo que quieren ver. Cuando lo vean, tocan «¡La vimos!» y la evalúan.',edit:'Editar nombre, año o plataforma',ph:'Del afiche, la pantalla o ustedes',platforms:['Netflix','Max','Disney+','Prime Video','Apple TV+','Cine'],again:[['si','La volveríamos a ver'],['quizas','Quizás'],['no','Una vez basta']]}
+};
+const hasCat=mod=>mod!=='mesa';
+const catEntries=mod=>Object.entries(CATS).filter(([,c])=>(c.m||'salidas')===mod);
+const againOf=mod=>ML[mod].again||AGAIN;
+const infoUrl=(mod,p)=>ML[mod].maps?mapsUrl(p):(/^https?:\/\//i.test(p.link||'')?p.link:'https://www.google.com/search?q='+encodeURIComponent([p.name,p.sector,CATS[p.cat]?.n||'película'].filter(Boolean).join(' ')));
+const other=sl=>sl==='a'?'b':'a';
+const sealedFor=rs=>(me==='a'||me==='b')&&!rs.some(r=>r.slot===me)&&rs.some(r=>r.slot===other(me))&&!rs.some(r=>r.slot==='j');
+const LOCK='<svg class="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="3" fill="#ffd86b" stroke="#2b2640"/><path d="M8 11V8a4 4 0 0 1 8 0v3" stroke="#2b2640"/><circle cx="12" cy="16" r="1.4" fill="#2b2640" stroke="none"/></svg>';
+const QG=['¿Qué momento de hoy te gustaría repetir?','¿Qué te hizo reír hoy?','¿Qué le agradeces a tu pareja de esta cita?','Si esta cita fuera una canción, ¿cuál sería?','¿Qué detalle de tu pareja notaste hoy?','Del 1 al 10, ¿cuánto te desconectaste de todo? ¿Por qué?','¿Qué conversación de hoy te quedó dando vueltas?','¿Qué cambiarías para que la próxima sea aún mejor?','¿En qué momento te sentiste más cerca de tu pareja?','Si tuvieras que ponerle un título a esta cita, ¿cuál sería?','¿Qué te sorprendió de hoy?','¿A quién le recomendarías esto y por qué?','¿Qué foto mental te llevas de hoy?','¿Qué fue lo más espontáneo que pasó?','Describe la cita en tres palabras.','¿Qué aprendiste hoy, de ti o de tu pareja?','¿Qué olor, sabor o sonido te va a recordar este día?','¿Qué harían distinto si lo repitieran mañana?','¿Qué parte de la próxima cita te gustaría planear tú?','¿Cómo estaba tu ánimo al empezar y cómo al terminar?','¿Qué hizo tu pareja hoy que te hizo sentir querido o querida?','Si esta cita fuera una película, ¿de qué género sería?','¿Qué idea para otra cita les dio el día de hoy?','¿Cuál fue el mejor momento de silencio cómodo?'];
+const QM={
+  mesa:['¿Qué plato le robarías a tu pareja la próxima vez?','Si fueras el chef, ¿qué le cambiarías al menú?','¿Qué sabor de hoy te gustaría aprender a cocinar en casa?','¿Con qué trago brindarían para celebrar algo importante?','¿Qué pedirías si volvieran para una ocasión especial?','¿La comida estuvo a la altura de la compañía?','¿Qué mesa del lugar elegirías la próxima vez?','¿Volverías por un plato, por el postre o por el ambiente?','Si este lugar fuera una persona, ¿cómo sería?','¿Qué plato podría ser «nuestro plato»?','¿Qué ingrediente sobró y cuál faltó?','¿A qué hora del día es mejor venir aquí?','¿Qué amigo o amiga amaría este lugar?','¿Qué brindis harías por lo de hoy?'],
+  salidas:['¿Cuál fue la mejor vista de hoy?','¿En qué momento sentiste que valió la pena el esfuerzo?','¿Qué llevarían la próxima vez que hoy les faltó?','Si pudieras congelar un minuto de hoy, ¿cuál sería?','¿En qué estación del año les gustaría volver aquí?','¿Qué fue lo más aventurero que hicieron?','¿Qué snack o comida hizo la diferencia hoy?','¿Qué sonido del lugar recuerdas?','¿Quién tuvo más energía hoy? ¿Quién se cansó primero?','¿A dónde les gustaría ir después de esto?','¿Qué te enseñó el lugar que visitaron?','¿Qué ruta o parada cambiarían la próxima vez?'],
+  pantallas:['¿Qué personaje serías tú y cuál sería tu pareja?','¿Qué escena te quedó dando vueltas?','¿Qué final habrías escrito tú?','¿Qué frase vas a repetir de ahora en adelante?','¿Lloraste, te reíste o te asustaste? ¿En qué momento?','¿Con qué comida acompañarías verla de nuevo?','¿A quién se la recomendarías y a quién nunca?','¿Quién se robó la película o serie?','¿Qué harías si vivieras dentro de esa historia?','¿Qué otra película o serie les recordó?','¿En qué momento supiste si te iba a gustar o no?','¿Qué canción o música te quedó sonando?']
+};
+const hashS=t=>{let h=2166136261;for(const c of t){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
+const qBank=mod=>[...QG,...(QM[mod]||[])];
+const pickQ=(mod,key,date,salt=0)=>{const b=qBank(mod);return b[hashS(norm(key)+'|'+date+'|'+salt)%b.length]};
 const TYPES=['Restaurante','Bar','Café','Picada','Otro'];
 const AGAIN=[['si','Volveríamos'],['quizas','Quizás'],['no','No volvemos']];
 const DIFF=1.5;
@@ -466,26 +571,26 @@ const money=v=>v?'$'.repeat(Math.round(v)):'';
 const img=id=>'/_blob/'+encodeURIComponent(id);
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
 const lbl=(arr,k)=>(arr.find(a=>a[0]===k)||[])[1]||'';
-const crits=(mod,cat)=>mod==='mesa'?CM:(CATS[cat]||CATS.actividades).crits;
+const crits=(mod,cat)=>mod==='mesa'?CM:((CATS[cat]&&(CATS[cat].m||'salidas')===mod)?CATS[cat]:CATS[DEFCAT[mod]]).crits;
 
 let db=null,assets=null,names={a:'Persona 1',b:'Persona 2'},me=store.get('mesa-yo')||'a',readOnly=false;
-const D={mesa:{places:[],reviews:[]},salidas:{places:[],reviews:[]}};
-const W={mesa:{},salidas:{}};
-const U={mesa:{city:'Todas',sort:'nota',q:'',cat:'all',scale:'all',rkC:'total',rkT:'Todo',rkCity:'Todas',rkScale:'all',rkCat:'all'},salidas:{city:'Todas',sort:'nota',q:'',cat:'all',scale:'all',rkC:'total',rkT:'Todo',rkCity:'Todas',rkScale:'all',rkCat:'all'}};
-let M=null,openPid=null,openMod=null,wishCat='naturaleza',wCat='naturaleza';
+const D={mesa:{places:[],reviews:[]},salidas:{places:[],reviews:[]},pantallas:{places:[],reviews:[]}};
+const W={mesa:{},salidas:{},pantallas:{}};
+const U={};for(const m of ['mesa','salidas','pantallas'])U[m]={city:'Todas',sort:'nota',q:'',cat:'all',scale:'all',rkC:'total',rkT:'Todo',rkCity:'Todas',rkScale:'all',rkCat:'all'};
+let M=null,openPid=null,openMod=null,wishCat={salidas:'naturaleza',pantallas:'pelicula'},wCat='naturaleza';
 const slotName=s=>s==='j'?'Los dos':(names[s]||'');
-const wts=(mod,cat)=>mod==='mesa'?W.mesa:(W.salidas[cat]||{});
+const wts=(mod,cat)=>mod==='mesa'?W.mesa:(W[mod][cat]||{});
 const visited=mod=>D[mod].places.filter(p=>p.status!=='wish');
 const catLine=p=>[p.sub||CATS[p.cat]?.n,p.sector,p.city].filter(Boolean).join(' · ');
 const norm=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
 const mapsUrl=p=>/^https?:\/\//i.test(p.link||'')?p.link:'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent([p.name,p.sector,p.city].filter(Boolean).join(' '));
 const PIN='<svg class="ic" viewBox="0 0 24 24" style="width:18px;height:18px"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
-const placeMeta=(mod,p)=>mod==='salidas'?catLine(p):[p.sector,p.city,p.type].filter(Boolean).join(' · ');
+const placeMeta=(mod,p)=>mod==='salidas'?catLine(p):mod==='pantallas'?[CATS[p.cat]?.n,p.sub,p.sector,p.city].filter(Boolean).join(' · '):[p.sector,p.city,p.type].filter(Boolean).join(' · ');
 const DEF={city:'Todas',cat:'all',scale:'all',rkT:'Todo',rkCity:'Todas',rkScale:'all',rkCat:'all'};
 const SORTS=[['nota','Mejor nota'],['reciente','Recientes'],['az','A–Z'],['pend','Me falta evaluar'],['diff','Opinamos distinto']];
 
 const iso=t=>{try{return new Date(t).toISOString().slice(0,10)}catch(e){return ''}};
-const visitsOf=r=>[...(r.history||[]),r].map(v=>({date:v.date||(v.updatedAt>1e12?iso(v.updatedAt):''),scores:v.scores||{},price:v.price,again:v.again,comment:v.comment,notes:v.notes,slot:r.slot,pid:r.pid}));
+const visitsOf=r=>[...(r.history||[]),r].map(v=>({date:v.date||(v.updatedAt>1e12?iso(v.updatedAt):''),scores:v.scores||{},price:v.price,again:v.again,comment:v.comment,notes:v.notes,qa:v.qa,slot:r.slot,pid:r.pid}));
 const EFF=new WeakMap();
 function effOf(r){if(!r)return null;if(EFF.has(r))return EFF.get(r);const vs=visitsOf(r);const sc={};const keys=new Set(vs.flatMap(v=>Object.keys(v.scores)));
   for(const k of keys){const nums=vs.map(v=>v.scores[k]).filter(x=>typeof x==='number');sc[k]=nums.length?nums.reduce((a,b)=>a+b,0)/nums.length:null}
@@ -505,7 +610,7 @@ function scoreOf(mod,pid){
   const photos=rs.flatMap(r=>(r.photos||[]).map(id=>({id,slot:r.slot})));
   const vis=rs.flatMap(visitsOf);const vdates=new Set(vis.map(v=>v.date||'?'));
   const pe=k=>{const seen=new Map();for(const r of rs)for(const t of r[k]||[]){const n=norm(t);if(!seen.has(n))seen.set(n,{t,who:new Set()});seen.get(n).who.add(r.slot)}return [...seen.values()]};
-  return {rs,use,C,crit,diff,photos,vis,visits:vdates.size,pedir:pe('pedir'),evitar:pe('evitar'),total:sw?sv/sw:null,price:mean(use.map(r=>r.price).filter(x=>typeof x==='number')),tags:[...new Set(rs.flatMap(r=>r.tags||[]))],last:Math.max(0,...rs.map(r=>r.updatedAt||0))};
+  return {rs,use,C,crit,diff,photos,vis,sealed:sealedFor(rs),visits:vdates.size,pedir:pe('pedir'),evitar:pe('evitar'),total:sw?sv/sw:null,price:mean(use.map(r=>r.price).filter(x=>typeof x==='number')),tags:[...new Set(rs.flatMap(r=>r.tags||[]))],last:Math.max(0,...rs.map(r=>r.updatedAt||0))};
 }
 const full=mod=>visited(mod).map(p=>({...p,...scoreOf(mod,p.id)}));
 let tick=0;
@@ -515,22 +620,23 @@ const chipRow=(sel,items,cur,attr,cls='')=>{$(sel).innerHTML=items.map(([k,t])=>
 
 /* ---------- inicio ---------- */
 function renderHome(){
-  for(const [mod,id,base] of [['mesa','#hm','Restaurantes, bares y cafés'],['salidas','#hs','Cerros, pueblos, actividades y viajes']]){
-    const V=full(mod),w=D[mod].places.length-V.length,best=V.filter(p=>p.total!=null).sort((a,b)=>b.total-a.total)[0];
-    $(id).textContent=V.length||w?`${V.length} evaluados · ${w} por ir${best?` · favorito: ${best.name}`:''}`:base;
+  for(const [mod,id,base] of [['mesa','#hm','Restaurantes, bares y cafés'],['salidas','#hs','Cerros, pueblos, actividades y viajes'],['pantallas','#hp','Películas y series']]){
+    const V=full(mod),w=D[mod].places.length-V.length,best=V.filter(p=>p.total!=null&&!p.sealed).sort((a,b)=>b.total-a.total)[0];
+    $(id).textContent=V.length||w?`${V.length} evaluados · ${w} ${ML[mod].wl}${best?` · favorito: ${best.name}`:''}`:base;
   }
-  const L=['mesa','salidas'].flatMap(mod=>full(mod).filter(p=>p.last).map(p=>({...p,mod}))).sort((a,b)=>b.last-a.last).slice(0,6);
-  $('#lastList').innerHTML=L.length?L.map((p,i)=>`<button type="button" class="last glass" data-mod="${p.mod}" data-pid="${esc(p.id)}" style="--i:${i}">${thumb(p,p.name)}<div><b>${esc(p.name)}</b><div class="meta">${p.mod==='mesa'?'Nuestra mesa':esc(CATS[p.cat]?.n||'Salida')}${p.city?' · '+esc(p.city):''}</div></div><b class="sc">${fmt(p.total)}</b></button>`).join('')
+  const L=MODLIST.flatMap(mod=>full(mod).filter(p=>p.last).map(p=>({...p,mod}))).sort((a,b)=>b.last-a.last).slice(0,6);
+  $('#lastList').innerHTML=L.length?L.map((p,i)=>`<button type="button" class="last glass" data-mod="${p.mod}" data-pid="${esc(p.id)}" style="--i:${i}">${thumb(p,p.name)}<div><b>${esc(p.name)}</b><div class="meta">${p.mod==='mesa'?'Nuestra mesa':esc(CATS[p.cat]?.n||'Salida')}${p.city?' · '+esc(p.city):''}</div></div><b class="sc">${p.sealed?'?':fmt(p.total)}</b></button>`).join('')
     :'<div class="empty glass" style="margin-top:8px"><b>Aún nada</b>Cuando evalúen algo aparecerá aquí.</div>';
 }
 
 /* ---------- lista ---------- */
 function renderList(){
-  const mod=M,u=U[mod],V=full(mod),S=mod==='salidas';
+  const mod=M,u=U[mod],V=full(mod),S=hasCat(mod),SAL=mod==='salidas';
   const cities=['Todas',...new Set(V.map(p=>p.city).filter(Boolean))];if(!cities.includes(u.city))u.city='Todas';
   chipRow('#cities',cities.map(c=>[c,c]),u.city,'city');
-  if(S){chipRow('#cats',[['all','Todo'],...Object.entries(CATS).map(([k,c])=>[k,c.n])],u.cat,'cat');chipRow('#scales',[['all','Cualquier escala'],...SCALES],u.scale,'scale')}
-  else{$('#cats').innerHTML='';$('#scales').innerHTML=''}
+  if(S)chipRow('#cats',[['all','Todo'],...catEntries(mod).map(([k,c])=>[k,c.n])],u.cat,'cat');else $('#cats').innerHTML='';
+  if(SAL)chipRow('#scales',[['all','Cualquier escala'],...SCALES],u.scale,'scale');else $('#scales').innerHTML='';
+  $('#cities').previousElementSibling.textContent=ML[mod].cityL;
   chipRow('#sorts',SORTS,u.sort,'sort');
   const act=[u.cat!=='all'&&['cat',CATS[u.cat]?.n],u.scale!=='all'&&['scale',lbl(SCALES,u.scale)],u.city!=='Todas'&&['city',u.city],u.sort!=='nota'&&['sort',lbl(SORTS,u.sort)]].filter(Boolean);
   $('#fCnt').textContent=act.length||'';
@@ -539,40 +645,41 @@ function renderList(){
   let L=V.filter(p=>(u.city==='Todas'||p.city===u.city)&&(!S||u.cat==='all'||p.cat===u.cat)&&(!S||u.scale==='all'||(p.scale||'general')===u.scale)&&(!ql||norm([p.name,p.sector,p.city,p.type,p.sub,CATS[p.cat]?.n,...p.tags].join(' ')).includes(norm(ql))));
   if(u.sort==='pend')L=L.filter(p=>!p.rs.some(r=>r.slot===me));
   if(u.sort==='diff')L=L.filter(p=>Object.keys(p.diff).length);
-  L.sort(u.sort==='az'?(a,b)=>a.name.localeCompare(b.name):u.sort==='reciente'?(a,b)=>(b.createdAt||0)-(a.createdAt||0):(a,b)=>(b.total??-1)-(a.total??-1));
-  const top=V.filter(p=>p.total!=null).sort((a,b)=>b.total-a.total).slice(0,3);
-  $('#stats').innerHTML=`<button type="button" class="glass cnts" id="cntBtn" aria-label="Ver por ir"><div><b>${V.length}</b>evaluados</div><div><b>${D[mod].places.length-V.length}</b>por ir</div></button>
+  L.sort(u.sort==='az'?(a,b)=>a.name.localeCompare(b.name):u.sort==='reciente'?(a,b)=>(b.createdAt||0)-(a.createdAt||0):(a,b)=>(b.sealed?-1:b.total??-1)-(a.sealed?-1:a.total??-1));
+  const top=V.filter(p=>p.total!=null&&!p.sealed).sort((a,b)=>b.total-a.total).slice(0,3);
+  $('#stats').innerHTML=`<button type="button" class="glass cnts" id="cntBtn" aria-label="Ver ${ML[mod].wl}"><div><b>${V.length}</b>evaluados</div><div><b>${D[mod].places.length-V.length}</b>${ML[mod].wl}</div></button>
     <div class="glass top3">${top.length?top.map((p,i)=>`<button type="button" data-top="${esc(p.id)}"><span class="md md${i+1}">${i+1}</span><span class="nm">${esc(p.name)}${p.sector?` <small>${esc(p.sector)}</small>`:''}</span><b>${fmt(p.total)}</b></button>`).join(''):'<span class="meta" style="font-size:13px">Su top 3 aparecerá aquí</span>'}</div>`;
   $('#list').innerHTML=L.length?L.map((p,i)=>{
     const has=s=>p.rs.some(r=>r.slot===s),nd=Object.keys(p.diff).length;
     const meta=placeMeta(mod,p);
-    const extra=S?[p.scale&&p.scale!=='general'?`<span class="pill s">${lbl(SCALES,p.scale)}</span>`:'',p.dif?`<span class="pill s">${lbl(DIFS,p.dif)}</span>`:''].join(''):'';
+    const extra=SAL?[p.scale&&p.scale!=='general'?`<span class="pill s">${lbl(SCALES,p.scale)}</span>`:'',p.dif?`<span class="pill s">${lbl(DIFS,p.dif)}</span>`:''].join(''):'';
     return `<button type="button" class="card glass" data-pid="${esc(p.id)}" style="--i:${i}">${thumb(p,p.name)}
       <div><h3>${esc(p.name)}</h3><div class="meta">${esc(meta)}${p.price?` · ${money(p.price)}`:''}</div></div>
-      <div class="score"><b>${fmt(p.total)}</b>${stars(p.total,13)}</div>
-      <div class="who">${has('j')&&!has('a')&&!has('b')?'<span class="pill ok">Nota de los dos</span>':['a','b'].map(s=>`<span class="pill ${has(s)?'ok':''}">${has(s)?'✓':'…'} ${esc(names[s])}</span>`).join('')}${extra}${p.visits>1?`<span class="pill s">${p.visits} visitas</span>`:''}${nd?`<span class="pill d">Opinan distinto${nd>1?` en ${nd}`:''}</span>`:''}${p.tags.slice(0,2).map(t=>`<span class="pill t">${esc(t)}</span>`).join('')}</div>
+      ${p.sealed?`<div class="score seal">${LOCK}<b>?</b></div>`:`<div class="score"><b>${fmt(p.total)}</b>${stars(p.total,13)}</div>`}
+      <div class="who">${p.sealed?`<span class="pill bl">A ciegas: ${esc(names[other(me)])} ya evaluó, te toca</span>`:has('j')&&!has('a')&&!has('b')?'<span class="pill ok">Nota de los dos</span>':['a','b'].map(s=>`<span class="pill ${has(s)?'ok':''}">${has(s)?'✓':'…'} ${esc(names[s])}</span>`).join('')}${extra}${p.visits>1?`<span class="pill s">${p.visits} visitas</span>`:''}${nd?`<span class="pill d">Opinan distinto${nd>1?` en ${nd}`:''}</span>`:''}${p.tags.slice(0,2).map(t=>`<span class="pill t">${esc(t)}</span>`).join('')}</div>
     </button>`}).join(''):`<div class="empty glass"><b>${V.length?'Nada por aquí':'Todavía no hay nada'}</b>${V.length?'Prueba con otro filtro.':'Toca «Evaluar» para agregar el primero.'}</div>`;
 }
 function animate(sel){const l=$(sel);if(!l)return;l.classList.remove('anim');void l.offsetWidth;l.classList.add('anim')}
 
 /* ---------- ranking ---------- */
 function renderRank(){
-  const mod=M,u=U[mod],S=mod==='salidas';let V=full(mod);
-  if(S){chipRow('#rkCat',[['all','Todas'],...Object.entries(CATS).map(([k,c])=>[k,c.n])],u.rkCat,'rkcat');V=V.filter(p=>u.rkCat==='all'||p.cat===u.rkCat)}else $('#rkCat').innerHTML='';
+  const mod=M,u=U[mod],S=hasCat(mod),SAL=mod==='salidas';let V=full(mod).filter(p=>!p.sealed);
+  $('#rkCity').previousElementSibling.textContent=ML[mod].cityL;
+  if(S){chipRow('#rkCat',[['all','Todas'],...catEntries(mod).map(([k,c])=>[k,c.n])],u.rkCat,'rkcat');V=V.filter(p=>u.rkCat==='all'||p.cat===u.rkCat)}else $('#rkCat').innerHTML='';
   const C=S?(u.rkCat==='all'?[]:CATS[u.rkCat].crits):CM;
   if(!C.some(c=>c[0]===u.rkC))u.rkC='total';
   chipRow('#rkCrit',[['total','General'],...C.map(([k,t])=>[k,t])],u.rkC,'rkc');
   const tc={};for(const p of V)for(const t of [...p.tags,S?p.sub:p.type].filter(Boolean))tc[t]=(tc[t]||0)+1;
   const tags=['Todo',...Object.keys(tc).sort((a,b)=>tc[b]-tc[a])];if(!tags.includes(u.rkT))u.rkT='Todo';
   $('#rkTag').innerHTML=tags.map(t=>`<button type="button" class="chip tag ${t===u.rkT?'on':''}" data-rkt="${esc(t)}">${esc(t)}${t!=='Todo'?` <span style="opacity:.6">${tc[t]}</span>`:''}</button>`).join('');
-  if(S)chipRow('#rkScale',[['all','Cualquier escala'],...SCALES],u.rkScale,'rkscale');else $('#rkScale').innerHTML='';
+  if(SAL)chipRow('#rkScale',[['all','Cualquier escala'],...SCALES],u.rkScale,'rkscale');else $('#rkScale').innerHTML='';
   const cities=['Todas',...new Set(V.map(p=>p.city).filter(Boolean))];if(!cities.includes(u.rkCity))u.rkCity='Todas';
   chipRow('#rkCity',cities.map(c=>[c,c]),u.rkCity,'rkcity');
   const ract=[u.rkCat!=='all'&&['rkCat',CATS[u.rkCat]?.n],u.rkT!=='Todo'&&['rkT',u.rkT],u.rkScale!=='all'&&['rkScale',lbl(SCALES,u.rkScale)],u.rkCity!=='Todas'&&['rkCity',u.rkCity]].filter(Boolean);
   $('#rCnt').textContent=ract.length||'';
   $('#rSum').innerHTML=ract.map(([k,t])=>`<button type="button" data-rclear="${k}" aria-label="Quitar filtro ${esc(t)}">${esc(t)} ×</button>`).join('');
   const val=p=>u.rkC==='total'?p.total:p.crit[u.rkC];
-  const L=V.filter(p=>(u.rkT==='Todo'||p.tags.includes(u.rkT)||p.type===u.rkT||p.sub===u.rkT)&&(u.rkCity==='Todas'||p.city===u.rkCity)&&(!S||u.rkScale==='all'||(p.scale||'general')===u.rkScale)&&val(p)!=null).sort((a,b)=>val(b)-val(a));
+  const L=V.filter(p=>(u.rkT==='Todo'||p.tags.includes(u.rkT)||p.type===u.rkT||p.sub===u.rkT)&&(u.rkCity==='Todas'||p.city===u.rkCity)&&(!SAL||u.rkScale==='all'||(p.scale||'general')===u.rkScale)&&val(p)!=null).sort((a,b)=>val(b)-val(a));
   if(!L.length){$('#rank').innerHTML='<div class="empty glass" style="margin-top:14px"><b>Sin candidatos</b>Nada evaluado calza con ese filtro.</div>';return}
   const top=L.slice(0,3),order=[top[1],top[0],top[2]];
   $('#rank').innerHTML=`<div class="pod">${order.map((p,j)=>{if(!p)return '<span></span>';const n=L.indexOf(p)+1;return `<div class="glass p${n}" data-pid="${esc(p.id)}" style="--i:${[1,0,2][j]}"><span class="n">${n}</span>${thumb(p,p.name)}<h3>${esc(p.name)}</h3><b>${fmt(val(p))}</b>${stars(val(p),11)}</div>`}).join('')}</div>`
@@ -581,24 +688,24 @@ function renderRank(){
 
 /* ---------- por ir ---------- */
 function renderWishes(){
-  const mod=M,S=mod==='salidas';
-  $('#wishIntro').textContent=S?'Las salidas que les tincan. Cuando vayan, tocan «¡Fuimos!» y la evalúan.':'Los lugares que les tincan. Cuando vayan, tocan «¡Fuimos!» y lo evalúan.';
-  $('#wCats').innerHTML=S?Object.entries(CATS).map(([k,c])=>`<button type="button" class="chip ${k===wishCat?'on':''}" data-wcat="${k}">${c.n}</button>`).join(''):'';
-  $('#wCity').placeholder=S?'Lugar o región':'Ciudad';
+  const mod=M,S=hasCat(mod),Lb=ML[mod];
+  $('#v-por-ir h2').textContent=Lb.wTab;$('#wishIntro').textContent=Lb.wishIntro;$('#wf .save').textContent='Agregar a '+Lb.wl;
+  $('#wCats').innerHTML=S?catEntries(mod).map(([k,c])=>`<button type="button" class="chip ${k===wishCat[mod]?'on':''}" data-wcat="${k}">${c.n}</button>`).join(''):'';
+  $('#wCity').placeholder=Lb.cityL+(mod==='pantallas'?' (opcional)':'');$('#wName').placeholder=mod==='pantallas'?'Título':'Nombre';
   const L=D[mod].places.filter(p=>p.status==='wish').sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
   $('#wishes').innerHTML=L.length?L.map((p,i)=>{const link=/^https?:\/\//i.test(p.link||'')?p.link:'';return `<div class="wish glass" style="--i:${i}">
     <h3>${esc(p.name)}</h3><div class="meta">${esc([S?CATS[p.cat]?.n:'',p.city,p.addedBy?`lo agregó ${slotName(p.addedBy)}`:''].filter(Boolean).join(' · '))}</div>
-    ${p.reason?`<p>${esc(p.reason)}</p>`:''}${p.link&&!link?`<p class="meta">${esc(p.link)}</p>`:''}<a class="mapl" href="${esc(mapsUrl(p))}" target="_blank" rel="noopener">${PIN}${link?'Abrir link':'Buscar en Google Maps'}</a>
-    ${readOnly?'':`<div class="row" style="margin-top:8px"><button type="button" class="save" style="flex:1;min-height:48px;font-size:15px" data-went="${esc(p.id)}">¡Fuimos! Evaluar</button><button type="button" class="ghost" data-unwish="${esc(p.id)}">Quitar</button></div>`}</div>`}).join('')
-   :`<div class="empty glass"><b>Nada pendiente</b>Agreguen arriba ${S?'la próxima salida':'el próximo lugar'} que les tinque.</div>`;
+    ${p.reason?`<p>${esc(p.reason)}</p>`:''}${p.link&&!link?`<p class="meta">${esc(p.link)}</p>`:''}<a class="mapl" href="${esc(infoUrl(mod,p))}" target="_blank" rel="noopener">${PIN}${link?'Abrir link':Lb.maps?'Buscar en Google Maps':'Buscar en Google'}</a>
+    ${readOnly?'':`<div class="row" style="margin-top:8px"><button type="button" class="save" style="flex:1;min-height:48px;font-size:15px" data-went="${esc(p.id)}">${Lb.went}</button><button type="button" class="ghost" data-unwish="${esc(p.id)}">Quitar</button></div>`}</div>`}).join('')
+   :`<div class="empty glass"><b>Nada pendiente</b>Agreguen arriba ${mod==='salidas'?'la próxima salida':mod==='pantallas'?'lo próximo que quieran ver':'el próximo lugar'} que les tinque.</div>`;
 }
-$('#wCats').addEventListener('click',e=>{const b=e.target.closest('[data-wcat]');if(b){wishCat=b.dataset.wcat;renderWishes()}});
+$('#wCats').addEventListener('click',e=>{const b=e.target.closest('[data-wcat]');if(b){wishCat[M]=b.dataset.wcat;renderWishes()}});
 $('#wf').addEventListener('submit',async e=>{
   e.preventDefault();if(!db||readOnly){toast('No puedes guardar aquí');return}
   const name=$('#wName').value.trim();if(!name)return;const mod=M;
   const data={name,city:$('#wCity').value.trim(),status:'wish',reason:$('#wWhy').value.trim(),link:$('#wLink').value.trim(),addedBy:me,createdAt:Date.now()};
-  if(mod==='salidas'){data.cat=wishCat;data.scale=wishCat==='viajes'?'viaje':'general'}else data.type='';
-  try{await db.collection(MODS[mod].p).doc().set(data);$('#wf').reset();toast('¡Anotado para ir!');animate('#wishes')}catch(err){toast('No se pudo guardar')}
+  if(hasCat(mod))data.cat=wishCat[mod];if(mod==='salidas')data.scale=wishCat[mod]==='viajes'?'viaje':'general';if(mod==='mesa')data.type='';
+  try{await db.collection(MODS[mod].p).doc().set(data);$('#wf').reset();toast(mod==='pantallas'?'¡Anotada para ver!':'¡Anotado para ir!');animate('#wishes')}catch(err){toast('No se pudo guardar')}
 });
 $('#wishes').addEventListener('click',async e=>{
   const b=e.target.closest('button');if(!b)return;
@@ -613,33 +720,43 @@ function closeSheet(){openPid=null;$('#scrim').classList.remove('on');$('#sheet'
 let gallery=[];
 function renderSheet(mod,pid,fresh=true){
   const p=D[mod].places.find(x=>x.id===pid);if(!p){closeSheet();return}
-  const s=scoreOf(mod,pid),S=mod==='salidas';openPid=pid;openMod=mod;gallery=s.photos;
+  const s=scoreOf(mod,pid),S=mod==='salidas',Lb=ML[mod];openPid=pid;openMod=mod;gallery=s.photos;
+  if(s.sealed){const ot=names[other(me)];const html=`<h2 style="font-size:32px">${esc(p.name)}</h2><div class="meta">${esc(placeMeta(mod,p))}</div>
+    ${s.photos.length?`<div class="gal">${s.photos.map((ph,i)=>`<button type="button" data-lb="${i}"><img src="${img(ph.id)}" alt="Foto ${i+1}" loading="lazy"></button>`).join('')}</div>`:''}
+    <div class="sealbox"><svg viewBox="0 0 64 64"><rect x="6" y="16" width="52" height="36" rx="6" fill="#fff"/><path d="M6 20l26 18 26-18" fill="none" stroke="#c7b8ff" stroke-width="3"/><circle cx="32" cy="38" r="9" fill="#ff6f9c"/><path d="M28.5 37.5l2.5 2.5 4.5-5" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+    <b>Evaluación a ciegas</b><span>${esc(ot)} ya evaluó este ${MODS[mod].noun}. Para ver su nota y sus respuestas, primero agrega la tuya. Después se revelan las dos.</span>
+    ${readOnly?'':`<button class="save" type="button" data-rate="${esc(pid)}" style="padding:0 22px">Evaluar ahora</button>`}</div>`;
+    if(fresh)openSheet(html);else{const st=$('#sheet').scrollTop;$('#sheet').innerHTML='<div class="grab"></div>'+html;$('#sheet').scrollTop=st}return}
+  if(fresh&&needReveal(mod,pid)){setTimeout(()=>playReveal(mod,pid),450)}
   const ind=s.rs.filter(r=>r.slot!=='j'),w=wts(mod,p.cat);
   const rows=s.C.map(([k,t])=>{
     const notes=s.rs.filter(r=>r.notes?.[k]).map(r=>`<q><i>${esc(slotName(r.slot))}:</i> ${esc(r.notes[k])}</q>`).join('');
     return `<div class="dr"><div class="row"><b>${t}${(w[k]??1)!==1?` <span class="meta" style="font-weight:600">×${fmt(w[k])}</span>`:''}</b><span class="row" style="gap:8px">${stars(s.crit[k],16)}<b style="min-width:2.2ch;text-align:right">${fmt(s.crit[k])}</b></span></div>
       ${ind.length>1?`<div class="persons">${ind.map(r=>`${esc(slotName(r.slot))}: ${fmt(effOf(r).scores[k])}`).join(' · ')}${s.diff[k]?`<span class="pill d">Δ ${fmt(s.diff[k])}</span>`:''}</div>`:''}${notes}</div>`}).join('');
   const pn=s.rs.filter(r=>r.notes?.precio).map(r=>`<q><i>${esc(slotName(r.slot))}:</i> ${esc(r.notes.precio)}</q>`).join('');
-  const again=s.rs.filter(r=>r.again).map(r=>`${esc(slotName(r.slot))}: ${esc(lbl(AGAIN,r.again))}`).join(' · ');
+  const again=s.rs.filter(r=>r.again).map(r=>`${esc(slotName(r.slot))}: ${esc(lbl(againOf(mod),r.again))}`).join(' · ');
+  const qas=s.rs.filter(r=>r.qa&&(r.qa.best||r.qa.a));
+  const qaHTML=qas.length?`<div class="qbox"><h4>Su cita${qas[0].date?' · '+esc(fmtDate(qas[0].date)):''}</h4>${qas.some(r=>r.qa.best)?`<p class="meta" style="margin:2px 0">¿Qué fue lo mejor de hoy?</p>${qas.filter(r=>r.qa.best).map(r=>`<p><i>${esc(slotName(r.slot))}:</i> ${esc(r.qa.best)}</p>`).join('')}`:''}${[...new Set(qas.filter(r=>r.qa.a).map(r=>r.qa.q))].map(q=>`<p class="meta" style="margin:8px 0 2px">${esc(q)}</p>${qas.filter(r=>r.qa.a&&r.qa.q===q).map(r=>`<p><i>${esc(slotName(r.slot))}:</i> ${esc(r.qa.a)}</p>`).join('')}`).join('')}</div>`:'';
   const comments=s.rs.filter(r=>r.comment).map(r=>`<div class="cm"><b>${esc(slotName(r.slot))}${r.date?` · ${esc(r.date)}`:''}</b><div>${esc(r.comment)}</div></div>`).join('');
   const mine=s.rs.some(r=>r.slot===me),nd=Object.keys(s.diff).length;
   const who=set=>[...set].map(slotName).join(' y ');
-  const peL=S?['Recomendamos','Evitaríamos']:['Pedir de nuevo','Evitar'];
-  const peHTML=s.pedir.length||s.evitar.length?`<div class="pebox">${[[peL[0],s.pedir],[peL[1],s.evitar]].map(([t,l])=>`<div><h4>${t}</h4><div class="pelist">${l.length?l.map(x=>`<div>${esc(x.t)} <i>${esc(who(x.who))}</i></div>`).join(''):'<div class="meta">—</div>'}</div></div>`).join('')}</div>`:'';
+  const peL=Lb.pe||['',''];
+  const peHTML=Lb.pe&&s.pedir.length||s.evitar.length?`<div class="pebox">${[[peL[0],s.pedir],[peL[1],s.evitar]].map(([t,l])=>`<div><h4>${t}</h4><div class="pelist">${l.length?l.map(x=>`<div>${esc(x.t)} <i>${esc(who(x.who))}</i></div>`).join(''):'<div class="meta">—</div>'}</div></div>`).join('')}</div>`:'';
   const byDate={};for(const v of s.vis){const d=v.date||'';(byDate[d]=byDate[d]||{})[v.slot]=visitTotal(mod,p.cat,v.scores)}
   const dates=Object.keys(byDate).sort().reverse();
   const visHTML=s.visits>1?`<div class="dr"><b>${s.visits} visitas</b><div style="margin-top:6px">${dates.map(d=>`<div class="vrow"><span>${esc(fmtDate(d))}</span><span>${Object.entries(byDate[d]).map(([sl,t])=>`${esc(slotName(sl))} ${fmt(t)}`).join(' · ')}</span></div>`).join('')}</div><div class="meta" style="font-size:12px;margin-top:6px">La nota de cada uno es el promedio de sus visitas.</div></div>`:'';
   const label=ind.length>1?`Promedio de ${esc(names.a)} y ${esc(names.b)}`:ind.length&&s.rs.some(r=>r.slot==='j')?`${esc(slotName(ind[0].slot))} + nota de los dos`:ind.length?`Solo evaluó ${esc(slotName(ind[0].slot))}`:s.rs.length?'Evaluación de los dos':'Sin evaluaciones';
   const info=S?`<div class="info">${[p.scale?lbl(SCALES,p.scale):'',p.dif?'Dificultad '+lbl(DIFS,p.dif).toLowerCase():'',p.dur?'Duración: '+p.dur:'',...(p.ideal||[]).map(x=>'Ideal: '+x),...(p.epoca||[]).map(x=>x)].filter(Boolean).map(x=>`<span class="pill s">${esc(x)}</span>`).join('')}</div>`:'';
-  const html=`<h2 style="font-size:32px">${esc(p.name)}</h2><div class="meta">${esc(S?[CATS[p.cat]?.n,p.sub,p.sector,p.city].filter(Boolean).join(' · '):[p.sector,p.city,p.type].filter(Boolean).join(' · '))}</div>${info}
-    <a class="mapl" href="${esc(mapsUrl(p))}" target="_blank" rel="noopener">${PIN}${/^https?:/i.test(p.link||'')?'Abrir en el mapa':'Buscar en Google Maps'}</a>
+  const both=s.rs.some(r=>r.slot==='a')&&s.rs.some(r=>r.slot==='b');
+  const html=`<h2 style="font-size:32px">${esc(p.name)}</h2><div class="meta">${esc(S?[CATS[p.cat]?.n,p.sub,p.sector,p.city].filter(Boolean).join(' · '):placeMeta(mod,p))}</div>${info}
+    <a class="mapl" href="${esc(infoUrl(mod,p))}" target="_blank" rel="noopener">${PIN}${/^https?:/i.test(p.link||'')?(Lb.maps?'Abrir en el mapa':'Abrir link'):(Lb.maps?'Buscar en Google Maps':'Buscar en Google')}</a>
     ${s.photos.length?`<div class="gal">${s.photos.map((ph,i)=>`<button type="button" data-lb="${i}"><img src="${img(ph.id)}" alt="Foto ${i+1}" loading="lazy"></button>`).join('')}</div>`:''}
     <div class="big"><b id="bigN">${fmt(s.total)}</b><div>${stars(s.total,26)}<div class="meta">${label}</div></div></div>
     ${nd?`<div class="pill d" style="display:inline-block;margin-bottom:8px;white-space:normal">Opinan distinto en ${nd===1?'1 cosa':nd+' cosas'} (diferencia de ${fmt(DIFF)}★ o más)</div>`:''}
     ${again?`<div class="meta" style="margin-bottom:8px">${again}</div>`:''}
     ${s.tags.length?`<div class="chips" style="margin:6px 0 10px">${s.tags.map(t=>`<span class="pill t">${esc(t)}</span>`).join('')}</div>`:''}
-    ${rows}<div class="dr"><div class="row"><b>${MODS[mod].price}</b><b style="font-family:Outfit;letter-spacing:.05em">${money(s.price)||'–'}</b></div>${ind.length>1?`<div class="persons">${ind.map(r=>`${esc(slotName(r.slot))}: ${money(effOf(r).price)||'–'}`).join(' · ')}</div>`:''}${pn}</div>${peHTML}${visHTML}${comments}
-    ${readOnly?'':`<div style="display:grid;gap:10px;margin-top:18px">${mine?`<button class="save" type="button" data-revisit="${esc(pid)}">Volvimos: nueva visita</button><button class="ghost" type="button" data-rate="${esc(pid)}">Editar mi última evaluación</button>`:`<button class="save" type="button" data-rate="${esc(pid)}">Agregar mi evaluación</button>`}
+    ${rows}${MODS[mod].price?`<div class="dr"><div class="row"><b>${MODS[mod].price}</b><b style="font-family:Outfit;letter-spacing:.05em">${money(s.price)||'–'}</b></div>${ind.length>1?`<div class="persons">${ind.map(r=>`${esc(slotName(r.slot))}: ${money(effOf(r).price)||'–'}`).join(' · ')}</div>`:''}${pn}</div>`:''}${peHTML}${qaHTML}${visHTML}${comments}
+    ${readOnly?'':`<div style="display:grid;gap:10px;margin-top:18px">${both?`<button class="ghost" type="button" data-reveal="${esc(pid)}">Ver la revelación de nuevo</button>`:''}${mine?`<button class="save" type="button" data-revisit="${esc(pid)}">${mod==='pantallas'?'La vimos de nuevo':'Volvimos: nueva visita'}</button><button class="ghost" type="button" data-rate="${esc(pid)}">Editar mi última evaluación</button>`:`<button class="save" type="button" data-rate="${esc(pid)}">Agregar mi evaluación</button>`}
     <button class="ghost" type="button" data-del="${esc(pid)}">Borrar ${MODS[mod].noun}</button></div>`}`;
   if(fresh){openSheet(html);countUp($('#bigN'),s.total)}else{const st=$('#sheet').scrollTop;$('#sheet').innerHTML='<div class="grab"></div>'+html;$('#sheet').scrollTop=st}
 }
@@ -651,25 +768,27 @@ $('#lb').addEventListener('click',e=>{const x=e.clientX/innerWidth;if(gallery.le
 /* ---------- formulario ---------- */
 let F;
 function blankForm(mod,pid,vmode){
-  F={mod,vmode:vmode||'edit',pedir:[],evitar:[],history:[],pid:pid||null,name:'',sector:'',editPlace:false,city:'',type:'Restaurante',cat:'naturaleza',sub:'',scale:'general',dif:'',dur:'',ideal:new Set(),epoca:new Set(),link:'',
+  F={mod,vmode:vmode||'edit',pedir:[],evitar:[],history:[],best:'',qa:'',q:'',qSalt:0,pid:pid||null,name:'',sector:'',editPlace:false,city:'',type:'Restaurante',cat:DEFCAT[mod]||'naturaleza',sub:'',scale:'general',dif:'',dur:'',ideal:new Set(),epoca:new Set(),link:'',
      slot:me,scores:{},na:{},notes:{},open:{},tags:new Set(),again:'',price:0,photos:[],saved:[],removed:[],uploading:0,date:new Date().toISOString().slice(0,10),comment:'',subOther:false};
   const p=pid&&D[mod].places.find(x=>x.id===pid);
-  if(p){Object.assign(F,{name:p.name,sector:p.sector||'',city:p.city||'',type:p.type||'Restaurante',cat:p.cat||'naturaleza',sub:p.sub||'',scale:p.scale||(p.cat==='viajes'?'viaje':'general'),dif:p.dif||'',dur:p.dur||'',ideal:new Set(p.ideal||[]),epoca:new Set(p.epoca||[]),link:p.link||''});
+  if(p){Object.assign(F,{name:p.name,sector:p.sector||'',city:p.city||'',type:p.type||'Restaurante',cat:p.cat||DEFCAT[mod]||'naturaleza',sub:p.sub||'',scale:p.scale||(p.cat==='viajes'?'viaje':'general'),dif:p.dif||'',dur:p.dur||'',ideal:new Set(p.ideal||[]),epoca:new Set(p.epoca||[]),link:p.link||''});
     F.subOther=!!F.sub&&!(CATS[F.cat]?.subs||[]).includes(F.sub)}
   if(pid)prefill();
 }
 function prefill(){
   const r=D[F.mod].reviews.find(x=>x.pid===F.pid&&x.slot===F.slot);
-  Object.assign(F,{scores:{},na:{},notes:{},open:{},tags:new Set(),again:'',comment:'',price:0,photos:[],saved:[],removed:[],pedir:[],evitar:[],history:[],hasRev:!!r});
+  Object.assign(F,{scores:{},na:{},notes:{},open:{},tags:new Set(),again:'',comment:'',price:0,photos:[],saved:[],removed:[],pedir:[],evitar:[],history:[],hasRev:!!r,best:'',qa:'',q:'',qSalt:0});
   if(!r)return;
   Object.assign(F,{pedir:[...(r.pedir||[])],evitar:[...(r.evitar||[])]});
-  if(F.vmode==='new'){const {history,...cur}=r;F.history=[...(r.history||[]),{date:cur.date||'',scores:cur.scores||{},notes:cur.notes||{},price:cur.price??null,again:cur.again||'',comment:cur.comment||'',updatedAt:cur.updatedAt||0}];
+  if(F.vmode==='new'){const {history,...cur}=r;F.history=[...(r.history||[]),{date:cur.date||'',scores:cur.scores||{},notes:cur.notes||{},price:cur.price??null,again:cur.again||'',comment:cur.comment||'',qa:cur.qa||null,updatedAt:cur.updatedAt||0}];
     Object.assign(F,{tags:new Set(r.tags||[]),photos:[...(r.photos||[])],saved:[...(r.photos||[])],date:new Date().toISOString().slice(0,10)});return}
   F.history=[...(r.history||[])];
   for(const k in r.scores||{}){const v=r.scores[k];if(typeof v==='number')F.scores[k]=v;else F.na[k]=true}
   for(const k in r.notes||{}){F.notes[k]=r.notes[k];F.open[k]=true}
   Object.assign(F,{tags:new Set(r.tags||[]),again:r.again||'',date:r.date||F.date,comment:r.comment||'',price:r.price||0,photos:[...(r.photos||[])],saved:[...(r.photos||[])]});
+  if(r.qa)Object.assign(F,{best:r.qa.best||'',qa:r.qa.a||'',q:r.qa.q||'',qPinned:!!r.qa.q});
 }
+function partnerQ(){if(!F.pid||F.slot==='j')return '';const o=D[F.mod].reviews.find(r=>r.pid===F.pid&&r.slot===other(F.slot));return o&&o.qa&&o.qa.q&&(o.qa.date||o.date)===F.date?o.qa.q:''}
 function updDup(){
   const box=$('#dupBox');if(!box)return;const a=$('#mapsA');if(a)a.href=mapsUrl({name:F.name,sector:F.sector,city:F.city});
   const n=norm(F.name);if(n.length<3){box.innerHTML='';return}
@@ -678,34 +797,36 @@ function updDup(){
 }
 const chipsHTML=(list,isOn,attr)=>list.map(([k,t])=>`<button type="button" class="chip ${isOn(k)?'on':''}" data-${attr}="${esc(k)}">${esc(t)}</button>`).join('');
 function renderForm(){
-  const mod=F.mod,S=mod==='salidas',p=F.pid&&D[mod].places.find(x=>x.id===F.pid);
+  const mod=F.mod,S=mod==='salidas',HC=hasCat(mod),Lb=ML[mod],p=F.pid&&D[mod].places.find(x=>x.id===F.pid);
   const isNew=!p,wish=p&&p.status==='wish';
-  const cities=[...new Set(D[mod].places.map(x=>x.city).filter(Boolean))];
+  const cities=[...new Set([...(Lb.platforms||[]),...D[mod].places.map(x=>x.city).filter(Boolean)])];
   const showEdit=isNew||F.editPlace;
-  const fields=`<div><label class="l" for="pname">Nombre</label><input id="pname" maxlength="80" placeholder="${S?'Ej: Cerro La Campana':'Ej: Mosai Café'}" value="${esc(F.name)}"></div>
+  const fields=`<div><label class="l" for="pname">${mod==='pantallas'?'Título':'Nombre'}</label><input id="pname" maxlength="80" placeholder="${Lb.namePh}" value="${esc(F.name)}"></div>
      <div class="dup" id="dupBox"></div>
-     <div class="two"><div><label class="l" for="psector">Sucursal o sector</label><input id="psector" maxlength="50" placeholder="${S?'Opcional, ej: Granizo':'Opcional, ej: Rotonda Atenas'}" value="${esc(F.sector)}"></div>
-     <div><label class="l" for="pcity">${S?'Lugar o región':'Ciudad'}</label><input id="pcity" maxlength="40" placeholder="${S?'Olmué, Cajón del Maipo…':'Santiago, Algarrobo…'}" value="${esc(F.city)}"></div></div>
+     <div class="two"><div><label class="l" for="psector">${Lb.sectorL}</label><input id="psector" maxlength="50" placeholder="${Lb.sectorPh}" value="${esc(F.sector)}"></div>
+     <div><label class="l" for="pcity">${Lb.cityL}</label><input id="pcity" maxlength="40" placeholder="${Lb.cityPh}" value="${esc(F.city)}"></div></div>
      ${cities.length?`<div class="chips" style="margin-top:-6px">${chipsHTML(cities.map(c=>[c,c]),k=>k===F.city,'pcity')}</div>`:''}
-     <a class="mapl" id="mapsA" href="${esc(mapsUrl({name:F.name,sector:F.sector,city:F.city}))}" target="_blank" rel="noopener">${PIN}Buscar en Google Maps para confirmar</a>
-     ${S?'':`<div><label class="l" for="linkIn">Link de Maps o Instagram <span class="meta" style="font-weight:600">(opcional)</span></label><input id="linkIn" maxlength="300" inputmode="url" placeholder="Pega aquí el link del local" value="${esc(F.link)}"></div>`}`;
-  let h=isNew?`<h2 style="font-size:30px">${S?'Una salida nueva':'Un lugar nuevo'}</h2>`+fields
+     ${Lb.maps?`<a class="mapl" id="mapsA" href="${esc(mapsUrl({name:F.name,sector:F.sector,city:F.city}))}" target="_blank" rel="noopener">${PIN}Buscar en Google Maps para confirmar</a>`:''}
+     ${mod!=='mesa'?'':`<div><label class="l" for="linkIn">Link de Maps o Instagram <span class="meta" style="font-weight:600">(opcional)</span></label><input id="linkIn" maxlength="300" inputmode="url" placeholder="Pega aquí el link del local" value="${esc(F.link)}"></div>`}`;
+  let h=isNew?`<h2 style="font-size:30px">${Lb.newT}</h2>`+fields
    :`<span class="meta">${wish?'¡Por fin fueron a…':'Evaluando'}</span><h2 style="font-size:28px">${esc(p.name)}</h2><div class="meta">${esc(placeMeta(mod,p))}</div>
-     <button type="button" class="mini ${F.editPlace?'on':''}" id="editPlace" style="justify-self:start">${F.editPlace?'Ocultar datos del lugar':'Editar nombre, sucursal o ciudad'}</button>${F.editPlace?fields:''}`;
-  if(!S&&(isNew||wish))h+=`<div><span class="l">Tipo</span><div class="chips">${chipsHTML(TYPES.map(t=>[t,t]),k=>k===F.type,'type')}</div></div>`;
+     <button type="button" class="mini ${F.editPlace?'on':''}" id="editPlace" style="justify-self:start">${F.editPlace?'Ocultar datos':Lb.edit}</button>${F.editPlace?fields:''}`;
+  if(mod==='mesa'&&(isNew||wish))h+=`<div><span class="l">Tipo</span><div class="chips">${chipsHTML(TYPES.map(t=>[t,t]),k=>k===F.type,'type')}</div></div>`;
+  if(HC){
+    if(isNew||wish||F.editPlace)h+=`<div><span class="l">${mod==='pantallas'?'¿Película o serie?':'Categoría'}</span><div class="chips">${chipsHTML(catEntries(mod).map(([k,c])=>[k,c.n]),k=>k===F.cat,'cat')}</div></div>`;
+    const subs=[...new Set([...CATS[F.cat].subs,...D[mod].places.filter(x=>x.cat===F.cat&&x.sub).map(x=>x.sub)])];
+    h+=`<div><span class="l">${mod==='pantallas'?'Género':'Tipo de '+esc(CATS[F.cat].n.toLowerCase())}</span><div class="chips">${chipsHTML(subs.map(x=>[x,x]),k=>k===F.sub&&!F.subOther,'sub')}<button type="button" class="chip ${F.subOther?'on':''}" data-subother="1">Otro…</button></div>${F.subOther?`<input id="subIn" maxlength="40" style="margin-top:8px" placeholder="¿Cuál?" value="${esc(F.sub)}">`:''}</div>`;
+  }
   if(S){
-    if(isNew||wish)h+=`<div><span class="l">Categoría</span><div class="chips">${chipsHTML(Object.entries(CATS).map(([k,c])=>[k,c.n]),k=>k===F.cat,'cat')}</div></div>`;
-    const subs=[...new Set([...CATS[F.cat].subs,...D.salidas.places.filter(x=>x.cat===F.cat&&x.sub).map(x=>x.sub)])];
-    h+=`<div><span class="l">Tipo de ${esc(CATS[F.cat].n.toLowerCase())}</span><div class="chips">${chipsHTML(subs.map(x=>[x,x]),k=>k===F.sub&&!F.subOther,'sub')}<button type="button" class="chip ${F.subOther?'on':''}" data-subother="1">Otro…</button></div>${F.subOther?`<input id="subIn" maxlength="40" style="margin-top:8px" placeholder="¿Cuál?" value="${esc(F.sub)}">`:''}</div>
-      <div><span class="l">Escala</span><div class="seg" style="background:var(--line)">${SCALES.map(([k,t])=>`<button type="button" data-scl="${k}" class="${F.scale===k?'on':''}">${t}</button>`).join('')}</div></div>
+    h+=`<div><span class="l">Escala</span><div class="seg" style="background:var(--line)">${SCALES.map(([k,t])=>`<button type="button" data-scl="${k}" class="${F.scale===k?'on':''}">${t}</button>`).join('')}</div></div>
       <div><span class="l">Dificultad <span class="meta" style="font-weight:600">(opcional)</span></span><div class="seg" style="background:var(--line)">${DIFS.map(([k,t])=>`<button type="button" data-dif="${k}" class="${F.dif===k?'on':''}">${t}</button>`).join('')}</div></div>
       <div><label class="l" for="durIn">Duración</label><input id="durIn" maxlength="30" placeholder="Ej: 4 horas, 2 días" value="${esc(F.dur)}"></div>
       <div><span class="l">Ideal para</span><div class="chips">${chipsHTML(IDEAL.map(x=>[x,x]),k=>F.ideal.has(k),'ideal')}</div></div>
       <div><span class="l">Mejor época</span><div class="chips">${chipsHTML(EPOCA.map(x=>[x,x]),k=>F.epoca.has(k),'epoca')}</div></div>
       <div><label class="l" for="linkIn2">Link <span class="meta" style="font-weight:600">(Maps, Instagram… opcional)</span></label><input id="linkIn2" maxlength="300" inputmode="url" value="${esc(F.link)}"></div>`;
   }
-  if(!isNew&&F.hasRev)h+=`<div><span class="l">${esc(slotName(F.slot))} ya evaluó este ${MODS[mod].noun}</span><div class="vmode"><button type="button" data-vm="new" class="${F.vmode==='new'?'on':''}">Nueva visita${F.vmode==='new'?` (la ${F.history.length+1}ª)`:''}</button><button type="button" data-vm="edit" class="${F.vmode==='edit'?'on':''}">Editar la última</button></div></div>`;
-  if(!isNew)h+=`<button type="button" class="mini" id="otherPlace">Cambiar a ${S?'una salida nueva':'un lugar nuevo'}</button>`;
+  if(!isNew&&F.hasRev)h+=`<div><span class="l">${esc(slotName(F.slot))} ya evaluó este ${MODS[mod].noun}</span><div class="vmode"><button type="button" data-vm="new" class="${F.vmode==='new'?'on':''}">${mod==='pantallas'?'Nueva vez':'Nueva visita'}${F.vmode==='new'?` (la ${F.history.length+1}ª)`:''}</button><button type="button" data-vm="edit" class="${F.vmode==='edit'?'on':''}">Editar la última</button></div></div>`;
+  if(!isNew)h+=`<button type="button" class="mini" id="otherPlace">Cambiar a ${Lb.newT.toLowerCase()}</button>`;
   $('#placeBox').innerHTML=`<div class="crit glass" style="display:grid;gap:14px">${h}</div>`;
   updDup();
   $('#slotSeg').innerHTML=[['a',names.a],['b',names.b],['j','Los dos']].map(([s,t])=>`<button type="button" data-slot="${s}" class="${F.slot===s?'on':''}">${esc(t)}</button>`).join('');
@@ -714,22 +835,25 @@ function renderForm(){
     <div class="rate" data-k="${k}" style="--w:${(v||0)/5*100}%" role="slider" aria-label="${t}" aria-valuemin="0" aria-valuemax="5" aria-valuenow="${v||0}" tabindex="0">${S1.repeat(5)}<span class="f">${S1.repeat(5)}</span></div>
     <div class="row" style="gap:4px"><button type="button" class="mini ${F.open[k]?'on':''}" data-note="${k}">＋ Nota</button><button type="button" class="mini ${F.na[k]?'on':''}" data-na="${k}">No aplica</button>${v?`<button type="button" class="mini" data-clr="${k}">Borrar</button>`:''}</div>
     ${F.open[k]?`<input data-noteinput="${k}" maxlength="140" placeholder="Breve nota sobre ${t.toLowerCase()}" value="${esc(F.notes[k]||'')}">`:''}</div>`}).join('');
-  $('#priceT').textContent=MODS[mod].price;
+  $('#priceCard').style.display=MODS[mod].price?'':'none';$('#peCard').style.display=Lb.pe?'grid':'none';$('#againL').textContent=Lb.againL;
+  $('#priceT').textContent=MODS[mod].price||'';
   $('#priceSeg').innerHTML=[1,2,3,4].map(n=>`<button type="button" data-price="${n}" class="${F.price===n?'on':''}">${'$'.repeat(n)}</button>`).join('');
   $('#pnBtn').classList.toggle('on',!!F.open.precio);
   $('#pnBox').innerHTML=F.open.precio?`<input data-noteinput="precio" maxlength="140" placeholder="${S?'Ej: entrada gratis, estacionamiento $3.000':'Ej: caro, pero vale la pena'}" value="${esc(F.notes.precio||'')}">`:'';
   renderPhotos();
   const used=[...new Set([...MODS[mod].tags,...D[mod].reviews.flatMap(r=>r.tags||[]),...F.tags])];
   $('#tags').innerHTML=used.map(t=>`<button type="button" class="chip tag ${F.tags.has(t)?'on':''}" data-tag="${esc(t)}">${esc(t)}</button>`).join('');
-  const S2=mod==='salidas';$('#peL1').textContent=S2?'Recomendamos':'Pedir de nuevo';$('#peL2').textContent=S2?'Evitaríamos':'Evitar';
+  const S2=mod==='salidas';if(Lb.pe){$('#peL1').textContent=Lb.pe[0];$('#peL2').textContent=Lb.pe[1]}
   $('#pedirIn').placeholder=S2?'Ej: ir temprano, llevar efectivo':'Ej: ceviche, pisco sour';$('#evitarIn').placeholder=S2?'Ej: ir el fin de semana':'Ej: postre, jugo natural';
   for(const k of ['pedir','evitar'])$('#'+k+'L').innerHTML=F[k].map((t,i)=>`<button type="button" class="chip ${k==='pedir'?'pe':'ev'}" data-rmpe="${k}" data-i="${i}" aria-label="Quitar ${esc(t)}">${esc(t)} ×</button>`).join('');
-  $('#againSeg').innerHTML=AGAIN.map(([k,t])=>`<button type="button" data-again="${k}" class="${F.again===k?'on':''}">${t}</button>`).join('');
+  const pq=partnerQ();if(pq)F.q=pq;else if(!F.q||!F.qPinned)F.q=pickQ(mod,F.name||'nuevo',F.date,F.qSalt);
+  $('#qaQ').textContent=F.q;$('#qShuffle').hidden=!!pq;$('#bestIn').value=F.best;$('#qaIn').value=F.qa;
+  $('#againSeg').innerHTML=againOf(mod).map(([k,t])=>`<button type="button" data-again="${k}" class="${F.again===k?'on':''}">${t}</button>`).join('');
   $('#date').value=F.date;$('#comment').value=F.comment;
   $('#saveBtn').disabled=readOnly;$('#saveBtn').textContent=readOnly?'Solo lectura':'Guardar evaluación';
 }
 function renderPhotos(){
-  $('#phHint').textContent=assets?(F.mod==='salidas'?'Del paisaje, el camino o ustedes':'Del lugar, los platos o ustedes'):'Para subir fotos necesitas permiso de Editor en esta página';
+  $('#phHint').textContent=assets?ML[F.mod].ph:'Para subir fotos necesitas permiso de Editor en esta página';
   $('#photos').innerHTML=F.photos.map(id=>`<div><img src="${img(id)}" alt=""><button type="button" class="x" data-rmph="${esc(id)}" aria-label="Quitar foto">×</button></div>`).join('')
     +'<div class="ld"><span class="spin"></span></div>'.repeat(F.uploading)
     +(assets&&!readOnly?`<button type="button" class="add" id="addPh"><svg class="ic" viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Agregar</button>`:'');
@@ -767,7 +891,7 @@ function moveRate(e,first){const r=drag.getBoundingClientRect();const v=Math.max
 $('#crits').addEventListener('keydown',e=>{const el=e.target.closest('.rate');if(!el)return;const d=e.key==='ArrowRight'||e.key==='ArrowUp'?.5:e.key==='ArrowLeft'||e.key==='ArrowDown'?-.5:0;if(!d)return;e.preventDefault();setRate(el,Math.max(.5,Math.min(5,(F.scores[el.dataset.k]||0)+d)),true)});
 $('#v-nuevo').addEventListener('input',e=>{const t=e.target,k=t.dataset.noteinput;if(k)F.notes[k]=t.value;
   if(t.id==='pname'||t.id==='psector'||t.id==='pcity'){F[{pname:'name',psector:'sector',pcity:'city'}[t.id]]=t.value;updDup()}
-  if(t.id==='subIn')F.sub=t.value;if(t.id==='durIn')F.dur=t.value;if(t.id==='linkIn'||t.id==='linkIn2')F.link=t.value;if(t.id==='date')F.date=t.value;if(t.id==='comment')F.comment=t.value});
+  if(t.id==='subIn')F.sub=t.value;if(t.id==='durIn')F.dur=t.value;if(t.id==='linkIn'||t.id==='linkIn2')F.link=t.value;if(t.id==='date')F.date=t.value;if(t.id==='comment')F.comment=t.value;if(t.id==='bestIn')F.best=t.value;if(t.id==='qaIn'){F.qa=t.value;F.qPinned=true}});
 const tog=(set,k)=>set.has(k)?set.delete(k):set.add(k);
 $('#v-nuevo').addEventListener('click',async e=>{
   const b=e.target.closest('button');if(!b)return;const d=b.dataset;
@@ -789,6 +913,7 @@ $('#v-nuevo').addEventListener('click',async e=>{
   else if(d.pcity){F.city=d.pcity;renderForm()}
   else if(d.rmph){const id=d.rmph;F.photos=F.photos.filter(x=>x!==id);if(F.saved.includes(id))F.removed.push(id);else assets?.delete(id).catch(()=>{});renderPhotos()}
   else if(b.id==='addPh')$('#file').click();
+  else if(b.id==='qShuffle'){F.qSalt++;F.qPinned=false;F.qa='';renderForm();const q=$('#qaQ');if(!RM)q.animate?.([{opacity:0,transform:'translateY(8px)'},{opacity:1,transform:'none'}],{duration:350})}
   else if(b.id==='otherPlace'){blankForm(F.mod);renderForm()}
   else if(b.id==='editPlace'){F.editPlace=!F.editPlace;renderForm()}
   else if(d.vm){F.vmode=d.vm;prefill();renderForm()}
@@ -804,17 +929,17 @@ $('#f').addEventListener('submit',async e=>{
   e.preventDefault();
   if(!db){toast('Sin conexión a la libreta');return}
   if(F.uploading){toast('Espera a que suban las fotos');return}
-  const mod=F.mod,P=MODS[mod],S=mod==='salidas';
-  if(!F.name.trim()){toast('Falta el nombre');$('#pname')?.focus();return}
+  const mod=F.mod,P=MODS[mod],S=mod==='salidas',HC=hasCat(mod);
+  if(!F.name.trim()){toast(mod==='pantallas'?'Falta el título':'Falta el nombre');$('#pname')?.focus();return}
   const twin=D[mod].places.find(p=>p.id!==F.pid&&norm(p.name)===norm(F.name)&&norm(p.sector)===norm(F.sector));
   if(twin){if(!F.pid||F.editPlace){toast(F.sector.trim()?'Ya existe con esa sucursal':'Ya lo tienen: agreguen la sucursal o sector');$('#psector')?.focus();updDup();return}}
   const C=crits(mod,F.cat);
   if(!C.some(([k])=>F.scores[k])){toast('Pon al menos una estrella');return}
   const btn=$('#saveBtn');btn.disabled=true;btn.textContent='Guardando…';
   try{
-    const info=S?{cat:F.cat,sub:F.sub.trim(),scale:F.scale,dif:F.dif,dur:F.dur.trim(),ideal:[...F.ideal],epoca:[...F.epoca],link:F.link.trim()}:{};
+    const info=S?{cat:F.cat,sub:F.sub.trim(),scale:F.scale,dif:F.dif,dur:F.dur.trim(),ideal:[...F.ideal],epoca:[...F.epoca],link:F.link.trim()}:HC?{cat:F.cat,sub:F.sub.trim()}:{};
     let pid=F.pid;const p=pid&&D[mod].places.find(x=>x.id===pid);
-    const want={name:F.name.trim(),sector:F.sector.trim(),city:F.city.trim(),...(S?info:{type:F.type,link:F.link.trim()})};
+    const want={name:F.name.trim(),sector:F.sector.trim(),city:F.city.trim(),...(HC?info:{type:F.type,link:F.link.trim()})};
     if(!pid){const ref=db.collection(P.p).doc();pid=ref.id;await ref.set({...want,status:'visited',createdAt:Date.now()})}
     else{const ch={};for(const k in want)if(JSON.stringify(want[k])!==JSON.stringify(p[k]??(Array.isArray(want[k])?[]:'')))ch[k]=want[k];
       if(p.status==='wish')Object.assign(ch,{status:'visited',createdAt:Date.now()});
@@ -822,10 +947,11 @@ $('#f').addEventListener('submit',async e=>{
     const scores={},notes={};
     for(const [k] of C){if(F.scores[k])scores[k]=F.scores[k];else if(F.na[k])scores[k]=null}
     for(const k of [...C.map(c=>c[0]),'precio']){const n=(F.notes[k]||'').trim();if(n&&F.open[k])notes[k]=n}
-    await db.doc(`${P.r}/${pid}__${F.slot}`).set({pid,slot:F.slot,scores,notes,price:F.price||null,photos:F.photos,tags:[...F.tags],pedir:F.pedir,evitar:F.evitar,history:F.history,again:F.again,date:F.date,comment:F.comment.trim(),updatedAt:Date.now()});
+    await db.doc(`${P.r}/${pid}__${F.slot}`).set({pid,slot:F.slot,scores,notes,price:F.price||null,photos:F.photos,tags:[...F.tags],pedir:F.pedir,evitar:F.evitar,history:F.history,again:F.again,date:F.date,comment:F.comment.trim(),qa:(F.best.trim()||F.qa.trim())?{date:F.date,best:F.best.trim(),q:F.q,a:F.qa.trim()}:null,updatedAt:Date.now()});
     for(const id of F.removed)assets?.delete(id).catch(()=>{});
     const r=btn.getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2);
-    toast('¡Guardado! ★');blankForm(mod);renderForm();setTimeout(()=>{go(mod,'lista');setTimeout(()=>renderSheet(mod,pid),380)},550);
+    const slotSaved=F.slot,hadPartner=slotSaved!=='j'&&D[mod].reviews.some(x=>x.pid===pid&&x.slot===other(slotSaved));
+    toast('¡Guardado! ★');blankForm(mod);renderForm();setTimeout(()=>{go(mod,'lista');setTimeout(()=>{if(hadPartner&&(me===slotSaved)){renderSheet(mod,pid)}else renderSheet(mod,pid)},380)},550);
   }catch(err){toast(err?.code==='invalid_argument'?'No tienes permiso para guardar':err?.code==='quota_exceeded'?'La libreta está llena':'No se pudo guardar, intenta de nuevo')}
   finally{btn.disabled=readOnly;btn.textContent='Guardar evaluación'}
 });
@@ -833,15 +959,15 @@ $('#f').addEventListener('submit',async e=>{
 /* ---------- pesos ---------- */
 let WD;
 function weightsSheet(){
-  const S=M==='salidas',C=crits(M,wCat),cur=WD;const sum=C.reduce((a,[k])=>a+(cur[k]??1),0)||1;
-  return `<h2 style="font-size:28px">¿Qué pesa más?</h2><p class="meta">La nota total es un promedio ponderado: ×2 cuenta el doble que ×1, y ×0 no cuenta. El ${MODS[M].price.toLowerCase()} ($) nunca suma. Cambia la nota para los dos.</p>
-   ${S?`<div class="scroll" style="margin:10px 0">${Object.entries(CATS).map(([k,c])=>`<button type="button" class="chip ${k===wCat?'on':''}" data-wcat2="${k}">${c.n}</button>`).join('')}</div>`:''}
+  const S=hasCat(M),C=crits(M,wCat),cur=WD;const sum=C.reduce((a,[k])=>a+(cur[k]??1),0)||1;
+  return `<h2 style="font-size:28px">¿Qué pesa más?</h2><p class="meta">La nota total es un promedio ponderado: ×2 cuenta el doble que ×1, y ×0 no cuenta. ${MODS[M].price?`El ${MODS[M].price.toLowerCase()} ($) nunca suma.`:''} Cambia la nota para los dos.</p>
+   ${S?`<div class="scroll" style="margin:10px 0">${catEntries(M).map(([k,c])=>`<button type="button" class="chip ${k===wCat?'on':''}" data-wcat2="${k}">${c.n}</button>`).join('')}</div>`:''}
    ${C.map(([k,t])=>`<div class="w8"><b>${t}</b><div class="step"><button type="button" data-w="${k}" data-dw="-0.5" aria-label="Menos peso a ${t}">−</button><b>×${fmt(cur[k]??1)}</b><button type="button" data-w="${k}" data-dw="0.5" aria-label="Más peso a ${t}">+</button></div>
    <div class="bar"><i style="width:${(cur[k]??1)/sum*100}%"></i></div><span class="meta" style="font-size:12px">${Math.round((cur[k]??1)/sum*100)}% de la nota</span></div>`).join('')}
    <div style="display:grid;gap:10px;margin-top:16px">${readOnly?'':'<button class="save" type="button" id="saveW">Guardar pesos</button>'}<button class="ghost" type="button" id="resetW">Todos iguales (×1)</button></div>`;
 }
-const loadWD=()=>{WD={...(M==='mesa'?W.mesa:(W.salidas[wCat]||{}))}};
-$('#cfgBtn').onclick=()=>{openPid=null;loadWD();openSheet(weightsSheet())};
+const loadWD=()=>{WD={...(M==='mesa'?W.mesa:(W[M][wCat]||{}))}};
+$('#cfgBtn').onclick=()=>{openPid=null;if(hasCat(M)&&(!CATS[wCat]||(CATS[wCat].m||'salidas')!==M))wCat=DEFCAT[M];loadWD();openSheet(weightsSheet())};
 
 /* ---------- efectos ---------- */
 function burst(x,y){if(RM)return;const cols=['#ffbf33','#ff8fb1','#8fe3c3','#9cc8ff'];for(let i=0;i<16;i++){const s=document.createElement('span');s.className='spark';s.style.color=cols[i%4];s.innerHTML=S1;s.style.left=x+'px';s.style.top=y+'px';$('#fx').append(s);const a=Math.random()*Math.PI*2,d=60+Math.random()*100;s.animate([{transform:'translate(-50%,-50%) scale(.4)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*d}px),calc(-50% + ${Math.sin(a)*d-50}px)) scale(${.8+Math.random()}) rotate(${Math.random()*220}deg)`,opacity:0}],{duration:850+Math.random()*350,easing:'cubic-bezier(.2,.8,.2,1)'}).onfinish=()=>s.remove()}}
@@ -854,12 +980,14 @@ function moveInd(){const b=document.querySelector('nav button.on'),i=$('#ind');i
 function show(){
   const h=location.hash.slice(1);const mod=h.split('-')[0];
   const prev=M;
-  if(!MODS[mod]){M=null;document.body.classList.add('home');for(const x of ['inicio',...VIEWS])$('#v-'+x).classList.toggle('on',x==='inicio');$('#hTitle').textContent='Nuestras aventuras';closeSheet();renderHome();animate('#heros');animate('#lastList');window.scrollTo({top:0,behavior:RM?'auto':'smooth'});return}
+  const setT=t=>{const h1=$('#hTitle');if(h1.textContent!==t){h1.textContent=t;h1.classList.remove('swap');void h1.offsetWidth;h1.classList.add('swap')}};
+  if(!MODS[mod]){const hist=h==='historia';M=null;document.body.classList.add('home');document.body.dataset.mod='mesa';for(const x of ['inicio','historia',...VIEWS])$('#v-'+x).classList.toggle('on',x===(hist?'historia':'inicio'));setT('Nuestras aventuras');closeSheet();if(hist)renderTimeline(true);else{renderHome();animate('#heros');animate('#lastList')}window.scrollTo({top:0,behavior:RM?'auto':'smooth'});return}
   const v=VIEWS.includes(h.slice(mod.length+1))?h.slice(mod.length+1):'lista';
-  M=mod;document.body.classList.remove('home');document.body.dataset.mod=mod;$('#hTitle').textContent=MODS[mod].name;
+  M=mod;document.body.classList.remove('home');document.body.dataset.mod=mod;setT(MODS[mod].name);
+  $('#t-por-ir').innerHTML='<svg class="ic" viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4z"/></svg>'+ML[mod].wTab;
   if(prev!==mod||!F||F.mod!==mod){blankForm(mod);renderForm()}
   renderList();renderRank();renderWishes();renderRuleta();
-  for(const x of ['inicio',...VIEWS]){$('#v-'+x).classList.toggle('on',x===v);if(x!=='inicio')$('#t-'+x).classList.toggle('on',x===v)}moveInd();
+  $('#v-historia').classList.remove('on');for(const x of ['inicio',...VIEWS]){$('#v-'+x).classList.toggle('on',x===v);if(x!=='inicio')$('#t-'+x).classList.toggle('on',x===v)}moveInd();
   if(v==='lista')animate('#list');if(v==='ranking')animate('#rank');if(v==='por-ir')animate('#wishes');window.scrollTo({top:0,behavior:RM?'auto':'smooth'});
 }
 addEventListener('hashchange',show);
@@ -871,6 +999,9 @@ const togPanel=(btn,wrap)=>{const o=!$(wrap).classList.contains('open');$(wrap).
 $('#fBtn').onclick=()=>togPanel('#fBtn','#fWrap');$('#rBtn').onclick=()=>togPanel('#rBtn','#rWrap');
 $('#stats').addEventListener('click',e=>{const t=e.target.closest('[data-top]');if(t){renderSheet(M,t.dataset.top);return}if(e.target.closest('#cntBtn'))go(M,'por-ir')});
 $('#heros').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b)go(b.dataset.go)});
+$('#v-inicio').addEventListener('click',e=>{if(e.target.closest('[data-hist]'))location.hash='historia'});
+$('#v-historia').addEventListener('click',e=>{if(e.target.closest('[data-home]')){go(null);return}const f=e.target.closest('[data-tlf]');if(f){TLF=f.dataset.tlf;renderTimeline(true);return}
+  const it=e.target.closest('.tli');if(it){const mod=it.dataset.mod,pid=it.dataset.pid;go(mod);setTimeout(()=>renderSheet(mod,pid),420)}});
 $('#lastList').addEventListener('click',e=>{const b=e.target.closest('[data-pid]');if(b){const mod=b.dataset.mod,pid=b.dataset.pid;go(mod);setTimeout(()=>renderSheet(mod,pid),420)}});
 $('#q').addEventListener('input',e=>{U[M].q=e.target.value;renderList()});
 $('#v-lista').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset,u=U[M];
@@ -886,6 +1017,7 @@ $('#sheet').addEventListener('click',async e=>{
   const b=e.target.closest('button');if(!b)return;const d=b.dataset;
   if(d.lb){lbShow(+d.lb)}
   else if(d.rate){const pid=d.rate,mod=openMod;closeSheet();blankForm(mod,pid);renderForm();go(mod,'nuevo')}
+  else if(d.reveal){playReveal(openMod,d.reveal)}
   else if(d.revisit){const pid=d.revisit,mod=openMod;closeSheet();blankForm(mod,pid,'new');renderForm();go(mod,'nuevo')}
   else if(d.del){
     if(!b.classList.contains('armed')){b.classList.add('armed');b.textContent='Toca otra vez para borrar (también sus fotos)';b.style.color='var(--hl)';return}
@@ -898,8 +1030,8 @@ $('#sheet').addEventListener('click',async e=>{
   else if(b.id==='resetW'){WD={};reSheet(weightsSheet())}
   else if(b.id==='saveW'){const C=crits(M,wCat);if(!C.some(([k])=>(WD[k]??1)>0)){toast('Al menos un factor debe pesar');return}
     const clean=Object.fromEntries(C.map(([k])=>[k,WD[k]??1]));
-    try{if(M==='mesa')await db.doc('config/pesos').set(clean);else await db.doc('config/pesos-salidas').set({...W.salidas,[wCat]:clean});
-      if(M==='mesa')W.mesa=clean;else W.salidas={...W.salidas,[wCat]:clean};closeSheet();refresh();toast('Pesos guardados')}catch(err){toast('No se pudieron guardar')}}
+    try{if(M==='mesa')await db.doc('config/pesos').set(clean);else await db.doc(MODS[M].w).set({...W[M],[wCat]:clean});
+      if(M==='mesa')W.mesa=clean;else W[M]={...W[M],[wCat]:clean};closeSheet();refresh();toast('Pesos guardados')}catch(err){toast('No se pudieron guardar')}}
   else if(b.id==='saveNames'){
     const a=$('#nA').value.trim().slice(0,24)||'Persona 1',bb=$('#nB').value.trim().slice(0,24)||'Persona 2';
     me=$('#sheet').querySelector('[data-pick].on')?.dataset.pick||me;store.set('mesa-yo',me);
@@ -914,15 +1046,15 @@ $('#meBtn').onclick=()=>{openPid=null;openSheet(`<h2 style="font-size:28px">¿Qu
   <div><label class="l" for="nB">Persona 2</label><input id="nB" maxlength="24" value="${esc(names.b)}"></div>
   <div><span class="l">En este teléfono soy</span><div class="seg" style="background:var(--line)"><button type="button" data-pick="a" class="${me==='a'?'on':''}">${esc(names.a)}</button><button type="button" data-pick="b" class="${me==='b'?'on':''}">${esc(names.b)}</button></div></div>
   <button class="save" type="button" id="saveNames">Listo</button></div>`)};
-function refresh(){if(M){renderList();renderRank();renderWishes();if(!spinning)renderRuleta(true)}else renderHome();if(openPid&&openMod)renderSheet(openMod,openPid,false)}
+function refresh(){if(M){renderList();renderRank();renderWishes();if(!spinning)renderRuleta(true)}else if($('#v-historia').classList.contains('on'))renderTimeline(false);else renderHome();if(openPid&&openMod)renderSheet(openMod,openPid,false)}
 
 /* ---------- ruleta ---------- */
-const RL={mesa:{pool:'wish',cat:'all',cost:0,city:'Todas',min:3.5},salidas:{pool:'wish',cat:'all',cost:0,city:'Todas',min:3.5}};
+const RL={};for(const m of ['mesa','salidas','pantallas'])RL[m]={pool:'wish',cat:'all',cost:0,city:'Todas',min:3.5};
 let spinning=false,rot=0,rlRes=[];
 const SEGC=['#ffd2c2','#dcd2ff','#c4f1df','#cfe4ff','#ffe7a8','#ffc8dd','#d9f2c4','#e6d7ff'];
 function rlPool(mod){
-  const u=RL[mod],S=mod==='salidas';
-  const vis=full(mod),wish=D[mod].places.filter(p=>p.status==='wish').map(p=>({...p,wish:true}));
+  const u=RL[mod],S=hasCat(mod);
+  const vis=full(mod).filter(p=>!p.sealed),wish=D[mod].places.filter(p=>p.status==='wish').map(p=>({...p,wish:true}));
   const noAgain=p=>!p.rs?.some(r=>r.again==='no');
   let L=u.pool==='wish'?wish:u.pool==='repeat'?vis.filter(p=>noAgain(p)&&(p.total!=null&&p.total>=u.min-1e-9||p.rs.some(r=>r.again==='si'))):[...wish,...vis.filter(noAgain)];
   return L.filter(p=>(!S||u.cat==='all'||p.cat===u.cat)&&(u.city==='Todas'||p.city===u.city)&&(!u.cost||!p.price||Math.round(p.price)<=u.cost));
@@ -939,21 +1071,23 @@ function drawWheel(items){
   g.innerHTML=h+'<circle r="100" fill="none" stroke="#fff" stroke-width="3"/>';
 }
 let wheelItems=[];
-const DISC={mesa:{items:[],busy:false,err:''},salidas:{items:[],busy:false,err:''}};
+const DISC={};for(const m of ['mesa','salidas','pantallas'])DISC[m]={items:[],busy:false,err:''};
 let sampleFn=null;
 const topCity=mod=>{const c={};for(const p of D[mod].places)if(p.city)c[p.city]=(c[p.city]||0)+1;return Object.entries(c).sort((a,b)=>b[1]-a[1])[0]?.[0]||''};
 function renderRuleta(keep){
-  if(!M)return;const mod=M,u=RL[mod],S=mod==='salidas',disc=u.pool==='disc';
-  $('#rlPool').innerHTML=[['wish','Por ir'],['repeat','Repetir'],['all','Todo'],['disc','Descubrir']].map(([k,t])=>`<button type="button" data-pool="${k}" class="${u.pool===k?'on':''}">${t}</button>`).join('');
-  chipRow('#rlCat',S?[['all','Todas'],...Object.entries(CATS).map(([k,c])=>[k,c.n])]:[],u.cat,'rlcat');if(!S)$('#rlCat').innerHTML='';
+  if(!M)return;const mod=M,u=RL[mod],S=hasCat(mod),disc=u.pool==='disc';
+  $('#rlCity').previousElementSibling.textContent=ML[mod].cityL;$('#rlCost').closest('.fsec').style.display=MODS[mod].price?'':'none';
+  $('#rlPool').innerHTML=[['wish',ML[mod].wTab],['repeat','Repetir'],['all','Todo'],['disc','Descubrir']].map(([k,t])=>`<button type="button" data-pool="${k}" class="${u.pool===k?'on':''}">${t}</button>`).join('');
+  chipRow('#rlCat',S?[['all','Todas'],...catEntries(mod).map(([k,c])=>[k,c.n])]:[],u.cat,'rlcat');if(!S)$('#rlCat').innerHTML='';
   chipRow('#rlMin',u.pool==='repeat'?[['3','3 o más'],['3.5','3,5 o más'],['4','4 o más']]:[],String(u.min),'rlmin');if(u.pool!=='repeat')$('#rlMin').innerHTML='';
   chipRow('#rlCost',[[0,'Cualquiera'],[1,'$'],[2,'$$'],[3,'$$$']].map(([k,t])=>[String(k),t]),String(u.cost),'rlcost');
   const cities=['Todas',...new Set(D[mod].places.map(p=>p.city).filter(Boolean))];if(!cities.includes(u.city))u.city='Todas';
   chipRow('#rlCity',cities.map(c=>[c,c]),u.city,'rlcity');
   $('#lCnt').textContent=[S&&u.cat!=='all',u.cost,u.city!=='Todas',u.pool==='repeat'&&u.min!==3.5].filter(Boolean).length||'';
   $('#discBox').style.display=disc?'grid':'none';
-  const dc=$('#discCity');if(disc&&!dc.value)dc.value=u.city!=='Todas'?u.city:topCity(mod);
-  $('#discQ').placeholder=S?'Ej: cerro fácil con vista, termas, pueblo bonito':'Ej: sushi, bar con terraza, algo romántico';
+  const dc=$('#discCity');dc.previousElementSibling.textContent=mod==='pantallas'?'¿En qué plataforma? (opcional)':'¿Dónde?';dc.placeholder=mod==='pantallas'?'Netflix, Max, cine…':'Ciudad o comuna';
+  if(disc&&!dc.value&&mod!=='pantallas')dc.value=u.city!=='Todas'?u.city:topCity(mod);if(dc.dataset.mod!==mod){if(dc.dataset.mod)dc.value=mod==='pantallas'?'':(u.city!=='Todas'?u.city:topCity(mod));dc.dataset.mod=mod}
+  $('#discQ').placeholder=mod==='pantallas'?'Ej: comedia liviana, serie corta de suspenso':mod==='salidas'?'Ej: cerro fácil con vista, termas, pueblo bonito':'Ej: sushi, bar con terraza, algo romántico';
   const X=DISC[mod];
   if(disc){
     $('#discBtn').disabled=X.busy||!sampleFn||readOnly;$('#discBtn').textContent=X.busy?'Buscando ideas…':X.items.length?'Buscar otras ideas':'Buscar ideas nuevas';
@@ -963,21 +1097,32 @@ function renderRuleta(keep){
     wheelItems=X.items.slice();drawWheel(wheelItems);if(!keep){$('#rlOut').innerHTML='';$('#rlOut').classList.remove('picked')}return;
   }
   const pool=rlPool(mod);
-  $('#rlInfo').textContent=pool.length?(u.pool==='repeat'?`${pool.length} ${pool.length===1?'lugar':'lugares'} con nota ${fmt(u.min)} o más, o marcados «Volveríamos»`:`${pool.length} ${pool.length===1?'opción':'opciones'} en la ruleta`):u.pool==='wish'?'No hay nada en «Por ir» con estos filtros. Agreguen lugares o prueben «Descubrir».':u.pool==='repeat'?`Aún no hay lugares con nota ${fmt(u.min)} o más ni marcados «Volveríamos». Bajen la nota mínima en Filtros.`:'No hay opciones con estos filtros.';
+  $('#rlInfo').textContent=pool.length?(u.pool==='repeat'?`${pool.length} ${pool.length===1?'lugar':'lugares'} con nota ${fmt(u.min)} o más, o marcados «Volveríamos»`:`${pool.length} ${pool.length===1?'opción':'opciones'} en la ruleta`):u.pool==='wish'?`No hay nada en «${ML[mod].wTab}» con estos filtros. Agreguen ideas o prueben «Descubrir».`:u.pool==='repeat'?`Aún no hay lugares con nota ${fmt(u.min)} o más ni marcados «Volveríamos». Bajen la nota mínima en Filtros.`:'No hay opciones con estos filtros.';
   $('#spinBtn').disabled=!pool.length;
   if(keep&&wheelItems.length)return;
   wheelItems=pool.slice().sort(()=>Math.random()-.5).slice(0,10);drawWheel(wheelItems);
   if(!keep){$('#rlOut').innerHTML='';$('#rlOut').classList.remove('picked')}
 }
 function discPrompt(mod){
-  const u=RL[mod],S=mod==='salidas',city=$('#discCity').value.trim()||topCity(mod)||'Santiago';
+  const u=RL[mod],S=mod==='salidas',PT=mod==='pantallas',city=$('#discCity').value.trim()||(PT?'':topCity(mod)||'Santiago');
   const want=$('#discQ').value.trim();
   const V=full(mod);
   const fav=V.filter(p=>p.total!=null).sort((a,b)=>b.total-a.total).slice(0,6).map(p=>`- ${p.name}${p.sector?' ('+p.sector+')':''}, ${p.city||''}: ${fmt(p.total)}/5${p.tags.length?', etiquetas: '+p.tags.slice(0,4).join(', '):''}${p.pedir.length?', les gustó: '+p.pedir.slice(0,3).map(x=>x.t).join(', '):''}`).join('\n')||'- (aún pocos datos)';
   const bad=V.filter(p=>p.total!=null&&p.total<3||p.rs.some(r=>r.again==='no')).slice(0,5).map(p=>`- ${p.name}: ${fmt(p.total)}/5`).join('\n')||'- (ninguno)';
   const known=D[mod].places.map(p=>p.name).slice(0,120).join('; ');
   const cat=S&&u.cat!=='all'?CATS[u.cat].n:'';
-  const what=S?`salidas o panoramas${cat?' de tipo «'+cat+'»':''} (categorías posibles: naturaleza, pueblos, actividades, viajes)`:'restaurantes, bares o cafés';
+  const cat2=hasCat(mod)&&u.cat!=='all'?CATS[u.cat].n:'';
+  const what=PT?`${cat2?(cat2==='Serie'?'series':'películas'):'películas o series'}`:S?`salidas o panoramas${cat?' de tipo «'+cat+'»':''} (categorías posibles: naturaleza, pueblos, actividades, viajes)`:'restaurantes, bares o cafés';
+  if(PT)return `Eres un crítico de cine y series. Una pareja de Chile usa una app para evaluar lo que ven juntos. Sugiéreles ${what} que NO hayan visto${city?`, disponibles idealmente en: ${city}`:''}.
+${want?`Lo que tienen ganas ahora: «${want}».\n`:''}Sus favoritos (para inferir sus gustos):
+${fav}
+Lo que no les gustó:
+${bad}
+NO sugieras ninguno de estos, ya los conocen: ${known||'(ninguno)'}.
+
+Reglas: solo títulos reales que conozcas con seguridad. No inventes. Si no sabes en qué plataforma está, deja "city" vacío. Escribe en español.
+Responde SOLO con un arreglo JSON de hasta 6 objetos, así:
+[{"name":"Título como se conoce en Chile","sector":"año","city":"plataforma o vacío","type":"pelicula|serie","sub":"género","price":0,"why":"por qué les gustaría, conectando con sus gustos (máx 110 caracteres)","confidence":"alta|media"}]`;
   return `Eres un guía local experto. Una pareja de Chile usa una app para evaluar ${S?'sus salidas y panoramas':'los restaurantes y bares a los que van'}. Sugiéreles ${what} NUEVOS para ellos, en o cerca de: ${city}.
 ${want?`Lo que tienen ganas ahora: «${want}».\n`:''}Presupuesto máximo: ${u.cost?'$'.repeat(u.cost)+' (escala de $ a $$$$)':'cualquiera'}.
 Sus favoritos (para inferir sus gustos y sugerir cosas similares):
@@ -998,7 +1143,7 @@ async function discover(fresh){
     const known=new Set(D[mod].places.map(p=>norm(p.name)));
     X.items=(Array.isArray(res)?res:[]).filter(o=>o&&typeof o.name==='string'&&o.name.trim()&&!known.has(norm(o.name))).slice(0,8).map(o=>({
       name:String(o.name).slice(0,80),sector:String(o.sector||'').slice(0,50),city:String(o.city||'').slice(0,40),
-      type:String(o.type||''),price:Math.max(0,Math.min(4,Math.round(+o.price||0))),why:String(o.why||'').slice(0,160),conf:o.confidence==='alta'?'alta':'media',ai:true}));
+      type:String(o.type||''),sub:String(o.sub||'').slice(0,40),price:Math.max(0,Math.min(4,Math.round(+o.price||0))),why:String(o.why||'').slice(0,160),conf:o.confidence==='alta'?'alta':'media',ai:true}));
     if(!X.items.length)X.err='No encontró ideas seguras con esos filtros. Prueben otra ciudad o menos filtros.';
   }catch(e){X.err=e?.code==='not_granted'||e?.code==='sampling_disabled'?'No se dio permiso para usar Claude en esta página.':e?.code==='rate_limited'?'Se alcanzó el límite de uso por ahora. Intenten más tarde.':'No se pudieron traer ideas. Intenten de nuevo.'}
   X.busy=false;$('.wheelBox').classList.remove('think');wheelItems=X.items.slice();drawWheel(wheelItems);renderRuleta(true);
@@ -1023,25 +1168,25 @@ function spin(){
 function showOpts(){
   const mod=M,S=mod==='salidas';
   $('#rlOut').innerHTML=rlRes.map((p,i)=>{
-    if(p.ai){const meta=[p.sector,p.city,S?(CATS[p.type]?.n||''):p.type].filter(Boolean).join(' · ');const added=D[mod].places.some(x=>norm(x.name)===norm(p.name));
+    if(p.ai){const meta=[mod==='pantallas'?CATS[p.type]?.n:'',p.sub,p.sector,p.city,mod==='salidas'?(CATS[p.type]?.n||''):mod==='mesa'?p.type:''].filter(Boolean).join(' · ');const added=D[mod].places.some(x=>norm(x.name)===norm(p.name));
       return `<div class="opt glass optIn" style="--i:${i}" data-opt="${i}"><span class="n">${i+1}</span><div><h3>${esc(p.name)}</h3><div class="meta">${esc(meta)}${p.price?` · ${money(p.price)}`:''}</div></div>
       <div class="meta" style="grid-column:2">${esc(p.why)}${p.conf==='media'?' <span class="pill" style="margin-left:4px">verificar</span>':''}</div>
-      <div class="row" style="grid-column:2"><button type="button" class="save" style="min-height:40px;font-size:14px" data-addwish="${i}" ${added||readOnly?'disabled':''}>${added?'En Por ir ✓':'Agregar a Por ir'}</button><a class="ghost" href="${esc(mapsUrl(p))}" target="_blank" rel="noopener">Ver en Maps</a></div></div>`}
+      <div class="row" style="grid-column:2"><button type="button" class="save" style="min-height:40px;font-size:14px" data-addwish="${i}" ${added||readOnly?'disabled':''}>${added?`En ${ML[mod].wTab} ✓`:`Agregar a ${ML[mod].wTab}`}</button><a class="ghost" href="${esc(infoUrl(mod,{...p,cat:p.type}))}" target="_blank" rel="noopener">${ML[mod].maps?'Ver en Maps':'Buscar'}</a></div></div>`}
     const why=p.wish?(p.reason||'Lo tenían en «Por ir»'):`★ ${fmt(p.total)}${p.pedir?.length?` · pedir: ${p.pedir.slice(0,2).map(x=>x.t).join(', ')}`:''}`;
     return `<div class="opt glass optIn" style="--i:${i}" data-opt="${i}"><span class="n">${i+1}</span><div><h3>${esc(p.name)}</h3><div class="meta">${esc(placeMeta(mod,p))}${p.price?` · ${money(p.price)}`:''}</div></div>
       <div class="meta" style="grid-column:2">${esc(why)}</div>
       <div class="row" style="grid-column:2"><button type="button" class="save" style="min-height:40px;font-size:14px" data-choose="${i}">Elegimos este</button>${p.wish?`<a class="ghost" href="${esc(mapsUrl(p))}" target="_blank" rel="noopener">Ver en mapa</a>`:`<button type="button" class="ghost" data-optview="${esc(p.id)}">Ver detalle</button>`}</div></div>`}).join('')
     +(rlRes.length<3?`<p class="meta" style="text-align:center">Solo hay ${rlRes.length} ${rlRes.length===1?'opción':'opciones'} con estos filtros.</p>`:'')
-    +(rlRes[0]?.ai?'<p class="aiNote" style="text-align:center">Sugerencias de Claude: confirmen en Maps que existan y estén abiertas.</p>':'');
+    +(rlRes[0]?.ai?`<p class="aiNote" style="text-align:center">${mod==='pantallas'?'Sugerencias de Claude: confirmen en qué plataforma está antes de verla.':'Sugerencias de Claude: confirmen en Maps que existan y estén abiertas.'}</p>`:'');
   const r=$('.wheelBox').getBoundingClientRect();burst(r.left+r.width/2,r.top+r.height/2);
 }
 async function addWish(i,btn){
-  const mod=M,p=rlRes[i],S=mod==='salidas';if(!p||!db)return;
+  const mod=M,p=rlRes[i],S=mod==='salidas',PT=mod==='pantallas';if(!p||!db)return;
   if(D[mod].places.some(x=>norm(x.name)===norm(p.name))){toast('Ya está en su lista');return}
   btn.disabled=true;
   const data={name:p.name,sector:p.sector,city:p.city,status:'wish',reason:p.why?'Descubierto: '+p.why:'Descubierto con la ruleta',link:'',addedBy:me,createdAt:Date.now()};
-  if(S){data.cat=CATS[p.type]?p.type:'actividades';data.scale=data.cat==='viajes'?'viaje':'general'}else data.type=TYPES.includes(p.type)?p.type:'';
-  try{await db.collection(MODS[mod].p).doc().set(data);btn.textContent='En Por ir ✓';const r=btn.getBoundingClientRect();burst(r.left+r.width/2,r.top);toast('¡Agregado a Por ir!')}catch(e){btn.disabled=false;toast('No se pudo agregar')}
+  if(S){data.cat=CATS[p.type]&&!CATS[p.type].m?p.type:'actividades';data.scale=data.cat==='viajes'?'viaje':'general'}else if(PT){data.cat=p.type==='serie'?'serie':'pelicula';data.sub=p.sub||''}else data.type=TYPES.includes(p.type)?p.type:'';
+  try{await db.collection(MODS[mod].p).doc().set(data);btn.textContent=`En ${ML[mod].wTab} ✓`;const r=btn.getBoundingClientRect();burst(r.left+r.width/2,r.top);toast(`¡Agregado a ${ML[mod].wTab}!`)}catch(e){btn.disabled=false;toast('No se pudo agregar')}
 }
 $('#v-ruleta').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset,u=RL[M];
   if(b.id==='spinBtn'){spin();return}
@@ -1060,8 +1205,8 @@ function wrapData(per){
   const inP=d=>per==='todo'?true:per==='anio'?(!d||d.startsWith(y)):!!d&&d.startsWith(ym);
   const label=per==='todo'?'toda su historia':per==='anio'?y:`${MESES[now.getMonth()]} ${y}`;
   const out={label,per,mods:{},ex:{a:[],b:[]}};
-  for(const mod of ['mesa','salidas']){
-    const F2=full(mod),vis=F2.flatMap(p=>p.vis.filter(v=>inP(v.date)).map(v=>({...v,p})));
+  for(const mod of MODLIST){
+    const F2=full(mod).filter(p=>!p.sealed),vis=F2.flatMap(p=>p.vis.filter(v=>inP(v.date)).map(v=>({...v,p})));
     for(const v of vis)if(v.slot==='a'||v.slot==='b'){const t=visitTotal(mod,v.p.cat,v.scores);if(t!=null)out.ex[v.slot].push(t)}
     const places=[...new Map(vis.map(v=>[v.p.id,v.p])).values()];
     const visits=new Set(vis.map(v=>v.p.id+'|'+(v.date||'?'))).size;
@@ -1080,28 +1225,29 @@ const topK=(o,n=3)=>Object.entries(o).sort((a,b)=>b[1]-a[1]).slice(0,n);
 const kt=t=>esc(t).split(/\s+/).map((w,i)=>`<span class="w" style="--d:${i}">${w}</span>`).join(' ');
 const PAL=[['#ffd2c2','#ffc8dd','#dcd2ff'],['#dcd2ff','#cfe4ff','#ffc8dd'],['#c4f1df','#cfe4ff','#ffe7a8'],['#ffe7a8','#ffd2c2','#c4f1df'],['#ffc8dd','#dcd2ff','#ffe7a8'],['#cfe4ff','#c4f1df','#dcd2ff']];
 function buildSlides(W2){
-  const m=W2.mods.mesa,s=W2.mods.salidas,S=[];const tot=m.places.length+s.places.length;
+  const m=W2.mods.mesa,s=W2.mods.salidas,pt=W2.mods.pantallas,S=[];const tot=m.places.length+s.places.length+pt.places.length;
   const add=(html,o={})=>S.push({html,dur:o.dur||5200,quiz:o.quiz,fx:o.fx});
   add(`<div class="k">Su resumen · ${esc(W2.label)}</div><svg class="heart" viewBox="0 0 24 24"><path d="M12 21s-8-5.3-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.7-8 11-8 11z" fill="#ff6f9c"/></svg><div class="h">${kt(names.a+' & '+names.b)}</div><div class="p">${tot?'Esto es lo que vivieron juntos. Suban el volumen.':'Todavía no hay evaluaciones en este período. ¡A salir!'}</div>`,{dur:4600});
   if(!tot)return S;
-  add(`<div class="k">Probaron y recorrieron</div><div class="big2 beat" data-count="${tot}">0</div><div class="p">${m.places.length} ${m.places.length===1?'lugar para comer o tomar algo':'lugares para comer o tomar algo'} y ${s.places.length} ${s.places.length===1?'salida':'salidas'}${m.visits+s.visits>tot?`, en ${m.visits+s.visits} visitas`:''}.</div>`,{fx:'count'});
+  add(`<div class="k">Probaron y recorrieron</div><div class="big2 beat" data-count="${tot}">0</div><div class="p">${[m.places.length?`${m.places.length} ${m.places.length===1?'lugar para comer o tomar algo':'lugares para comer o tomar algo'}`:'',s.places.length?`${s.places.length} ${s.places.length===1?'salida':'salidas'}`:'',pt.places.length?`${pt.places.length} ${pt.places.length===1?'película o serie':'películas y series'}`:''].filter(Boolean).join(', ').replace(/, ([^,]*)$/,' y $1')}${m.visits+s.visits+pt.visits>tot?`, en ${m.visits+s.visits+pt.visits} visitas`:''}.</div>`,{fx:'count'});
   if(m.ranked.length){const t3=m.ranked.slice(0,3),ord=[t3[1],t3[0],t3[2]],H=[72,100,52];
     add(`<div class="k">Su podio de la mesa</div><div class="h" style="font-size:clamp(30px,9vw,48px)">${kt('Y el primer lugar es…')}</div><div class="pod3">${ord.map((p,j)=>p?`<div><span class="nm" style="animation-delay:${[1.6,2.4,1.0][j]}s">${esc(p.name)}</span><span class="sc" style="animation:wUp .6s ${[1.6,2.4,1.0][j]}s backwards">${fmt(p.total)}</span><div class="bar" style="height:${H[j]}%;animation-delay:${[1.2,2,0.6][j]}s">${[2,1,3][j]}</div></div>`:'<div></div>').join('')}</div>`,{dur:6500,fx:'podium'})}
   if(s.best)add(`<div class="k">Su mejor salida</div>${s.best.photos[0]?`<img class="hero2" src="${img(s.best.photos[0].id)}" alt="">`:''}<div class="h">${kt(s.best.name)}</div><div class="p">${fmt(s.best.total)} ★ · ${esc(CATS[s.best.cat]?.n||'')}${s.best.city?' · '+esc(s.best.city):''}</div>`);
+  if(pt.best)add(`<div class="k">Su pantalla favorita</div>${pt.best.photos[0]?`<img class="hero2" src="${img(pt.best.photos[0].id)}" alt="">`:''}<div class="h">${kt(pt.best.name)}</div><div class="p">${fmt(pt.best.total)} ★ · ${esc([CATS[pt.best.cat]?.n,pt.best.sub].filter(Boolean).join(' · '))}</div>`);
   const cities={};for(const o of [m.cities,s.cities])for(const k in o)cities[k]=(cities[k]||0)+o[k];
   const tc=topK(cities,3);if(tc[0])add(`<div class="k">Su lugar en el mapa</div><svg class="pin" viewBox="0 0 24 24"><path d="M12 22s-7-6.4-7-12a7 7 0 0 1 14 0c0 5.6-7 12-7 12z" fill="#ff6f9c"/><circle cx="12" cy="10" r="2.6" fill="#fff"/></svg><div class="h">${kt(tc[0][0])}</div><div class="p">Ahí estuvieron ${tc[0][1]} ${tc[0][1]===1?'vez':'veces'}.${tc.length>1?' Le siguen '+tc.slice(1).map(x=>esc(x[0])).join(' y ')+'.':''}</div>`);
-  const tags={};for(const o of [m.tags,s.tags])for(const k in o)tags[k]=(tags[k]||0)+o[k];
+  const tags={};for(const o of [m.tags,s.tags,pt.tags])for(const k in o)tags[k]=(tags[k]||0)+o[k];
   const tt=topK(tags,4);if(tt.length)add(`<div class="k">Lo que más los define</div><div class="tags3">${tt.map((x,i)=>`<span style="--fx:${[-120,140,-90,110][i]}vw;--fy:${[-40,30,60,-60][i]}vh;--fr:${[-40,30,-20,45][i]}deg;animation-delay:${.3+i*.25}s">${esc(x[0])}</span>`).join('')}</div><div class="p">Sus etiquetas más marcadas.</div>`);
   const pd=topK({...m.pedir},1)[0];if(pd)add(`<div class="k">Su plato estrella</div><div class="h">${kt(pd[0])}</div><div class="p">Lo que más anotaron para pedir de nuevo.</div>`);
   const ct=topK(s.cats,1)[0];if(ct)add(`<div class="k">Su tipo de salida</div><div class="h">${kt(CATS[ct[0]]?.n||ct[0])}</div><div class="p">${ct[1]} ${ct[1]===1?'salida':'salidas'} de este tipo.</div>`);
   const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null,ea=avg(W2.ex.a),eb=avg(W2.ex.b);
   if(ea!=null&&eb!=null&&Math.abs(ea-eb)>=.05){const strict=ea<eb?'a':'b';
     add(`<div class="k">Pregunta rápida</div><div class="h">${kt('¿Quién es más exigente?')}</div><div class="quiz"><button type="button" data-quiz="a" data-ok="${strict==='a'}">${esc(names.a)}</button><button type="button" data-quiz="b" data-ok="${strict==='b'}">${esc(names.b)}</button></div><div class="p rev" id="quizRev" style="animation:none;opacity:1">Toquen su respuesta</div>`,{quiz:{strict,ea,eb},dur:4200})}
-  const dis=[m.dis,s.dis].filter(Boolean).sort((a,b)=>b.v-a.v)[0];
+  const dis=[m.dis,s.dis,pt.dis].filter(Boolean).sort((a,b)=>b.v-a.v)[0];
   if(dis){const cn=(crits(dis.mod,dis.p.cat).find(c=>c[0]===dis.k)||[])[1]||dis.k;add(`<div class="k">Donde no se pusieron de acuerdo</div><div class="h">${kt(dis.p.name)}</div><div class="p">En ${esc(cn.toLowerCase())}: ${esc(names.a)} le dio ${fmt(dis.a)} ★ y ${esc(names.b)} ${fmt(dis.b)} ★.</div>`)}
-  const ph=[...m.photos,...s.photos];if(ph.length){const P=[[2,4,-8],[42,0,6],[18,40,-3],[46,44,9],[0,30,4],[30,22,-10]];
+  const ph=[...m.photos,...s.photos,...pt.photos];if(ph.length){const P=[[2,4,-8],[42,0,6],[18,40,-3],[46,44,9],[0,30,4],[30,22,-10]];
     add(`<div class="k">En fotos</div><div class="pols">${ph.slice(-6).map((id,i)=>`<img src="${img(id)}" alt="" style="left:${P[i][0]}%;top:${P[i][1]}%;transform:rotate(${P[i][2]}deg);animation-delay:${.3+i*.35}s">`).join('')}</div><div class="p">${ph.length} ${ph.length===1?'foto guardada':'fotos guardadas'}.</div>`,{dur:6500})}
-  const w=m.wish+s.wish;add(`<div class="k">Y lo que viene…</div><div class="h">${kt(w?`${w} ${w===1?'lugar espera':'lugares esperan'} en «Por ir»`:'Agreguen ideas a «Por ir»')}</div><div class="p">Tomen una captura para guardar este resumen.</div><div class="end"><button type="button" data-replay="1">Ver de nuevo</button><button type="button" data-close="1">Cerrar</button></div>`,{dur:0,fx:'end'});
+  const w=m.wish+s.wish+pt.wish;add(`<div class="k">Y lo que viene…</div><div class="h">${kt(w?`${w} ${w===1?'idea espera':'ideas esperan'} en «Por ir» y «Por ver»`:'Agreguen ideas a «Por ir»')}</div><div class="p">Tomen una captura para guardar este resumen.</div><div class="end"><button type="button" data-replay="1">Ver de nuevo</button><button type="button" data-close="1">Cerrar</button></div>`,{dur:0,fx:'end'});
   return S;
 }
 /* música: se compone en el navegador y se reproduce como archivo de audio (suena aunque el iPhone esté en silencio) */
@@ -1192,6 +1338,62 @@ addEventListener('keydown',e=>{if(!$('#wr').classList.contains('on'))return;if(e
 document.addEventListener('visibilitychange',()=>{if(document.hidden&&$('#wr').classList.contains('on'))closeWrap()});
 $('#v-inicio').addEventListener('click',e=>{const b=e.target.closest('[data-wrap]');if(b)openWrap(b.dataset.wrap)});
 
+/* ---------- revelación ---------- */
+const rvKey=(mod,pid,A,B)=>`rv:${mod}:${pid}:${A.updatedAt||0}:${B.updatedAt||0}`;
+function needReveal(mod,pid){if(window.__noReveal||(me!=='a'&&me!=='b'))return false;const rs=D[mod].reviews.filter(r=>r.pid===pid),A=rs.find(r=>r.slot==='a'),B=rs.find(r=>r.slot==='b');if(!A||!B)return false;return !store.get(rvKey(mod,pid,A,B))}
+function playReveal(mod,pid){
+  const p=D[mod].places.find(x=>x.id===pid);const rs=D[mod].reviews.filter(r=>r.pid===pid);const RA=rs.find(r=>r.slot==='a'),RB=rs.find(r=>r.slot==='b');if(!p||!RA||!RB)return;
+  store.set(rvKey(mod,pid,RA,RB),'1');
+  const A=effOf(RA),B=effOf(RB),C=crits(mod,p.cat);const tA=visitTotal(mod,p.cat,A.scores),tB=visitTotal(mod,p.cat,B.scores);
+  const ds=C.map(([k])=>[A.scores[k],B.scores[k]]).filter(([x,y])=>typeof x==='number'&&typeof y==='number').map(([x,y])=>Math.abs(x-y));
+  const sint=ds.length?Math.max(0,Math.round(100-ds.reduce((a,b)=>a+b,0)/ds.length/4.5*100)):null;
+  let maxK=null,maxV=0;for(const [k] of C){const x=A.scores[k],y=B.scores[k];if(typeof x==='number'&&typeof y==='number'&&Math.abs(x-y)>maxV){maxV=Math.abs(x-y);maxK=k}}
+  const rows=C.map(([k,t],i)=>{const x=A.scores[k],y=B.scores[k];if(typeof x!=='number'&&typeof y!=='number')return '';const same=typeof x==='number'&&typeof y==='number'&&Math.abs(x-y)<=.5;
+    return `<div class="rb" style="--i:${i}"><div class="t">${esc(t)}${same?'<span class="badge m">¡Coinciden!</span>':k===maxK&&maxV>=1.5?'<span class="badge dd">La mayor diferencia</span>':''}</div><div class="ba"><i data-w="${(x||0)/5*100}"></i></div><small>${fmt(x)} · ${fmt(y)}</small><div class="bb"><i data-w="${(y||0)/5*100}"></i></div></div>`}).join('');
+  const qa=[RA,RB].filter(r=>r.qa&&(r.qa.best||r.qa.a));let n=C.length;
+  const qaH=qa.length?`<div class="rqa" style="--n:${n}">${qa.some(r=>r.qa.best)?`<div class="qbox"><h4>¿Qué fue lo mejor de hoy?</h4>${qa.filter(r=>r.qa.best).map(r=>`<p><i>${esc(slotName(r.slot))}:</i> ${esc(r.qa.best)}</p>`).join('')}</div>`:''}${[...new Set(qa.filter(r=>r.qa.a).map(r=>r.qa.q))].map(q=>`<div class="qbox"><h4>${esc(q)}</h4>${qa.filter(r=>r.qa.a&&r.qa.q===q).map(r=>`<p><i>${esc(slotName(r.slot))}:</i> ${esc(r.qa.a)}</p>`).join('')}</div>`).join('')}</div>`:'';
+  const msg=sint==null?'':sint>=90?'¡Están en la misma sintonía!':sint>=75?'Muy parecidos, con matices':sint>=55?'Cada uno lo vivió a su manera':'¡Opiniones muy distintas!';
+  $('#rvIn').innerHTML=`<div class="k">La revelación</div><h2>${esc(p.name)}</h2>
+    <div class="fcs"><div class="fc" style="--d:0"><div class="fr"><span>${esc(names.a)}</span><b data-to="${tA??''}">${tA==null?'–':'0'}</b>${stars(tA,16)}</div><div class="bk">?</div></div>
+    <div class="fc" style="--d:1"><div class="fr"><span>${esc(names.b)}</span><b data-to="${tB??''}">${tB==null?'–':'0'}</b>${stars(tB,16)}</div><div class="bk">?</div></div></div>
+    ${sint!=null?`<div class="cmp"><svg viewBox="0 0 86 86"><circle class="tr" cx="43" cy="43" r="36"/><circle class="vl" cx="43" cy="43" r="36" id="rvRing"/></svg><div><b id="rvPct">0%</b><span>de sintonía · ${esc(msg)}</span></div></div>`:''}
+    <div class="rbars">${rows}</div>${qaH}<button type="button" class="go2" style="--n:${n}" id="rvGo">Ver el detalle</button>`;
+  $('#rv').classList.add('on');$('#rv').scrollTop=0;
+  const T=RM?0:1;
+  setTimeout(()=>{for(const b of $('#rvIn').querySelectorAll('.fc .fr b[data-to]')){const to=+b.dataset.to;if(!b.dataset.to)continue;if(RM){b.textContent=fmt(to);continue}const t0=performance.now();const st=t=>{const k=Math.min(1,(t-t0)/900);b.textContent=fmt(to*(1-(1-k)**3));if(k<1)requestAnimationFrame(st)};requestAnimationFrame(st)}},T*1500);
+  setTimeout(()=>{const r=$('#rvIn .fcs')?.getBoundingClientRect();if(r)burst(r.left+r.width/2,r.top+r.height/2)},T*2000);
+  setTimeout(()=>{const ring=$('#rvRing');if(ring&&sint!=null){ring.style.strokeDashoffset=226*(1-sint/100);const pc=$('#rvPct');if(RM)pc.textContent=sint+'%';else{const t0=performance.now();const st=t=>{const k=Math.min(1,(t-t0)/1300);pc.textContent=Math.round(sint*(1-(1-k)**3))+'%';if(k<1)requestAnimationFrame(st);else if(sint>=80){const r=pc.getBoundingClientRect();burst(r.left,r.top)}};requestAnimationFrame(st)}}},T*2300);
+  setTimeout(()=>{for(const i of $('#rvIn').querySelectorAll('.rb i[data-w]'))i.style.width=i.dataset.w+'%'},T*2900);
+  RV={mod,pid};
+}
+let RV=null;
+const closeReveal=()=>{$('#rv').classList.remove('on');if(RV&&!$('#sheet').classList.contains('on'))renderSheet(RV.mod,RV.pid);RV=null};
+$('#rvX').onclick=closeReveal;
+$('#rv').addEventListener('click',e=>{if(e.target.closest('#rvGo'))closeReveal()});
+
+/* ---------- línea de tiempo ---------- */
+let TLF='todo',tlIO=null;
+function renderTimeline(fresh){
+  const mods=TLF==='todo'?MODLIST:[TLF];
+  $('#tlF').innerHTML=[['todo','Todo'],['mesa','Mesa'],['salidas','Salidas'],['pantallas','Pantallas']].map(([k,t])=>`<button type="button" class="chip ${k===TLF?'on':''}" data-tlf="${k}">${t}</button>`).join('');
+  const items=[];
+  for(const mod of mods){for(const p of full(mod)){const g={};for(const v of p.vis){const d=v.date||'';(g[d]=g[d]||{mod,p,date:d,slots:{},best:[]});const t=visitTotal(mod,p.cat,v.scores);if(t!=null)g[d].slots[v.slot]=t;if(v.qa&&v.qa.best&&!p.sealed)g[d].best.push({slot:v.slot,t:v.qa.best})}items.push(...Object.values(g))}}
+  items.sort((a,b)=>a.date&&b.date?b.date.localeCompare(a.date):a.date?-1:b.date?1:0);
+  if(!items.length){$('#tl').innerHTML='<div class="empty glass" style="margin-left:-34px"><b>Su historia empieza pronto</b>Cuando evalúen algo aparecerá aquí, en orden.</div>';return}
+  let lastM='',h='';const cls={mesa:'m',salidas:'s',pantallas:'p'},bg={mesa:'#ffc8dd99',salidas:'#c4f1df99',pantallas:'#dcd2ff99'};
+  const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+  items.forEach((it,i)=>{const mk=it.date?it.date.slice(0,7):'';if(mk!==lastM||i===0){lastM=mk;h+=`<div class="tlm glass">${mk?MES[+mk.slice(5,7)-1]+' '+mk.slice(0,4):'Sin fecha'}</div>`}
+    const vals=Object.values(it.slots),sc=it.p.sealed?'?':vals.length?fmt(vals.reduce((a,b)=>a+b,0)/vals.length):'–';
+    const lab=it.mod==='mesa'?'Nuestra mesa':CATS[it.p.cat]?.n||'';
+    h+=`<button type="button" class="tli glass ${cls[it.mod]}" data-mod="${it.mod}" data-pid="${esc(it.p.id)}"><span class="dot"></span>${thumb(it.p,it.p.name)}<div><span class="dt">${it.date?esc(fmtDate(it.date)):'Sin fecha'} · ${esc(lab)}</span><br><b>${esc(it.p.name)}</b><div class="meta">${esc(placeMeta(it.mod,it.p))}</div></div><b class="sc">${sc}</b>${it.best.length?`<q>«${esc(it.best[0].t)}» — ${esc(slotName(it.best[0].slot))}</q>`:''}</button>`});
+  $('#tl').innerHTML=h;
+  tlIO?.disconnect();
+  const els=[...$('#tl').querySelectorAll('.tli')];
+  if(RM||!('IntersectionObserver' in window)){els.forEach(e=>e.classList.add('seen'));return}
+  tlIO=new IntersectionObserver(es=>{for(const e of es)if(e.isIntersecting){e.target.classList.add('seen');tlIO.unobserve(e.target)}},{threshold:.15});
+  els.forEach((e,i)=>{if(!fresh){e.classList.add('seen');return}e.style.transitionDelay=Math.min(i,6)*70+'ms';tlIO.observe(e)});
+}
+
 /* ---------- datos ---------- */
 blankForm('mesa');show();paintMe();
 (async()=>{
@@ -1203,16 +1405,17 @@ blankForm('mesa');show();paintMe();
   const can=await user?.can?.('data.write').catch(()=>null);
   if(can===false){readOnly=true;note('Estás en modo lectura: pide que te compartan la página como «Editor» para poder evaluar y subir fotos.')}
   renderForm();
-  let got=0;const need=4;const timer=setTimeout(()=>{if(got<need)note('La libreta tarda en responder; lo que ves puede no estar al día.')},10000);
+  let got=0;const need=6;const timer=setTimeout(()=>{if(got<need)note('La libreta tarda en responder; lo que ves puede no estar al día.')},10000);
   const done=snap=>{if(!snap.metadata.fromCache){got++;if(got>=need){clearTimeout(timer);if(!readOnly)note('')}}};
   const fail=()=>{clearTimeout(timer);note('Se perdió la conexión con la libreta. Recarga para volver a intentar.')};
-  for(const mod of ['mesa','salidas']){
+  for(const mod of MODLIST){
     db.collection(MODS[mod].p).onSnapshot(s=>{D[mod].places=s.docs.map(d=>({id:d.id,...d.data()})).filter(p=>p.name);refresh();done(s)},fail);
     db.collection(MODS[mod].r).onSnapshot(s=>{D[mod].reviews=s.docs.map(d=>({id:d.id,...d.data()}));refresh();done(s)},fail);
   }
   db.doc('config/pareja').onSnapshot(d=>{if(d.exists){const x=d.data();names={a:x.a||'Persona 1',b:x.b||'Persona 2'};paintMe();refresh();if(!$('#v-nuevo').classList.contains('on'))renderForm()}},()=>{});
   db.doc('config/pesos').onSnapshot(d=>{W.mesa=d.exists?{...d.data()}:{};refresh()},()=>{});
   db.doc('config/pesos-salidas').onSnapshot(d=>{W.salidas=d.exists?{...d.data()}:{};refresh()},()=>{});
+  db.doc('config/pesos-pantallas').onSnapshot(d=>{W.pantallas=d.exists?{...d.data()}:{};refresh()},()=>{});
 })();
 }
 </script>

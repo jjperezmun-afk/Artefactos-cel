@@ -7,7 +7,7 @@ const fire=()=>subs.forEach(f=>f());window.__fire=fire;
 const doc=path=>({id:path.split('/')[1],set:async d=>{if(O.ro)throw{code:'invalid_argument'};S[path]=JSON.parse(JSON.stringify(d));setTimeout(fire)},update:async d=>{if(!S[path])throw{code:'invalid_argument'};S[path]={...S[path],...JSON.parse(JSON.stringify(d))};setTimeout(fire)},delete:async()=>{delete S[path];setTimeout(fire)},onSnapshot(n){const f=()=>n({exists:!!S[path],data:()=>S[path],metadata:{fromCache:false}});subs.push(f);f();return()=>{}}});
 let n=0;const db={doc,collection:c=>({doc:id=>doc(c+'/'+(id||'gen'+(++n))),onSnapshot(cb){const f=()=>cb(snapC(c));subs.push(f);setTimeout(f);return()=>{}}})};
 const assets={upload:async(b,o)=>{if(O.upFail)throw{code:'upstream_error'};let dims=null;try{const bm=await createImageBitmap(b);dims=[bm.width,bm.height]}catch(e){}window.__up.push({size:b.size,type:o?.type,dims});return{id:'asset'+window.__up.length}},delete:async id=>{window.__del.push(id);return{deleted:true}}};
-window.__prompts=[];const sample=Object.assign(async()=>({text:''}),{json:async(pr,op)=>{window.__prompts.push({pr,op});await new Promise(r=>setTimeout(r,O.sampleDelay||300));if(O.sampleErr)throw{code:O.sampleErr};return O.disc||[{name:'Ramblas',sector:'Lastarria',city:'Santiago',type:'Bar',price:2,why:'Bar con terraza como les gusta',confidence:'alta'},{name:'Enigma bar',city:'Santiago',type:'Bar',price:2,why:'ya lo conocen',confidence:'alta'},{name:'Peumayén',sector:'Bellavista',city:'Santiago',type:'Restaurante',price:3,why:'Cocina ancestral para una ocasión',confidence:'media'},{name:'Liguria',sector:'Providencia',city:'Santiago',type:'Restaurante',price:2,why:'Clásico',confidence:'alta'},{name:'<img src=x onerror=window.__x=9>',city:'Santiago',type:'Bar',price:9,why:'<b>xss</b>'}]}});
+window.__noReveal=!O.reveal;window.__prompts=[];const sample=Object.assign(async()=>({text:''}),{json:async(pr,op)=>{window.__prompts.push({pr,op});await new Promise(r=>setTimeout(r,O.sampleDelay||300));if(O.sampleErr)throw{code:O.sampleErr};return O.disc||[{name:'Ramblas',sector:'Lastarria',city:'Santiago',type:'Bar',price:2,why:'Bar con terraza como les gusta',confidence:'alta'},{name:'Enigma bar',city:'Santiago',type:'Bar',price:2,why:'ya lo conocen',confidence:'alta'},{name:'Peumayén',sector:'Bellavista',city:'Santiago',type:'Restaurante',price:3,why:'Cocina ancestral para una ocasión',confidence:'media'},{name:'Liguria',sector:'Providencia',city:'Santiago',type:'Restaurante',price:2,why:'Clásico',confidence:'alta'},{name:'<img src=x onerror=window.__x=9>',city:'Santiago',type:'Bar',price:9,why:'<b>xss</b>'}]}});
 window.__audio=0;window.__wav=null;const AC0=window.AudioContext;if(AC0)window.AudioContext=class extends AC0{constructor(){super();window.__audio++}};const cou=URL.createObjectURL;URL.createObjectURL=o=>{if(o&&o.type==='audio/wav')window.__wav=o.size;return cou(o)};window.__plays=0;const pl=HTMLMediaElement.prototype.play;HTMLMediaElement.prototype.play=function(){window.__plays++;window.__lastMedia=this;return pl.call(this)};
 window.claude={use:async k=>k==='db'?(O.nodb?null:db):k==='assets'?(O.noassets?null:assets):k==='sample'?(O.nosample?null:sample):{can:async()=>O.ro?false:true}}})()`;
 const seed=()=>({'places/p1':{name:'Enigma bar',city:'Santiago',type:'Bar',status:'visited',createdAt:1},'places/p2':{name:'Yako',city:'Rancagua',type:'Restaurante',status:'visited',createdAt:2},
@@ -236,6 +236,100 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
  ok('Descubrir: si no dan permiso lo explica',/permiso/.test(await txt(p,'#rlInfo')));ok('Descubrir salidas: sin errores',!p.__errs.length,p.__errs.join('|'));await p.close()}
 {const p=await page(b,{seed:seed(),nosample:true},undefined,'#mesa-ruleta');await p.click('[data-pool="disc"]');await p.waitForTimeout(200);
  ok('Descubrir no disponible: lo dice y desactiva el botón',/no está disponible/.test(await txt(p,'#rlInfo'))&&await p.$eval('#discBtn',e=>e.disabled));await p.close()}
+// v7: PANTALLAS, A CIEGAS, REVELACIÓN, PREGUNTAS, LÍNEA DE TIEMPO
+const today=new Date().toISOString().slice(0,10);
+const seed2=()=>{const sd=seed();Object.assign(sd,{
+ 'screens/s1':{name:'Intensamente 2',cat:'pelicula',sub:'Animación',sector:'2024',city:'Disney+',status:'visited',createdAt:8},
+ 'sreviews/s1__a':{pid:'s1',slot:'a',scores:{historia:5,actuaciones:4.5,visual:5,musica:4,entretencion:5,final:4.5},tags:['Para llorar'],photos:[],qa:{date:'2026-11-20',best:'Llorar juntos',q:'¿Qué escena te quedó dando vueltas?',a:'La de la alegría'},date:'2026-11-20',updatedAt:200},
+ 'sreviews/s1__b':{pid:'s1',slot:'b',scores:{historia:4.5,actuaciones:4.5,visual:5,musica:2,entretencion:4.5,final:4},tags:[],photos:[],qa:{date:'2026-11-20',best:'Las palomitas',q:'¿Qué escena te quedó dando vueltas?',a:'El final'},date:'2026-11-20',updatedAt:210},
+ 'screens/w5':{name:'The Bear',cat:'serie',status:'wish',createdAt:9},
+ 'places/p3':{name:'Liguria',city:'Santiago',type:'Restaurante',status:'visited',createdAt:7},
+ 'reviews/p3__b':{pid:'p3',slot:'b',scores:{comida:5,atencion:4,ambiente:4},photos:[],tags:[],date:today,qa:{date:today,best:'secreto de Lore',q:'¿Qué te hizo reír hoy?',a:'el mozo'},updatedAt:300}});return sd};
+{const p=await page(b,{seed:seed2(),reveal:true});
+ ok('Inicio: tercera sección «Nuestras pantallas»',(await p.$$('#heros .hero')).length===3&&/1 evaluados · 1 por ver/.test(await txt(p,'#hp')),await txt(p,'#hp'));
+ ok('Inicio: tarjeta «Su historia»',!!(await p.$('[data-hist]')));
+ await p.click('[data-go="pantallas"]');await p.waitForTimeout(500);
+ ok('Pantallas: título, color y pestaña «Por ver»',await txt(p,'#hTitle')==='Nuestras pantallas'&&await p.evaluate(()=>document.body.dataset.mod)==='pantallas'&&/Por ver/.test(await txt(p,'#t-por-ir')));
+ ok('Pantallas: tarjeta muestra tipo, género, año y plataforma',/Película · Animación · 2024 · Disney\+/.test(await txt(p,'.card[data-pid="s1"]')),await txt(p,'.card[data-pid="s1"] .meta'));
+ await p.click('#fBtn');await p.waitForTimeout(400);
+ ok('Pantallas: filtros por Película/Serie y «Plataforma»',(await p.$$eval('#cats .chip',x=>x.map(e=>e.textContent))).join()==='Todo,Película,Serie'&&/Plataforma/.test(await p.$eval('#cities',e=>e.previousElementSibling.textContent)));
+ await p.click('#fBtn');
+ // detalle con revelación automática
+ await p.click('.card[data-pid="s1"]');await p.waitForTimeout(1000);
+ ok('Revelación: se abre sola la primera vez que ambos evaluaron',await p.$eval('#rv',e=>e.classList.contains('on')));
+ await p.waitForTimeout(4200);await p.screenshot({path:SP+'/v7-reveal.png'});
+ const rv=await txt(p,'#rvIn');
+ ok('Revelación: notas de ambos, sintonía, coincidencias y diferencia',/Juanjo/.test(rv)&&/Lore/.test(rv)&&/% ?de sintonía/.test(rv)&&/¡Coinciden!/.test(rv)&&/La mayor diferencia/.test(rv),rv.slice(0,200));
+ ok('Revelación: respuestas de la cita de los dos',/Llorar juntos/.test(rv)&&/Las palomitas/.test(rv)&&/La de la alegría/.test(rv)&&/El final/.test(rv));
+ ok('Revelación: barras animadas llenas',(await p.$$eval('#rvIn .rb i',x=>x.filter(e=>parseFloat(e.style.width)>0).length))>=10);
+ await p.click('#rvGo');await p.waitForTimeout(500);
+ ok('Revelación: al cerrar queda el detalle con «Su cita»',!(await p.$eval('#rv',e=>e.classList.contains('on')))&&/Su cita/.test(await txt(p,'#sheet'))&&/Las palomitas/.test(await txt(p,'#sheet')));
+ await closeSheet(p);await p.waitForTimeout(300);await p.click('.card[data-pid="s1"]');await p.waitForTimeout(900);
+ ok('Revelación: no se repite sola',!(await p.$eval('#rv',e=>e.classList.contains('on'))));
+ await p.click('[data-reveal="s1"]');await p.waitForTimeout(300);ok('Revelación: botón «Ver la revelación de nuevo»',await p.$eval('#rv',e=>e.classList.contains('on')));
+ await p.click('#rvX');await p.waitForTimeout(300);await closeSheet(p);await p.waitForTimeout(300);
+ // formulario pantallas
+ await p.click('#t-nuevo');await p.waitForTimeout(400);
+ ok('Pantallas form: Película/Serie, géneros y plataformas',/¿Película o serie\?/.test(await txt(p,'#placeBox'))&&/Comedia/.test(await txt(p,'#placeBox'))&&/Netflix/.test(await txt(p,'#placeBox')));
+ ok('Pantallas form: sin precio ni qué pedir',await p.$eval('#priceCard',e=>e.style.display==='none')&&await p.$eval('#peCard',e=>e.style.display==='none'));
+ ok('Pantallas form: «¿La volverían a ver?»',/La volverían a ver/.test(await txt(p,'#againL'))&&/Una vez basta/.test(await txt(p,'#againSeg')));
+ await p.click('#placeBox [data-cat="serie"]');
+ ok('Serie: características propias (Enganche)',/Enganche/.test(await txt(p,'#crits')));
+ await p.fill('#pname','Severance');await p.click('#placeBox [data-sub="Ciencia ficción"]');await p.click('[data-pcity="Apple TV+"]');
+ await tapStar(p,'enganche',.99);await tapStar(p,'historia',.9);
+ const q1=await txt(p,'#qaQ');
+ ok('Pregunta de la cita: viene del banco (general o de pantallas)',q1.length>10);
+ await p.click('#qShuffle');const q2=await txt(p,'#qaQ');ok('«Otra pregunta» la cambia',q2!==q1,`${q1} → ${q2}`);
+ await p.fill('#bestIn','Ver el capítulo final juntos');await p.fill('#qaIn','Mark, sin duda');
+ await p.click('#saveBtn');await p.waitForTimeout(1600);
+ const sv=await p.evaluate(()=>{const k=Object.keys(__S).find(k=>k.startsWith('screens/')&&__S[k].name==='Severance');return {pl:__S[k],r:__S['sreviews/'+k.split('/')[1]+'__a']}});
+ ok('Guarda serie con género, plataforma y respuestas',sv.pl.cat==='serie'&&sv.pl.sub==='Ciencia ficción'&&sv.pl.city==='Apple TV+'&&sv.r.qa.best==='Ver el capítulo final juntos'&&sv.r.qa.a==='Mark, sin duda'&&sv.r.qa.q===q2&&sv.r.price===null);
+ await closeSheet(p);await p.waitForTimeout(300);
+ // por ver
+ await p.click('#t-por-ir');await p.waitForTimeout(300);
+ ok('Por ver: textos propios y botón «¡La vimos!»',/Por ver/.test(await txt(p,'#v-por-ir h2'))&&/La vimos/.test(await txt(p,'#wishes')));
+ await p.click('[data-wcat="serie"]');await p.fill('#wName','Shogun');await p.click('#wf .save');await p.waitForTimeout(400);
+ ok('Por ver: agrega con tipo serie',(await p.evaluate(()=>Object.values(__S).find(v=>v.name==='Shogun')?.cat))==='serie');
+ // pesos pantallas
+ await p.click('#cfgBtn');await p.waitForTimeout(300);ok('Pesos pantallas: Película y Serie',/Película/.test(await txt(p,'#sheet'))&&/Serie/.test(await txt(p,'#sheet')));
+ await p.click('[data-wcat2="serie"]');await p.click('[data-w="enganche"][data-dw="0.5"]');await p.click('#saveW');await p.waitForTimeout(300);
+ ok('Pesos pantallas se guardan aparte',(await p.evaluate(()=>__S['config/pesos-pantallas']?.serie?.enganche))===1.5);
+ // descubrir pantallas
+ await p.click('#t-ruleta');await p.waitForTimeout(300);await p.click('[data-pool="disc"]');await p.waitForTimeout(200);
+ ok('Descubrir pantallas: pide plataforma opcional',/plataforma/.test(await p.$eval('#discCity',e=>e.previousElementSibling.textContent))&&await p.$eval('#discCity',e=>e.value)==='');
+ await p.click('#discBtn');await p.waitForTimeout(5500);const pr=await p.evaluate(()=>window.__prompts.at(-1).pr);
+ ok('Descubrir pantallas: pide películas o series que no han visto',/películas o series/.test(pr)&&/Intensamente 2/.test(pr)&&!/restaurantes/.test(pr));
+ // A CIEGAS en mesa
+ await p.click('#backBtn');await p.waitForTimeout(300);await p.click('[data-go="mesa"]');await p.waitForTimeout(500);
+ const lig=await txt(p,'.card[data-pid="p3"]');
+ ok('A ciegas: la tarjeta oculta la nota de Lore',/\?/.test(lig)&&/A ciegas/.test(lig)&&!/5/.test(await p.$eval('.card[data-pid="p3"] .score',e=>e.textContent)));
+ ok('A ciegas: no aparece en el top 3',!/Liguria/.test(await txt(p,'.top3')));
+ await p.click('.card[data-pid="p3"]');await p.waitForTimeout(500);const shs=await txt(p,'#sheet');
+ ok('A ciegas: el detalle no muestra notas ni respuestas de Lore',/Evaluación a ciegas/.test(shs)&&!/secreto de Lore/.test(shs)&&!(await p.$('#bigN')));
+ await p.screenshot({path:SP+'/v7-ciegas.png'});
+ await p.click('#sheet [data-rate="p3"]');await p.waitForTimeout(500);
+ ok('Misma pregunta que respondió Lore ese día (sin «Otra pregunta»)',await txt(p,'#qaQ')==='¿Qué te hizo reír hoy?'&&await p.$eval('#qShuffle',e=>e.hidden));
+ await tapStar(p,'comida',.99);await tapStar(p,'atencion',.5);await p.fill('#bestIn','La pasta');await p.fill('#qaIn','El brindis');
+ await p.click('#saveBtn');await p.waitForTimeout(2600);
+ ok('Al evaluar a ciegas: se revela automáticamente',await p.$eval('#rv',e=>e.classList.contains('on'))&&/secreto de Lore/.test(await txt(p,'#rvIn'))&&/La pasta/.test(await txt(p,'#rvIn')));
+ await p.click('#rvX');await p.waitForTimeout(400);
+ ok('Después de revelar: el detalle muestra ambas notas',/Promedio de Juanjo y Lore/.test(await txt(p,'#sheet')));
+ await closeSheet(p);await p.waitForTimeout(300);
+ // LÍNEA DE TIEMPO
+ await p.click('#backBtn');await p.waitForTimeout(300);await p.click('[data-hist]');await p.waitForTimeout(1200);
+ const items=await p.$$eval('#tl .tli',x=>x.map(e=>e.dataset.mod));
+ ok('Línea de tiempo: incluye mesa, salidas y pantallas',items.includes('mesa')&&items.includes('salidas')&&items.includes('pantallas'),items.join(','));
+ ok('Línea de tiempo: meses y «lo mejor de hoy»',(await p.$$('#tl .tlm')).length>=2&&/Llorar juntos|Las palomitas|La pasta/.test(await txt(p,'#tl')));
+ await p.screenshot({path:SP+'/v7-timeline.png'});
+ await p.click('[data-tlf="pantallas"]');await p.waitForTimeout(300);ok('Línea de tiempo: filtro Pantallas',(await p.$$eval('#tl .tli',x=>x.map(e=>e.dataset.mod))).every(m=>m==='pantallas'));
+ await p.click('#tl .tli');await p.waitForTimeout(900);ok('Línea de tiempo: tocar abre el detalle',await txt(p,'#hTitle')==='Nuestras pantallas'&&await p.$eval('#sheet',e=>e.classList.contains('on')));
+ await closeSheet(p);await p.click('#backBtn');await p.waitForTimeout(300);
+ // wrapped con pantallas
+ await p.click('[data-wrap="todo"]');await p.waitForTimeout(300);
+ let all='';for(let i=0;i<16;i++){const q=await p.$('#wrSl .sl:last-child [data-quiz]');if(q){await q.click();await p.waitForTimeout(250)}all+=await txt(p,'#wrSl .sl:last-child');if(await p.$('#wrSl .sl:last-child [data-close]'))break;await p.mouse.click(350,400);await p.waitForTimeout(450)}
+ ok('Wrapped: incluye «Su pantalla favorita»',/Su pantalla favorita/.test(all));await p.click('#wrX');
+ ok('Sin errores JS (v7)',!p.__errs.length,p.__errs.join('|'));await p.close()}
+{const p=await page(b,{seed:seed2()},{width:320,height:640},'#historia');await p.waitForTimeout(800);ok('Línea de tiempo a 320px: nada se sale',(await overflow(p))<=0);await p.close()}
 // hash directo
 {const p=await page(b,{seed:seed()},undefined,'#salidas-ranking');ok('Link directo a #salidas-ranking',await txt(p,'#hTitle')==='Nuestras salidas'&&await p.$eval('#v-ranking',e=>e.classList.contains('on')));await p.close()}
 // fotos
@@ -253,7 +347,7 @@ const closeSheet=p=>p.click('#scrim',{position:{x:200,y:10}});
 {const p=await page(b,{seed:seed(),ro:true});await p.click('[data-go="salidas"]');await p.waitForTimeout(300);await p.click('.card[data-pid="o1"]');await p.waitForTimeout(300);ok('Solo lectura: sin botones de edición',!(await p.$('[data-rate]')));await p.close()}
 // tamaños
 for(const [w,h] of [[320,640],[390,844],[768,1024],[1280,800]]){const p=await page(b,{seed:seed()},{width:w,height:h});let worst=await overflow(p);
- for(const mod of ['mesa','salidas'])for(const v of ['','-ranking','-por-ir','-nuevo']){await p.evaluate(h=>location.hash=h,mod+v);await p.waitForTimeout(350);worst=Math.max(worst,await overflow(p))}
+ for(const mod of ['mesa','salidas','pantallas'])for(const v of ['','-ranking','-ruleta','-por-ir','-nuevo']){await p.evaluate(h=>location.hash=h,mod+v);await p.waitForTimeout(350);worst=Math.max(worst,await overflow(p))}
  if(w===320){await p.evaluate(()=>location.hash='inicio');await p.waitForTimeout(500);await p.screenshot({path:SP+'/av-320.png'})}
  ok(`Pantalla ${w}px: nada se sale de los bordes`,worst<=0,`exceso ${worst}px`);await p.close()}
 {const ctx=await b.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));await p.addInitScript(mock({seed:seed()}));await p.goto(FILE+'#salidas');await p.waitForTimeout(500);ok('Reducir movimiento: funciona',!errs.length);await ctx.close()}
