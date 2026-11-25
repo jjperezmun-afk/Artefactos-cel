@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SIGPER · Obras en 3D</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<style>
+/* VOICE: maqueta de obra: juguetona en la imagen, seria en los datos.
+   IDEA: la mesa de maquetas de la oficina técnica: cada obra es un terreno sobre el mapa que se construye según sus hitos.
+   PICTURE: dioramas low-poly en 3D con camiones, retros, camionetas y personas que se mueven; se giran y se tocan.
+   COLOUR and TYPE: manual SIGPER (#255A9B, #347CB1, #279DCA, #1B191A) para la interfaz; amarillo maquinaria y tierra en la escena. Montserrat + Inter.
+   LAYOUT: escena arriba (o a la izquierda en pantalla ancha) y panel de datos abajo (o a la derecha). */
+:root{color-scheme:light dark;--bg:light-dark(#f6f8fb,#0f1620);--card:light-dark(#fff,#18222f);--ink:light-dark(#1B191A,#eef2f7);--mute:light-dark(#5b6470,#9aa7b6);--line:light-dark(#e3e8ef,#2a3647);--soft:light-dark(#e8f1fa,#1c2e45);--deep:#255A9B;--mid:#347CB1;--sky:#279DCA;--ok:light-dark(#1f8a4c,#4cc584);--warn:light-dark(#b7791f,#f0b44c);--bad:light-dark(#c0392b,#ff7b6b)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,Arial,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Montserrat,Arial,sans-serif;margin:0;line-height:1.1;text-wrap:balance}
+.top{background:var(--deep);color:#fff;padding:10px max(3vw,12px);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{font:800 20px Montserrat,sans-serif;display:flex;align-items:center;gap:8px}
+.logo i{width:24px;height:24px;border-radius:6px;background:linear-gradient(135deg,var(--sky),var(--mid));box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}
+.logo small{font:500 13px Inter,sans-serif;opacity:.85}
+.demo{margin-left:auto;font-size:12px;background:rgba(255,255,255,.16);padding:4px 10px;border-radius:99px}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 400px;height:calc(100vh - 52px);min-height:560px}
+.stage{position:relative;overflow:hidden;background:linear-gradient(#cfe6f5,#eef5fa)}
+:root[data-theme=dark] .stage{background:linear-gradient(#0d1b2b,#1a2c40)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]) .stage{background:linear-gradient(#0d1b2b,#1a2c40)}}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.lbl{position:absolute;left:0;top:0;transform:translate(-50%,-100%);pointer-events:auto;cursor:pointer;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:5px 9px;font:600 13px Inter,sans-serif;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.15)}
+.lbl b{font-family:Montserrat;color:var(--deep)}:root[data-theme=dark] .lbl b{color:var(--sky)}
+.lbl .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+.lbl.town{background:none;border:0;box-shadow:none;font:700 12px Montserrat;color:#4b5a6b;letter-spacing:.04em;pointer-events:none}
+.hud{position:absolute;left:12px;top:12px;display:flex;gap:8px;flex-wrap:wrap}
+button{font:600 15px Inter,sans-serif;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:0 14px;cursor:pointer}
+button.pri{background:var(--deep);color:#fff;border-color:var(--deep)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.hint{position:absolute;right:12px;bottom:12px;font-size:12px;color:var(--mute);background:var(--card);border-radius:8px;padding:4px 8px;opacity:.9}
+.pop{position:absolute;left:12px;bottom:12px;max-width:min(320px,calc(100% - 24px));background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.pop h3{font-size:16px}.pop[hidden]{display:none}
+.panel{overflow-y:auto;border-left:1px solid var(--line);padding:16px}
+.panel h2{font-size:clamp(20px,4vw,26px)}
+.meta{font-size:13px;color:var(--mute)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:10px}
+.ob{cursor:pointer;display:block;width:100%;text-align:left;min-height:auto;padding:12px 14px;margin-top:10px}
+.ob:hover{border-color:var(--mid)}
+.bar{height:10px;background:var(--soft);border-radius:6px;overflow:hidden;margin:6px 0 2px}.bar i{display:block;height:100%;background:var(--mid);border-radius:6px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:14px}
+.row:first-child{border-top:0}.row .v{font-weight:600;white-space:nowrap;text-align:right}
+.chip{display:inline-flex;align-items:center;gap:5px;font:600 12px Inter;padding:2px 9px;border-radius:99px;background:var(--soft);white-space:nowrap}
+.chip::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.c-ok{color:var(--ok)}.c-warn{color:var(--warn)}.c-bad{color:var(--bad)}.c-info{color:var(--mid)}
+.kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px}.kpi b{display:block;font:700 20px Montserrat;color:var(--deep)}:root[data-theme=dark] .kpi b{color:var(--sky)}.kpi span{font-size:12px;color:var(--mute)}
+.hito{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:14px}
+.hito:first-child{border-top:0}
+.hito .ck{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:12px;color:#fff}
+.hito.done .ck{background:var(--ok);border-color:var(--ok)}.hito.now .ck{border-color:var(--sky);background:conic-gradient(var(--sky) var(--p),transparent 0)}
+input[type=range]{width:100%;height:44px;accent-color:var(--deep)}
+.sec{margin-top:18px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.sec h3{font-size:16px}
+.alert{font-size:14px;padding:8px 10px;border-radius:10px;background:var(--soft);margin-top:6px;display:flex;gap:8px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 12px;font-size:12px;color:var(--mute);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:5px}.legend i{width:11px;height:11px;border-radius:50%;display:inline-block}
+@media(max-width:860px){.app{grid-template-columns:1fr;height:auto}.stage{height:58vh;min-height:360px}.panel{border-left:0;border-top:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<header class="top"><div class="logo"><i aria-hidden="true"></i>SIGPER <small>Obras en 3D</small></div><span class="demo">Ejemplo con datos ficticios</span></header>
+<div class="app">
+  <div class="stage" id="stage">
+    <canvas id="c"></canvas>
+    <div id="labels"></div>
+    <div class="hud"><button type="button" id="back" hidden>← Mapa</button></div>
+    <div class="pop" id="pop" hidden></div>
+    <div class="hint" id="hint">Arrastra para girar · pellizca para acercar · toca una obra</div>
+  </div>
+  <aside class="panel" id="panel"></aside>
+</div>
+<script>
+{
+/* ---------------- Datos ficticios ---------------- */
+const OBRAS=[
+ {id:'PRY-001',nombre:'Excavación Canal Norte',tipo:'tierra',tipoN:'Movimiento de tierra',cliente:'Constructora Andina (ficticia)',comuna:'Buin',pos:[-22,-14],avance:62,
+  hitos:[{n:'Instalación de faena',p:10,f:'29-09'},{n:'Excavación a 1,3 m',p:35,f:'15-10'},{n:'Instalación de manta',p:30,f:'05-11'},{n:'Relleno y cierre',p:25,f:'20-11'}],
+  equipos:[{t:'retro',pat:'PXYZ11',est:'Operativo',hrs:132,min:180,ch:'Luis Rojas'},{t:'tolva',pat:'RKTL20',est:'Operativo',hrs:141,min:180,ch:'Jorge Díaz'},{t:'camioneta',pat:'SFHG31',est:'Operativo',ch:'Pedro Soto'},{t:'camioneta',pat:'SFHG32',est:'En taller',ch:'—'}],
+  personal:[{n:'Pedro Soto',r:'Capataz',a:1},{n:'Ana Muñoz',r:'Maestro',a:1},{n:'Raúl Vera',r:'Maestro',a:1},{n:'Iván Pino',r:'Jornal',a:1},{n:'José Lara',r:'Jornal',a:1},{n:'Luis Rojas',r:'Operador',a:1},{n:'Jorge Díaz',r:'Chofer',a:1}],
+  ep:{n:'EP-03',monto:18400000,est:'Por enviar'}},
+ {id:'PRY-002',nombre:'Sala de control Los Aromos',tipo:'civil',tipoN:'Obras civiles',cliente:'Energía del Valle (ficticia)',comuna:'Machalí',pos:[18,-16],avance:46,
+  hitos:[{n:'Excavación de fundaciones',p:15,f:'10-10'},{n:'Hormigón de fundaciones',p:20,f:'24-10'},{n:'Muros y pilares',p:30,f:'15-11'},{n:'Losa y techumbre',p:20,f:'01-12'},{n:'Terminaciones',p:15,f:'20-12'}],
+  equipos:[{t:'excavadora',pat:'JPLM40',est:'Operativo',hrs:96,min:180,ch:'Hugo Silva'},{t:'mixer',pat:'HRMX12',est:'Operativo',ch:'Servicio externo'},{t:'pluma',pat:'GRUA07',est:'Operativo',hrs:60,min:120,ch:'Mario León'},{t:'camioneta',pat:'TKVB18',est:'Operativo',ch:'Carla Núñez'}],
+  personal:[{n:'Carla Núñez',r:'Capataz',a:1},{n:'Tomás Reyes',r:'Maestro',a:1},{n:'Felipe Olea',r:'Maestro',a:1},{n:'Diego Campos',r:'Maestro',a:0},{n:'Bruno Fuentes',r:'Jornal',a:1},{n:'Matías Ríos',r:'Jornal',a:1},{n:'Hugo Silva',r:'Operador',a:1},{n:'Mario León',r:'Operador',a:1}],
+  ep:{n:'EP-02',monto:24900000,est:'Con V°B°'}},
+ {id:'PRY-003',nombre:'Ampliación S/E Valle Alto',tipo:'electrica',tipoN:'Apoyo eléctrico',cliente:'Transmisora Sur (ficticia)',comuna:'San Fernando',pos:[-6,18],avance:22,
+  hitos:[{n:'Replanteo y acreditación',p:10,f:'03-11'},{n:'Contrafosos',p:30,f:'25-11'},{n:'Fundaciones de equipos',p:25,f:'15-12'},{n:'Montaje de pórticos',p:20,f:'10-01'},{n:'Canalizaciones',p:15,f:'30-01'}],
+  equipos:[{t:'retro',pat:'LKJH55',est:'Operativo',hrs:58,min:180,ch:'Óscar Paz'},{t:'tolva',pat:'RTSA90',est:'Operativo',hrs:77,min:180,ch:'Felipe Mora'},{t:'camioneta',pat:'TYUI77',est:'Operativo',ch:'Nicolás Vidal'}],
+  personal:[{n:'Nicolás Vidal',r:'Capataz',a:1},{n:'Sergio Tapia',r:'Maestro',a:0},{n:'Cristóbal Gil',r:'Jornal',a:0},{n:'Esteban Ruiz',r:'Jornal',a:1},{n:'Óscar Paz',r:'Operador',a:1},{n:'Felipe Mora',r:'Chofer',a:1}],
+  ep:{n:'EP-01',monto:0,est:'Sin EP aún'}},
+ {id:'PRY-004',nombre:'Arriendo flota Ruta 5',tipo:'arriendo',tipoN:'Arriendo de equipos',cliente:'Movimientos del Sur (ficticia)',comuna:'Rengo',pos:[26,14],avance:78,
+  hitos:[{n:'Entrega de equipos',p:10,f:'01-09'},{n:'Mes 1',p:30,f:'30-09'},{n:'Mes 2',p:30,f:'31-10'},{n:'Mes 3',p:25,f:'30-11'},{n:'Devolución',p:5,f:'02-12'}],
+  equipos:[{t:'tolva',pat:'TMBO01',est:'Operativo',hrs:150,min:180,ch:'Cristian Lagos'},{t:'tolva',pat:'TMBO02',est:'Operativo',hrs:164,min:180,ch:'Sergio Mella'},{t:'camioneta',pat:'HLX001',est:'Operativo',ch:'Cliente'},{t:'camioneta',pat:'HLX002',est:'Operativo',ch:'Cliente'}],
+  personal:[{n:'Cristian Lagos',r:'Chofer',a:1},{n:'Sergio Mella',r:'Chofer',a:1}],
+  ep:{n:'EP-03',monto:21300000,est:'Facturado'}}
+];
+const TIPO={tolva:'Camión tolva',retro:'Retroexcavadora',camioneta:'Camioneta 4x4',excavadora:'Excavadora',mixer:'Camión mixer',pluma:'Camión pluma'};
+const ROLC={Capataz:'#f4f4f4',Maestro:'#f08a24',Jornal:'#f2c230',Operador:'#279DCA',Chofer:'#255A9B'};
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const clp=v=>'$'+Math.round(v).toLocaleString('es-CL');
+const $=s=>document.querySelector(s);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const alertsOf=o=>{const a=[];o.equipos.filter(e=>e.est!=='Operativo').forEach(e=>a.push(['bad',`${e.pat} ${e.est.toLowerCase()}`]));
+  const sin=o.personal.filter(p=>!p.a);if(sin.length)a.push(['warn',`${sin.length} sin acreditación completa: ${sin.map(p=>p.n).join(', ')}`]);
+  o.equipos.filter(e=>e.min&&e.hrs/e.min<.6).forEach(e=>a.push(['info',`${e.pat} va lento: ${e.hrs} de ${e.min} h mínimas`]));return a};
+
+/* ---------------- Escena ---------------- */
+if(typeof THREE==='undefined'){$('#stage').innerHTML='<p style="padding:20px">No cargó el motor 3D. Revisa tu conexión y recarga.</p>'}
+else{
+const cv=$('#c'),R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.setPixelRatio(Math.min(devicePixelRatio,2));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;
+const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(32,1,.5,600);
+const ctl=new THREE.OrbitControls(cam,cv);ctl.enableDamping=true;ctl.maxPolarAngle=1.35;ctl.minDistance=12;ctl.maxDistance=180;ctl.enablePan=true;
+scene.add(new THREE.HemisphereLight(0xffffff,0x6b5a48,.5));
+const sun=new THREE.DirectionalLight(0xfff4e0,.62);sun.position.set(40,70,30);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-60,right:60,top:60,bottom:-60,far:200});scene.add(sun);
+const MC={};const mat=c=>MC[c]||(MC[c]=new THREE.MeshLambertMaterial({color:c}));
+const mesh=(geo,c,x=0,y=0,z=0,par)=>{const m=new THREE.Mesh(geo,mat(c));m.position.set(x,y,z);m.castShadow=m.receiveShadow=true;if(par)par.add(m);return m};
+const box=(w,h,d,c,x,y,z,par)=>mesh(new THREE.BoxGeometry(w,h,d),c,x,y,z,par);
+const cyl=(r,h,c,x,y,z,par,seg=14)=>mesh(new THREE.CylinderGeometry(r,r,h,seg),c,x,y,z,par);
+const cone=(r,h,c,x,y,z,par)=>mesh(new THREE.ConeGeometry(r,h,8),c,x,y,z,par);
+const wheel=(x,z,par,r=.33)=>{const w=cyl(r,.28,'#222',x,r,z,par);w.rotation.x=Math.PI/2;return w};
+const YEL='#f2b705';
+
+/* modelos */
+function truck(c=YEL){const g=new THREE.Group();box(3.4,.3,1.2,'#333',0,.55,0,g);box(1,1.05,1.2,c,1.2,1.2,0,g);box(.06,.42,1,'#9cc9e8',1.73,1.35,0,g);
+  const bed=new THREE.Group();bed.position.set(.6,.75,0);g.add(bed);box(2.2,.85,1.25,c,-1.35,.42,0,bed);box(2.1,.1,1.1,'#7a5a3a',-1.35,.88,0,bed);g.userData.bed=bed;
+  [1.15,-.55,-1.25].forEach(x=>{wheel(x,.62,g);wheel(x,-.62,g)});return g}
+function pickup(c='#f5f7fa'){const g=new THREE.Group();box(2.8,.5,1.15,c,0,.62,0,g);box(1.3,.55,1.05,c,.25,1.15,0,g);box(1.32,.32,1.07,'#3b5368',.25,1.17,0,g);box(.1,.12,1.15,'#c33',-.6,.9,.5,g);
+  [.9,-.85].forEach(x=>{wheel(x,.55,g,.3);wheel(x,-.55,g,.3)});return g}
+function retro(){const g=new THREE.Group();box(2.4,.7,1.3,YEL,0,.85,0,g);box(1,1,1.1,YEL,-.2,1.7,0,g);box(.9,.7,1.12,'#9cc9e8',-.2,1.75,0,g);
+  wheel(.8,.68,g,.4);wheel(.8,-.68,g,.4);wheel(-.8,.7,g,.55);wheel(-.8,-.7,g,.55);box(.3,.6,1.6,'#555',1.6,.5,0,g);
+  const arm=new THREE.Group();arm.position.set(-1.2,1.1,0);g.add(arm);const a1=box(1.8,.22,.22,YEL,-.8,.5,0,arm);a1.rotation.z=-.6;const a2=box(1.4,.18,.18,YEL,-1.9,.6,0,arm);a2.rotation.z=.9;box(.4,.4,.5,'#555',-2.3,.05,0,arm);g.userData.arm=arm;return g}
+function excav(){const g=new THREE.Group();box(3,.5,.6,'#333',0,.3,.8,g);box(3,.5,.6,'#333',0,.3,-.8,g);
+  const t=new THREE.Group();t.position.y=.6;g.add(t);box(2.4,.8,1.8,YEL,-.2,.45,0,t);box(.9,.9,.9,'#9cc9e8',.6,1.25,.4,t);box(.7,.9,1.6,'#555',-1.3,.6,0,t);
+  const b=box(2.6,.3,.3,YEL,1.8,1.6,-.3,t);b.rotation.z=.55;const s=box(1.8,.25,.25,YEL,3.2,1.6,-.3,t);s.rotation.z=-.9;box(.6,.5,.6,'#555',3.6,.75,-.3,t);g.userData.turret=t;return g}
+function mixer(){const g=truck('#e9edf2');g.remove(g.userData.bed);const d=new THREE.Group();d.position.set(-.8,1.45,0);d.rotation.z=.2;g.add(d);
+  const dr=mesh(new THREE.CylinderGeometry(.55,.75,2.2,12),'#f08a24',0,0,0,d);dr.rotation.z=Math.PI/2;g.userData.drum=dr;return g}
+function pluma(){const g=truck('#c0392b');g.remove(g.userData.bed);box(2.2,.3,1.2,'#555',-.8,.85,0,g);const b=new THREE.Group();b.position.set(.2,1.1,0);g.add(b);
+  const m=box(3.6,.25,.25,YEL,-1.6,.9,0,b);m.rotation.z=-.5;const h=cyl(.02,1.4,'#222',-3.2,1.1,0,b);g.userData.boom=b;return g}
+function person(rol){const g=new THREE.Group();cyl(.14,.5,'#2b3a55',0,.25,0,g,8);cyl(.19,.5,rol==='Capataz'?'#f4f4f4':'#ff7a1a',0,.72,0,g,8);mesh(new THREE.SphereGeometry(.15,10,8),'#e2b48c',0,1.08,0,g);
+  const h=mesh(new THREE.SphereGeometry(.18,10,6,0,Math.PI*2,0,Math.PI/2),ROLC[rol]||YEL,0,1.14,0,g);g.scale.setScalar(.95);return g}
+function office(c='#347CB1'){const g=new THREE.Group();box(3,1.4,1.5,c,0,.7,0,g);box(.6,1,.05,'#ddd',-.8,.6,.76,g);box(.9,.45,.05,'#9cc9e8',.6,.9,.76,g);box(3.1,.1,1.6,'#eee',0,1.45,0,g);return g}
+function tree(par,x,z,s=1){const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(s);cyl(.15,.6,'#7a5a3a',0,.3,0,g,6);cone(.7,1.6,'#4d8b4a',0,1.3,0,g);par.add(g)}
+const marker=()=>{const m=mesh(new THREE.OctahedronGeometry(.35),'#e74c3c',0,3.2,0);m.castShadow=false;return m};
+
+/* mapa */
+const world=new THREE.Group();scene.add(world);
+const ground=box(110,1,90,'#a9bf7e',0,-.5,0,world);
+const river=box(4,.05,90,'#5d9fcf',-38,.03,0,world);river.rotation.y=.25;
+[[-40,-30,9],[42,-34,11],[-46,30,8],[0,-40,7],[48,36,9]].forEach(([x,z,s])=>{cone(s*.7,s*.6,'#7f9e5c',x,s*.3,z,world)});
+const road=(x1,z1,x2,z2)=>{const L=Math.hypot(x2-x1,z2-z1),r=box(L,.06,2.4,'#6f747b',(x1+x2)/2,.03,(z1+z2)/2,world);r.rotation.y=-Math.atan2(z2-z1,x2-x1);r.castShadow=false};
+road(-50,0,55,0);OBRAS.forEach(o=>road(o.pos[0],o.pos[1],o.pos[0],0));
+for(let i=0;i<46;i++){const x=(Math.random()-.5)*100,z=(Math.random()-.5)*80;if(OBRAS.some(o=>Math.hypot(o.pos[0]-x,o.pos[1]-z)<11)||Math.abs(z)<3)continue;tree(world,x,z,.7+Math.random()*.6)}
+
+/* terrenos */
+const L=16;const lots={};
+function lotBase(o){const g=new THREE.Group();g.position.set(o.pos[0],0,o.pos[1]);world.add(g);
+  const top={tierra:'#d9b98a',civil:'#d8c3a0',electrica:'#b9bcc0',arriendo:'#c9b79a'}[o.tipo];
+  box(L,1.2,L,'#8a6a48',0,.6,0,g);box(L,.12,L,top,0,1.26,0,g);
+  const base=new THREE.Group();base.position.y=1.32;g.add(base);
+  for(let i=-L/2+.5;i<L/2;i+=1.5){if(Math.abs(i)<1.5)continue;box(.08,.7,.08,'#999',i,.35,-L/2+.3,base);box(.08,.7,.08,'#999',-L/2+.3,.35,i,base);box(.08,.7,.08,'#999',L/2-.3,.35,i,base)}
+  [[-L/2+.3,0,L,'x'],[0,-L/2+.3,L,'z']].forEach(()=>{});box(L-.6,.05,.03,'#e74c3c',0,.6,-L/2+.3,base);box(.03,.05,L-.6,'#e74c3c',-L/2+.3,.6,0,base);box(.03,.05,L-.6,'#e74c3c',L/2-.3,.6,0,base);
+  const of=office(o.tipo==='electrica'?'#255A9B':'#347CB1');of.position.set(-L/2+2.5,0,L/2-1.8);base.add(of);
+  for(let i=0;i<5;i++)cone(.15,.45,'#ff6b1a',-2+i*1.1,.22,L/2-.6,base);
+  const prog=new THREE.Group();base.add(prog);const actors=new THREE.Group();base.add(actors);
+  const hit=box(L,1.4,L,'#000',0,.7,0,g);hit.material=new THREE.MeshBasicMaterial({visible:false});hit.userData={lot:o.id};
+  lots[o.id]={o,g,base,prog,actors,hit,anim:[]};return lots[o.id]}
+
+/* progreso por tipo (p de 0 a 1) */
+const cl=v=>Math.max(0,Math.min(1,v));
+function buildProg(lt,p){const g=lt.prog;while(g.children.length)g.remove(g.children[0]);const t=lt.o.tipo;
+  if(t==='tierra'){const len=10*cl(p/.45);if(len>0){box(len,.04,2.4,'#5a4330',-5+len/2,.02,-1,g);for(let i=0;i<Math.ceil(len/2);i++)cone(.8,.9*cl(p/.45)+.2,'#a07a52',-4.5+i*2,.45,1.3,g)}
+    const m=10*cl((p-.45)/.3);if(m>0)box(m,.06,2.2,'#4c6a8a',-5+m/2,.05,-1,g);const r=10*cl((p-.75)/.25);if(r>0)box(r,.1,2.4,'#c8a679',-5+r/2,.07,-1,g)}
+  if(t==='civil'){const W=7,D=4.5,x0=1.2,z0=-2.5;const pits=cl(p/.15),ftg=cl((p-.15)/.2),wall=cl((p-.35)/.3),slab=cl((p-.65)/.2),fin=cl((p-.85)/.15);
+    const pts=[];for(let i=0;i<4;i++)for(let j=0;j<3;j++)pts.push([x0-W/2+i*W/3,z0-D/2+j*D/2]);
+    pts.forEach(([x,z],k)=>{if(k/pts.length<pits&&ftg<=0)box(1,.04,1,'#5a4330',x,.02,z,g);if(k/pts.length<ftg)box(.9,.3,.9,'#b8b8b2',x,.15,z,g);if(wall>0)box(.32,2.6*wall,.32,'#c9c9c3',x,.3+1.3*wall,z,g)});
+    if(wall>.2){[[0,-D/2,W,.2],[0,D/2,W,.2]].forEach(([dx,dz,w,d])=>box(w,2.4*wall,d,'#d6d2c8',x0+dx,.3+1.2*wall,z0+dz,g));box(.2,2.4*wall,D,'#d6d2c8',x0-W/2,.3+1.2*wall,z0,g)}
+    if(wall>0&&fin<1){for(let i=0;i<5;i++){box(.06,3.3,.06,'#d08a2e',x0-W/2+i*W/4,1.65,z0+D/2+.6,g)}box(W,.06,.5,'#c88b3a',x0,1.7,z0+D/2+.6,g);box(W,.06,.5,'#c88b3a',x0,3.2,z0+D/2+.6,g)}
+    if(slab>0)box(W+.4,.25,D+.4,'#bdbdb6',x0,2.95,z0-(1-slab)*0,g).scale.set(slab,1,1);
+    if(fin>0){box(W+.4,.12,D+.4,'#255A9B',x0,3.15,z0,g);[-2,0,2].forEach(dx=>box(1,.8,.05,'#9cc9e8',x0+dx,1.7,z0+D/2+.12,g));box(.8,1.6,.05,'#5a4330',x0+3,1.1,z0+D/2+.12,g)}}
+  if(t==='electrica'){box(11,.05,9,'#a3a6aa',1,.02,-1,g);const ex=new THREE.Group();g.add(ex);ex.position.set(-2.5,0,-4);
+    box(2,1.6,1.4,'#7f8c8d',0,.8,0,ex);[-.6,0,.6].forEach(dx=>cyl(.07,.8,'#b0b8c0',dx,2,0,ex,6));gantry(ex,3,0);
+    const cf=cl((p-.1)/.3),fd=cl((p-.4)/.25),mo=cl((p-.65)/.2),ca=cl((p-.85)/.15);
+    [[2,-3],[5,-3],[2,0],[5,0]].forEach(([x,z],k)=>{if(k/4<cf)box(2.2,.05,2,'#4a3a2a',x,.04,z,g);if(k/4<fd)box(1.8,.4,1.6,'#c4c4be',x,.2,z,g);if(k/4<mo&&k<2){box(1.4,1.3,1,'#6f7f8a',x,1.05,z,g);[-.4,0,.4].forEach(dx=>cyl(.06,.7,'#c9d2da',x+dx,2,z,g,6))}});
+    if(mo>.5)gantry(g,3.5,2.6);if(ca>0)box(7*ca,.12,.5,'#555',-1+3.5*ca,.08,3,g)}
+  if(t==='arriendo'){box(12,.04,6,'#9a9a92',1,.02,-2,g);for(let i=0;i<4;i++)box(.1,.02,4,'#fff',-3+i*3,.05,-2,g)}}
+function gantry(par,x,z){const g=new THREE.Group();g.position.set(x,0,z);par.add(g);[-1.6,1.6].forEach(dx=>{box(.18,3.4,.18,'#8e9aa5',dx,1.7,0,g);box(.5,.1,.5,'#bbb',dx,.05,0,g)});box(3.6,.2,.2,'#8e9aa5',0,3.4,0,g);[-1,0,1].forEach(dx=>cyl(.02,1.2,'#333',dx,2.8,0,g,4))}
+
+/* actores: equipos y personas */
+const machineObjs=[];
+function buildActors(lt){const o=lt.o,g=lt.actors;lt.anim=[];
+  const slots={tierra:[[-3,3.8],[4,3.6],[5,-5.5],[-1,-5.5]],civil:[[-4.5,3.5],[4.6,3.8],[-5,-3],[5.5,-5.8]],electrica:[[-4,3.6],[4,4],[-5.5,-.5]],arriendo:[[-3,-4],[0,-4],[3,-4],[6,-4]]}[o.tipo];
+  o.equipos.forEach((e,i)=>{const m={tolva:truck,retro:retro,camioneta:pickup,excavadora:excav,mixer:mixer,pluma:pluma}[e.t]();const [x,z]=slots[i%slots.length];m.position.set(x,0,z);
+    if(o.tipo==='arriendo')m.rotation.y=Math.PI/2;g.add(m);m.traverse(c=>{if(c.isMesh)c.userData.eq={o,e}});machineObjs.push(m);
+    if(e.est!=='Operativo'){const k=marker();k.position.set(x,3.2,z);g.add(k);lt.anim.push(t=>{k.rotation.y=t*2;k.position.y=3.2+Math.sin(t*3)*.15});return}
+    const ph=i*1.7;
+    if(e.t==='tolva'||(e.t==='camioneta'&&o.tipo!=='arriendo')){const rx=e.t==='tolva'?5.2:4.6,rz=e.t==='tolva'?5.2:3;lt.anim.push(t=>{const a=t*.25+ph;m.position.set(Math.cos(a)*rx,0,Math.sin(a)*rz);m.rotation.y=-Math.atan2(Math.cos(a)*rz,-Math.sin(a)*rx)})}
+    if(e.t==='tolva'&&o.tipo==='arriendo')lt.anim.push(t=>{const a=t*.2+ph;m.position.set(Math.cos(a)*5,0,2+Math.sin(a)*3);m.rotation.y=-Math.atan2(Math.cos(a)*3,-Math.sin(a)*5)});
+    if(m.userData.arm)lt.anim.push(t=>m.userData.arm.rotation.z=Math.sin(t*1.2+ph)*.35);
+    if(m.userData.turret)lt.anim.push(t=>m.userData.turret.rotation.y=Math.sin(t*.6+ph)*1.1);
+    if(m.userData.drum)lt.anim.push(t=>m.userData.drum.rotation.x=t*2);
+    if(m.userData.boom)lt.anim.push(t=>m.userData.boom.rotation.y=Math.sin(t*.4)*.8)});
+  o.personal.filter(p=>p.r!=='Chofer'&&p.r!=='Operador').forEach((p,i)=>{const w=person(p.r);const bx=-3+(i%4)*2,bz=-1+Math.floor(i/4)*1.6;w.position.set(bx,0,bz);g.add(w);w.traverse(c=>{if(c.isMesh)c.userData.per={o,p}});
+    lt.anim.push(t=>{const a=t*.5+i;w.position.x=bx+Math.sin(a)*.6;w.position.y=Math.abs(Math.sin(t*4+i))*.05;w.rotation.y=Math.cos(a)>0?Math.PI/2:-Math.PI/2})})}
+
+OBRAS.forEach(o=>{const lt=lotBase(o);buildProg(lt,o.avance/100);buildActors(lt)});
+
+/* etiquetas */
+const LB=$('#labels');const tags=[];
+const tag=(html,pos,cls,on)=>{const d=document.createElement('div');d.className='lbl '+(cls||'');d.innerHTML=html;LB.appendChild(d);if(on)d.onclick=on;tags.push({d,pos:new THREE.Vector3(...pos)});return d};
+OBRAS.forEach(o=>{const a=alertsOf(o),c=a.some(x=>x[0]==='bad')?'var(--bad)':a.some(x=>x[0]==='warn')?'var(--warn)':'var(--ok)';
+  lots[o.id].tag=tag(`<span class="dot" style="background:${c}"></span>${esc(o.nombre)} · <b>${o.avance}%</b>`,[o.pos[0],5.2,o.pos[1]],'',()=>select(o.id))});
+[['RANCAGUA',[-4,1,-30]],['MACHALÍ',[34,1,-28]],['SAN FERNANDO',[-18,1,34]],['RENGO',[36,1,28]]].forEach(([n,p])=>tag(n,p,'town'));
+
+/* cámara y vistas */
+let cur=null,goal={t:new THREE.Vector3(0,0,0),p:new THREE.Vector3(0,95,95)},flying=0;
+cam.position.copy(goal.p);ctl.target.copy(goal.t);
+function fly(t,p){goal={t,p};flying=1}
+function select(id){cur=id?lots[id]:null;$('#back').hidden=!cur;$('#pop').hidden=true;
+  if(cur){const P=cur.g.position;fly(new THREE.Vector3(P.x,1.5,P.z),new THREE.Vector3(P.x+22,24,P.z+24))}else fly(new THREE.Vector3(0,0,0),new THREE.Vector3(0,95,95));
+  tags.forEach(t=>t.d.hidden=!!cur);panel()}
+$('#back').onclick=()=>select(null);
+
+/* toque */
+const ray=new THREE.Raycaster(),ptr=new THREE.Vector2();let down=null;
+cv.addEventListener('pointerdown',e=>down=[e.clientX,e.clientY]);
+cv.addEventListener('pointerup',e=>{if(!down||Math.hypot(e.clientX-down[0],e.clientY-down[1])>6)return;const r=cv.getBoundingClientRect();ptr.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);ray.setFromCamera(ptr,cam);
+  const hits=ray.intersectObjects(world.children,true);for(const h of hits){const u=h.object.userData;
+    if(u.eq&&cur&&u.eq.o===cur.o){showEq(u.eq.e);return}if(u.per&&cur&&u.per.o===cur.o){showPer(u.per.p);return}
+    if(u.lot&&!cur){select(u.lot);return}if(u.lot&&cur&&u.lot!==cur.o.id){select(u.lot);return}}$('#pop').hidden=true});
+function showEq(e){const c=e.est==='Operativo'?'c-ok':'c-bad';$('#pop').hidden=false;$('#pop').innerHTML=`<h3>${esc(TIPO[e.t])} · ${esc(e.pat)}</h3><div class="row"><span>Estado</span><span class="chip ${c}">${esc(e.est)}</span></div><div class="row"><span>Chofer / operador</span><span class="v">${esc(e.ch)}</span></div>${e.min?`<div class="row"><span>Horas del mes</span><span class="v">${e.hrs} / ${e.min} h</span></div><div class="bar"><i style="width:${Math.min(100,e.hrs/e.min*100)}%"></i></div>`:''}`}
+function showPer(p){$('#pop').hidden=false;$('#pop').innerHTML=`<h3>${esc(p.n)}</h3><div class="row"><span>Rol</span><span class="v">${esc(p.r)}</span></div><div class="row"><span>Acreditación</span><span class="chip ${p.a?'c-ok':'c-warn'}">${p.a?'Completa':'Faltan documentos'}</span></div>`}
+
+/* panel */
+function panel(){const P=$('#panel');
+  if(!cur){P.innerHTML=`<h2>Obras activas</h2><p class="meta">${OBRAS.length} obras · toca una en el mapa o en la lista</p>`+OBRAS.map(o=>{const a=alertsOf(o);return`<button type="button" class="card ob" data-id="${o.id}"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(o.nombre)}</b><span class="meta">${esc(o.comuna)}</span></div><div class="meta">${esc(o.tipoN)} · ${o.equipos.length} equipos · ${o.personal.length} personas</div><div class="bar"><i style="width:${o.avance}%"></i></div><div class="meta">Avance ${o.avance}%${a.length?' · '+a.length+' alerta'+(a.length>1?'s':''):''}</div></button>`}).join('')+
+    `<div class="legend"><span><i style="background:var(--ok)"></i>Sin alertas</span><span><i style="background:var(--warn)"></i>Revisar</span><span><i style="background:var(--bad)"></i>Equipo detenido</span></div>`;
+    P.querySelectorAll('.ob').forEach(b=>b.onclick=()=>select(b.dataset.id));return}
+  const o=cur.o,a=alertsOf(o);let acc=0;const H=o.hitos.map(h=>{const s=acc;acc+=h.p;return{...h,s,e:acc}});
+  const roles={};o.personal.forEach(p=>(roles[p.r]=roles[p.r]||[]).push(p));
+  P.innerHTML=`<div class="meta">${esc(o.id)} · ${esc(o.tipoN)}</div><h2>${esc(o.nombre)}</h2><div class="meta">${esc(o.cliente)} · ${esc(o.comuna)}</div>
+  <div class="kpis"><div class="kpi"><b>${o.avance}%</b><span>avance</span></div><div class="kpi"><b>${o.equipos.length}</b><span>equipos</span></div><div class="kpi"><b>${o.personal.length}</b><span>personas</span></div></div>
+  ${a.map(x=>`<div class="alert"><span class="chip c-${x[0]}"></span><span>${esc(x[1])}</span></div>`).join('')}
+  <div class="sec"><h3>Hitos</h3><span class="meta" id="simLbl">Avance real</span></div>
+  <input type="range" id="sim" min="0" max="100" value="${o.avance}" aria-label="Ver la obra en otra etapa">
+  <div class="card" id="hitos"></div>
+  <div class="sec"><h3>Equipos</h3><span class="meta">toca uno en la escena</span></div>
+  <div class="card">${o.equipos.map(e=>`<div class="row"><span>${esc(TIPO[e.t])}<br><small class="meta">${esc(e.pat)} · ${esc(e.ch)}</small></span><span class="v">${e.min?e.hrs+'/'+e.min+' h ':''}<span class="chip ${e.est==='Operativo'?'c-ok':'c-bad'}">${esc(e.est)}</span></span></div>`).join('')}</div>
+  <div class="sec"><h3>Personal</h3><span class="meta">color del casco = rol</span></div>
+  <div class="card">${Object.entries(roles).map(([r,ps])=>`<div class="row"><span><i style="display:inline-block;width:11px;height:11px;border-radius:50%;background:${ROLC[r]};border:1px solid #999;margin-right:6px"></i>${esc(r)} (${ps.length})</span><span class="v" style="white-space:normal;font-weight:500">${ps.map(p=>esc(p.n)+(p.a?'':' <span class="c-warn">●</span>')).join(', ')}</span></div>`).join('')}</div>
+  <div class="sec"><h3>Estado de pago</h3></div><div class="card"><div class="row"><span>${esc(o.ep.n)}</span><span class="v">${o.ep.monto?clp(o.ep.monto):'—'} · ${esc(o.ep.est)}</span></div></div>
+  <p class="meta" style="margin-top:14px">Todos los nombres, patentes y montos son inventados para mostrar la idea.</p>`;
+  const drawH=v=>{$('#hitos').innerHTML=H.map(h=>{const st=v>=h.e?'done':v>h.s?'now':'';const pp=st==='now'?Math.round((v-h.s)/h.p*100):st?100:0;return`<div class="hito ${st}" style="--p:${pp}%"><span class="ck">${st==='done'?'✓':''}</span><span>${esc(h.n)}<br><small class="meta">${esc(h.f)}</small></span><span class="meta">${pp}%</span></div>`}).join('')};
+  drawH(o.avance);const sim=$('#sim');sim.oninput=()=>{const v=+sim.value;buildProg(cur,v/100);drawH(v);$('#simLbl').textContent=v===o.avance?'Avance real':'Simulación: '+v+'%'}}
+
+/* bucle */
+function size(){const r=cv.parentElement.getBoundingClientRect();R.setSize(r.width,r.height,false);cam.aspect=r.width/r.height;cam.updateProjectionMatrix()}
+new ResizeObserver(size).observe(cv.parentElement);size();
+const clock=new THREE.Clock();const v=new THREE.Vector3();
+function loop(){const t=reduce?0:clock.getElapsedTime();
+  if(flying){cam.position.lerp(goal.p,.08);ctl.target.lerp(goal.t,.08);if(cam.position.distanceTo(goal.p)<.3)flying=0}
+  ctl.update();Object.values(lots).forEach(l=>{if(!cur||cur===l)l.anim.forEach(f=>f(t))});R.render(scene,cam);
+  const r=cv.getBoundingClientRect();tags.forEach(g=>{if(g.d.hidden)return;v.copy(g.pos).project(cam);g.d.style.display=v.z>1?'none':'';g.d.style.left=((v.x+1)/2*r.width)+'px';g.d.style.top=((1-v.y)/2*r.height)+'px'});
+  requestAnimationFrame(loop)}
+panel();loop();
+}
+}
+</script>
+</body>
+</html>
