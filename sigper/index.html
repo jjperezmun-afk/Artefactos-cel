@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SIGPER · Visor de obras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+/* VOICE: tablero de faena: sobrio, directo, para leer en el celular bajo el sol.
+   IDEA: la pizarra de control de obra: cada equipo es una ficha con su semáforo.
+   PICTURE: la franja de alertas y las barras de horas contra el mínimo mensual.
+   COLOUR and TYPE: manual SIGPER v2.0: azul profundo #255A9B, medio #347CB1, celeste #279DCA, negro #1B191A; Montserrat + Inter.
+   LAYOUT: barra de marca arriba, pestañas desplazables, tarjetas en una columna en el celular y en rejilla en pantalla ancha. */
+:root{color-scheme:light dark;
+--bg:light-dark(#f6f8fb,#0f1620);--card:light-dark(#fff,#18222f);--ink:light-dark(#1B191A,#eef2f7);--mute:light-dark(#5b6470,#9aa7b6);
+--line:light-dark(#e3e8ef,#2a3647);--deep:#255A9B;--mid:#347CB1;--sky:#279DCA;--soft:light-dark(#e8f1fa,#1c2e45);
+--ok:light-dark(#1f8a4c,#4cc584);--warn:light-dark(#b7791f,#f0b44c);--bad:light-dark(#c0392b,#ff7b6b);--na:light-dark(#8a94a3,#7b8899)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,Arial,sans-serif;overflow-x:clip}
+h1,h2,h3{font-family:Montserrat,Arial,sans-serif;margin:0;line-height:1.1;text-wrap:balance}
+.top{background:var(--deep);color:#fff;padding:14px max(4vw,14px) 0}
+.brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font:800 22px Montserrat,sans-serif;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+.logo i{display:inline-block;width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,var(--sky),var(--mid));box-shadow:inset 0 -6px 0 rgba(0,0,0,.18)}
+.logo small{font:500 13px Inter,sans-serif;opacity:.8;letter-spacing:0}
+.src{margin-left:auto;font-size:13px;opacity:.9;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+button,.btn,select{font:600 15px Inter,sans-serif;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:0 14px;cursor:pointer}
+.top button{background:rgba(255,255,255,.14);color:#fff;border-color:rgba(255,255,255,.3)}
+button:focus-visible,select:focus-visible,.tabs a:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.tabs{display:flex;gap:4px;overflow-x:auto;margin-top:12px;scrollbar-width:none}
+.tabs a{flex:none;color:#fff;text-decoration:none;font:600 15px Montserrat,sans-serif;padding:12px 14px;border-radius:10px 10px 0 0;opacity:.78}
+.tabs a[aria-current]{background:var(--bg);color:var(--deep);opacity:1}
+:root[data-theme=dark] .tabs a[aria-current]{color:#fff}
+main{padding:18px max(4vw,14px) 40px;max-width:1240px;margin:0 auto}
+section[hidden]{display:none}
+.lead{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;margin-bottom:14px}
+.lead h2{font-size:clamp(22px,4.5vw,30px)}
+.lead p{margin:0;color:var(--mute);font-size:14px}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+.kpi b{display:block;font:700 clamp(22px,5vw,28px) Montserrat,sans-serif;color:var(--deep);white-space:nowrap}
+:root[data-theme=dark] .kpi b{color:var(--sky)}
+.kpi span{font-size:13px;color:var(--mute)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,330px),1fr));gap:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.card h3{font-size:17px;margin-bottom:4px}
+.meta{font-size:13px;color:var(--mute)}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:15px}
+.row:first-of-type{border-top:0}
+.row .v{font-weight:600;text-align:right;white-space:nowrap}
+.chip{display:inline-flex;align-items:center;gap:6px;font:600 13px Inter,sans-serif;padding:3px 10px;border-radius:99px;background:var(--soft);white-space:nowrap}
+.chip::before{content:"";width:9px;height:9px;border-radius:50%;background:currentColor}
+.c-ok{color:var(--ok)}.c-warn{color:var(--warn)}.c-bad{color:var(--bad)}.c-na{color:var(--na)}.c-info{color:var(--mid)}
+.alert{display:grid;grid-template-columns:12px 1fr;gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:8px}
+.alert .dot{width:12px;height:12px;border-radius:50%;margin-top:6px;background:currentColor}
+.alert b{display:block;font-weight:600}
+.alert small{color:var(--mute);font-size:13px}
+.group{margin:22px 0 10px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.group h3{font-size:18px}
+.bar{position:relative;height:16px;background:var(--soft);border-radius:8px;margin:8px 0 4px;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--mid);border-radius:8px}
+.bar em{position:absolute;inset:0 auto 0 0;background:repeating-linear-gradient(45deg,var(--sky) 0 6px,transparent 6px 10px);opacity:.55;border-radius:8px}
+.bar u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:var(--mute);margin-bottom:10px}
+.legend span::before{content:"";display:inline-block;width:12px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px;background:var(--mid)}
+.legend .p::before{background:repeating-linear-gradient(45deg,var(--sky) 0 4px,transparent 4px 7px)}
+.legend .m::before{width:2px;background:var(--ink)}
+.hbar{display:grid;grid-template-columns:minmax(0,9em) 1fr auto;gap:10px;align-items:center;font-size:14px;padding:5px 0}
+.hbar .t{height:12px;background:var(--soft);border-radius:6px;overflow:hidden}.hbar .t i{display:block;height:100%;background:var(--mid)}
+.hbar .n{white-space:nowrap;font-weight:600;text-align:right}
+.todo{border:2px dashed var(--line);border-radius:14px;padding:14px;color:var(--mute);font-size:14px}
+.todo b{color:var(--warn)}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:8px 8px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+th{font:600 13px Inter,sans-serif;color:var(--mute)}
+td.n,th.n{text-align:right;white-space:nowrap}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.state{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px;text-align:center}
+.state p{color:var(--mute);margin:8px 0 14px}
+.file{display:inline-flex;align-items:center;justify-content:center}
+.file input{position:absolute;opacity:0;width:1px;height:1px}
+.spin{width:28px;height:28px;border:3px solid var(--soft);border-top-color:var(--mid);border-radius:50%;margin:0 auto;animation:r 1s linear infinite}
+@keyframes r{to{transform:rotate(1turn)}}
+@media (prefers-reduced-motion:reduce){.spin{animation:none}}
+@media(max-width:600px){table{font-size:13px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;color:var(--mute)}.stack td:empty{display:none}.src{margin-left:0}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="logo"><i aria-hidden="true"></i>SIGPER <small>Visor de obras</small></div>
+    <div class="src"><span id="srcInfo">Conectando con Google Drive…</span><button id="reload" type="button">Actualizar</button></div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <a href="#hoy">Hoy</a><a href="#equipos">Equipos</a><a href="#horas">Horas</a><a href="#combustible">Combustible</a><a href="#proyectos">Proyectos</a><a href="#personal">Personal</a>
+  </nav>
+</header>
+<main>
+  <div id="state" class="state"><div class="spin"></div><p>Buscando la versión más reciente de SIGPER_SPA en tu Google Drive…</p></div>
+  <section id="v-hoy" hidden></section>
+  <section id="v-equipos" hidden></section>
+  <section id="v-horas" hidden></section>
+  <section id="v-combustible" hidden></section>
+  <section id="v-proyectos" hidden></section>
+  <section id="v-personal" hidden></section>
+</main>
+<script>
+{
+const $=s=>document.querySelector(s);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm=s=>String(s??'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+const num=v=>typeof v==='number'?v:(v==null||v===''?null:(isFinite(+String(v).replace(/[$.\s]/g,'').replace(',','.'))?+String(v).replace(/[$.\s]/g,'').replace(',','.'):null));
+const toDate=v=>v instanceof Date?v:(typeof v==='number'&&v>20000&&v<80000?new Date(Math.round((v-25569)*864e5)+new Date().getTimezoneOffset()*6e4):null);
+const clp=v=>v==null||isNaN(v)?'—':'$'+Math.round(v).toLocaleString('es-CL');
+const n0=v=>v==null||isNaN(v)?'—':Math.round(v).toLocaleString('es-CL');
+const n1=v=>v==null||isNaN(v)?'—':(+v).toLocaleString('es-CL',{maximumFractionDigits:1});
+const fd=d=>d?d.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'2-digit'}):'—';
+const DAY=864e5,today=new Date();today.setHours(0,0,0,0);
+const daysTo=d=>d?Math.round((new Date(d).setHours(0,0,0,0)-today)/DAY):null;
+const MES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+const mkey=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+const mname=k=>{const[y,m]=k.split('-');return MES[+m-1]+' '+y};
+const SERVER='Google Drive';
+let S={},src={},selMonth=mkey(today),selFuel=mkey(today);
+
+/* ---------- lectura de hojas ---------- */
+const grid=(wb,name)=>{const k=wb.SheetNames.find(n=>norm(n)===norm(name));return k?XLSX.utils.sheet_to_json(wb.Sheets[k],{header:1,raw:true,defval:null}):null};
+function table(g,heads,stop){ // busca la fila cuyos encabezados consecutivos coinciden y devuelve objetos por columna
+  if(!g)return null;const H=heads.map(norm);
+  for(let r=0;r<g.length;r++){const row=g[r]||[];for(let c=0;c<row.length;c++){
+    if(H.every((h,k)=>norm(row[c+k])===h)){
+      const head=[];for(let j=c;j<row.length&&row[j]!=null&&row[j]!=='';j++)head.push(row[j]);
+      const out=[];for(let i=r+1;i<g.length;i++){const x=g[i]||[],key=x[c];
+        if(key==null||key===''||(stop&&norm(key)===norm(stop)))break;
+        const o={};head.forEach((h,k)=>{o[norm(h)]=x[c+k]});out.push(o)}
+      return out}}}
+  return null}
+const pick=(o,...names)=>{for(const n of names){const k=Object.keys(o).find(k=>k===norm(n)||k.startsWith(norm(n)));if(k&&o[k]!=null&&o[k]!=='')return o[k]}return null};
+
+function parseMain(wb){
+  const eq=(table(grid(wb,'Equipos'),['Código','Fecha'])||[]).filter(r=>/^EQ-/i.test(String(r[norm('Código')]||'')));
+  const hg=grid(wb,'Horómetro')||grid(wb,'Horometro');
+  const lect=(table(hg,['Fecha','Código','Patente'])||[]).map(r=>({f:toDate(r.fecha),c:r[norm('Código')],l:num(r.lectura),obs:pick(r,'Informado'),p:r.proyecto})).filter(r=>r.f&&r.c&&r.l!=null);
+  const det=(table(hg,['Código','Patente','Desde'])||[]).map(r=>({c:r[norm('Código')],pat:r.patente,d:toDate(r.desde)||parseDT(r.desde),h:toDate(r.hasta)||parseDT(r.hasta),hrs:num(pick(r,'Horas detenido')),dias:num(pick(r,'Días a descontar')),causa:r.causa,resp:r.responsable,desc:pick(r,'¿Se descuenta')})).filter(r=>r.c);
+  const gastos=(table(grid(wb,'Gastos'),['Fecha','Categoría'])||[]);
+  const comb=gastos.filter(r=>norm(pick(r,'Categoría'))==='combustible').map(r=>{const d=String(pick(r,'Descripción')||'');const[p,...ch]=d.split(/\s+-\s+/);
+    return{f:toDate(r.fecha),proy:pick(r,'Proyecto'),pat:(p||'').trim().toUpperCase(),ch:ch.join(' - ').trim()||'Sin chofer',lt:num(r.litros)||0,tot:num(r.total)||0,estado:r.estado,doc:pick(r,'Tipo Doc')}}).filter(r=>r.f);
+  const cg=grid(wb,'Combustible');const rec=(table(cg,['Proyecto','Recargo por litro'])||[]).map(r=>({p:r.proyecto,rec:num(pick(r,'Recargo'))||0,si:/^s/i.test(String(pick(r,'Se cobra')||''))}));
+  const rg=grid(wb,'Resumen');
+  const proy=(table(rg,['Proyecto','Cliente'],'TOTAL')||[]).filter(r=>r.proyecto&&norm(r.proyecto)!=='total');
+  const rev=(table(rg,['Revisión','Resultado'])||[]);
+  const cob=(table(rg,['Glosa','N° EP'])||[]);
+  const per=table(grid(wb,'Personal'),['Nombre'])||null;
+  const upd=(rg||[]).flat().find(v=>/^Actualizado/i.test(String(v||'')));
+  return{eq,lect,det,comb,rec,proy,rev,cob,per,upd}}
+function parseDT(v){const m=String(v||'').match(/(\d{1,2})-(\d{1,2})-(\d{4})(?:\s+(\d{1,2}):(\d{2}))?/);return m?new Date(+m[3],m[2]-1,+m[1],+(m[4]||0),+(m[5]||0)):null}
+function parseLic(wb){return(table(grid(wb,'Resumen'),['Hoja (pestaña)','Código'])||table(grid(wb,'Resumen'),['Código','Nombre'])||[]).filter(r=>r[norm('Código')])}
+
+/* ---------- Drive ---------- */
+function findB64(x,depth=0){if(depth>6||x==null)return null;if(typeof x==='string'){const s=x.replace(/\s/g,'');return s.length>200&&/^UEsDB/.test(s)?s:null}
+  if(Array.isArray(x)){for(const v of x){const r=findB64(v,depth+1);if(r)return r}return null}
+  if(typeof x==='object'){for(const k of Object.keys(x)){const r=findB64(x[k],depth+1);if(r)return r}}return null}
+const asObj=p=>{if(typeof p==='string'){try{return JSON.parse(p)}catch{return{}}}return p||{}};
+async function latest(mcp,prefix){
+  const res=await mcp.callTool(SERVER,'search_files',{query:`title contains '${prefix}' and trashed = false`,excludeContentSnippets:true,pageSize:50});
+  const files=(asObj(res.payload).files||[]).map(f=>({...f,v:+((f.title||'').match(new RegExp(prefix+'(\\d+)','i'))||[])[1]})).filter(f=>f.v>0);
+  files.sort((a,b)=>b.v-a.v||String(b.modifiedTime).localeCompare(String(a.modifiedTime)));
+  return files[0]||null}
+async function download(mcp,f){
+  const isG=/google-apps\.spreadsheet/.test(f.mimeType||'');
+  const res=await mcp.callTool(SERVER,'download_file_content',isG?{fileId:f.id,exportMimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}:{fileId:f.id});
+  const b=findB64(res);if(!b)throw{code:'no_binary'};
+  return XLSX.read(b,{type:'base64',cellDates:true})}
+const errText=e=>({needs_reauth:'Tu conexión con Google Drive venció. Vuelve a conectarla en claude.ai → Configuración → Conectores.',server_not_connected:'Agrega el conector Google Drive en claude.ai → Configuración → Conectores.',selection_required:'Tienes más de un conector Google Drive: elige uno en el aviso de Claude.',not_in_manifest:'No se dio permiso a esta página para usar Google Drive. Recárgala y acepta el aviso.',approval_required:'Falta aprobar el acceso a Google Drive. Pulsa Actualizar y acepta el aviso.',blocked_by_policy:'Tu organización bloquea esta herramienta de Google Drive.',no_binary:'Drive respondió, pero sin el archivo .xlsx. Puedes cargarlo a mano.',no_file:'No encontré ninguna planilla SIGPER_SPA_vXX en tu Drive (o no tienes acceso a ella).',no_mcp:'Esta vista no puede usar tus conectores (por ejemplo, fuera de claude.ai).'}[e&&e.code]||('No se pudo leer Drive'+(e&&e.message?': '+e.message:'.')));
+
+async function load(fresh){
+  $('#state').hidden=false;$('#state').innerHTML='<div class="spin"></div><p>Buscando la versión más reciente de SIGPER_SPA en tu Google Drive…</p>';
+  try{
+    const mcp=await claude.use('mcp');if(!mcp)throw{code:'no_mcp'};
+    const f=await latest(mcp,'SIGPER_SPA_v');if(!f)throw{code:'no_file'};
+    $('#state').querySelector('p').textContent='Leyendo '+f.title+'…';
+    const wb=await download(mcp,f);S=parseMain(wb);src={main:f,at:new Date()};
+    try{const lf=await latest(mcp,'SIGPER_Licitaciones_v');if(lf){S.lic=parseLic(await download(mcp,lf));src.lic=lf}}catch(e){S.lic=null;src.licErr=errText(e)}
+    show()}
+  catch(e){fail(errText(e))}}
+function fail(msg){$('#state').hidden=false;$('#srcInfo').textContent='Sin datos';
+  $('#state').innerHTML=`<h2>No pude leer la planilla</h2><p>${esc(msg)}</p><button type="button" id="retry">Reintentar</button> <label class="btn file">Cargar .xlsx a mano<input type="file" id="pickFile" accept=".xlsx"></label>`;
+  $('#retry').onclick=()=>load(true);$('#pickFile').onchange=manual}
+async function manual(ev){const file=ev.target.files[0];if(!file)return;const wb=XLSX.read(await file.arrayBuffer(),{type:'array',cellDates:true});
+  S=parseMain(wb);S.lic=null;src={main:{title:file.name+' (cargado a mano)'},at:new Date()};show()}
+
+/* ---------- cálculos ---------- */
+const eqv=(e,...k)=>pick(e,...k);
+const active=e=>!/devuel/i.test(String(eqv(e,'Estado')||''));
+function hoursFor(code,mk){
+  const rs=S.lect.filter(r=>r.c===code).sort((a,b)=>a.f-b.f);
+  const [y,m]=mk.split('-').map(Number),m0=new Date(y,m-1,1),m1=new Date(y,m,1),dim=(m1-m0)/DAY;
+  const prev=rs.filter(r=>r.f<m0).pop(),inm=rs.filter(r=>r.f>=m0&&r.f<m1);
+  if(!inm.length)return{hrs:0,proj:null,last:prev,n:0,dim};
+  const base=prev||inm[0],last=inm[inm.length-1],hrs=last.l-base.l;
+  const span=Math.max(1,(last.f-(prev?m0:base.f))/DAY),left=Math.max(0,(m1-last.f)/DAY-1);
+  return{hrs,proj:hrs+hrs/span*left,last,n:inm.length,dim}}
+function detDays(code,mk){return S.det.filter(d=>d.c===code&&d.d&&mkey(d.d)===mk&&/^s/i.test(String(d.desc||''))).reduce((s,d)=>s+(d.dias||0),0)}
+function docCols(e){const out=[];for(const[k,v]of Object.entries(e)){if(/venc|soap|revision tecnica|permiso/.test(k)){const d=toDate(v)||parseDT(v);out.push({k,d})}}return out}
+function alerts(){
+  const A=[];const add=(lvl,t,s,proy)=>A.push({lvl,t,s,proy});
+  for(const r of S.rev){const st=norm(r.estado);if(st&&st!=='ok'&&!/horometro/.test(norm(r[norm('Revisión')])))add('warn',r[norm('Revisión')],String(r[norm('Explicación')]||'').slice(0,160)+(r.resultado!=null?' · Resultado: '+(typeof r.resultado==='number'?n1(r.resultado):r.resultado):''),'Planilla')}
+  for(const e of S.eq.filter(active)){const code=e[norm('Código')],pat=e.patente,obra=pick(e,'Proyecto');
+    const st=String(eqv(e,'Estado')||'');if(/taller/i.test(st))add('bad',`${pat} en taller`,String(eqv(e,'Tipo')||''),obra);
+    const last=S.lect.filter(r=>r.c===code).sort((a,b)=>b.f-a.f)[0];
+    if(num(eqv(e,'Mínimo'))>0){const ago=last?-daysTo(last.f):null;if(ago==null||ago>7)add('warn',`${pat}: falta lectura de horómetro`,last?`Última lectura hace ${ago} días (${fd(last.f)})`:'Sin lecturas',obra);
+      const h=hoursFor(code,mkey(today)),min=num(eqv(e,'Mínimo'));if(h.proj!=null&&h.proj<min)add('info',`${pat} va bajo el mínimo`,`Proyección ${n0(h.proj)} h de ${min} h: se cobra el mínimo`,obra)}
+    for(const dc of docCols(e)){const d=daysTo(dc.d);if(d==null)continue;if(d<0)add('bad',`${pat}: ${dc.k} vencido`,fd(dc.d),obra);else if(d<=30)add('warn',`${pat}: ${dc.k} vence en ${d} días`,fd(dc.d),obra)}}
+  for(const d of S.det)if(d.d&&!d.h)add('bad',`${d.pat||d.c} detenido ahora`,String(d.causa||''),'');
+  for(const c of S.cob){const d=toDate(pick(c,'Fecha cobro')),dt=daysTo(d);if(dt!=null&&dt<0&&!/pagad/i.test(String(c.estado)))add('bad',`Cobro atrasado: ${c[norm('N° EP')]||''}`,`${c.glosa} · ${clp(num(pick(c,'Por cobrar')))}`,c.cliente)}
+  for(const l of S.lic||[]){const d=toDate(pick(l,'Entrega oferta')),dt=daysTo(d),st=String(l.estado||'');if(/adjudic|perdid|cancel/i.test(st))continue;
+    if(dt!=null&&dt>=0&&dt<=14)add('warn',`Entregar oferta ${l.nombre} en ${dt} días`,`${l.cliente} · ${fd(d)}`,l.nombre);
+    const fa=toDate(pick(l,'Fecha acción'));if(fa&&daysTo(fa)<0)add('info',`${l.nombre}: acción pendiente desde ${fd(fa)}`,String(pick(l,'Próxima acción')||''),l.nombre)}
+  const ord={bad:0,warn:1,info:2};return A.sort((a,b)=>ord[a.lvl]-ord[b.lvl])}
+
+/* ---------- vistas ---------- */
+const chipFor=st=>{const s=norm(st);const c=/taller|detenid/.test(s)?'c-bad':/pendiente/.test(s)?'c-warn':/devuel/.test(s)?'c-na':'c-ok';return`<span class="chip ${c}">${esc(st||'Sin estado')}</span>`};
+const todo=(t,how)=>`<div class="todo"><b>POR COMPLETAR</b> · ${esc(t)}<br>${how}</div>`;
+function vHoy(){
+  const A=alerts(),act=S.eq.filter(active),mk=mkey(today);
+  const lt=S.comb.filter(c=>mkey(c.f)===mk).reduce((s,c)=>s+c.lt,0);
+  const porCobrar=S.cob.reduce((s,c)=>s+(num(pick(c,'Por cobrar'))||0),0);
+  const hrs=act.filter(e=>num(eqv(e,'Mínimo'))>0).reduce((s,e)=>s+hoursFor(e[norm('Código')],mk).hrs,0);
+  const lv={bad:['c-bad','Urgente'],warn:['c-warn','Revisar'],info:['c-info','Ojo']};
+  return`<div class="lead"><h2>${A.filter(a=>a.lvl!=='info').length?A.filter(a=>a.lvl!=='info').length+' cosas por revisar':'Todo en orden'}</h2><p>${esc(fd(today))} · ${esc(S.upd||'')}</p></div>
+  <div class="kpis"><div class="kpi"><b>${act.length}</b><span>equipos activos</span></div><div class="kpi"><b>${n0(hrs)} h</b><span>horas de máquina en ${esc(MES[today.getMonth()].toLowerCase())}</span></div><div class="kpi"><b>${n0(lt)} L</b><span>combustible del mes</span></div><div class="kpi"><b>${clp(porCobrar)}</b><span>por cobrar (con IVA)</span></div></div>
+  <div class="tools"><button type="button" id="copyA">Copiar como pendientes</button><span class="meta" id="copyMsg"></span></div>
+  ${A.map(a=>`<div class="alert ${lv[a.lvl][0]}"><span class="dot"></span><div><b style="color:var(--ink)">${esc(a.t)}</b><small>${esc(lv[a.lvl][1])}${a.proy?' · '+esc(a.proy):''} · ${esc(a.s)}</small></div></div>`).join('')||'<p class="meta">Sin alertas.</p>'}
+  <div class="group"><h3>Aún sin datos en la planilla</h3></div>
+  <div class="grid">${hasDocs()?'':todo('Vencimientos de SOAP, revisión técnica y permiso de circulación','Agrega en la hoja Equipos las columnas <i>Venc. SOAP</i>, <i>Venc. Revisión técnica</i> y <i>Venc. Permiso</i>: el visor las lee solo.')}
+  ${hasMant()?'':todo('Mantenciones próximas','Agrega en la hoja Equipos la columna <i>Próx. mantención (h)</i> con la lectura a la que toca.')}
+  ${S.per?'':todo('Acreditaciones del personal','Crea una hoja <i>Personal</i> (ver pestaña Personal).')}</div>`}
+const hasDocs=()=>S.eq.some(e=>docCols(e).length);
+const hasMant=()=>S.eq.some(e=>pick(e,'Próx. mantención','Prox mantencion','Próxima mantención')!=null);
+function vEquipos(){
+  const by={};for(const e of S.eq){const o=pick(e,'Proyecto')||'Sin obra';(by[o]=by[o]||[]).push(e)}
+  const order=Object.keys(by).sort((a,b)=>by[b].filter(active).length-by[a].filter(active).length);
+  return`<div class="lead"><h2>Equipos por obra</h2><p>${S.eq.filter(active).length} activos de ${S.eq.length} · hoja Equipos</p></div>`+order.map(o=>`<div class="group"><h3>${esc(o)}</h3><span class="meta">${esc(pick(by[o][0],'Cliente')||'')}</span></div><div class="grid">${by[o].map(e=>{
+    const code=e[norm('Código')],last=S.lect.filter(r=>r.c===code).sort((a,b)=>b.f-a.f)[0],min=num(eqv(e,'Mínimo')),pm=num(pick(e,'Próx. mantención','Próxima mantención'));
+    const h=last?last.l:num(pick(e,'Horómetro Actual'));
+    return`<div class="card"><div style="display:flex;justify-content:space-between;gap:8px;align-items:start"><div><h3>${esc(e.patente||code)}</h3><div class="meta">${esc(eqv(e,'Tipo'))} · ${esc(eqv(e,'Marca'))} ${esc(eqv(e,'Modelo'))}</div></div>${chipFor(eqv(e,'Estado'))}</div>
+    <div style="margin-top:8px"><div class="row"><span>Proveedor</span><span class="v">${esc(eqv(e,'Proveedor'))}</span></div>
+    <div class="row"><span>Última lectura</span><span class="v">${last?n0(last.l)+' · '+fd(last.f):'—'}</span></div>
+    ${min?`<div class="row"><span>Mínimo</span><span class="v">${min} h/mes</span></div>`:''}
+    <div class="row"><span>Próx. mantención</span><span class="v">${pm?(h!=null?n0(pm-h)+' h restantes':n0(pm)):'<span class="c-warn">POR COMPLETAR</span>'}</span></div>
+    ${docCols(e).map(dc=>{const d=daysTo(dc.d);return`<div class="row"><span>${esc(dc.k)}</span><span class="v ${d==null?'':d<0?'c-bad':d<=30?'c-warn':'c-ok'}">${dc.d?fd(dc.d):'POR COMPLETAR'}</span></div>`}).join('')}
+    ${pick(e,'Fecha Dev')?`<div class="row"><span>Devuelto</span><span class="v">${fd(toDate(pick(e,'Fecha Dev')))}</span></div>`:''}</div></div>`}).join('')}</div>`).join('')}
+function vHoras(){
+  const months=[...new Set(S.lect.map(r=>mkey(r.f)).concat(mkey(today)))].sort().reverse();
+  const withMin=S.eq.filter(e=>num(eqv(e,'Mínimo'))>0),others=S.eq.filter(e=>!(num(eqv(e,'Mínimo'))>0)&&S.lect.some(r=>r.c===e[norm('Código')]));
+  let totCobro=0;
+  const cards=withMin.map(e=>{const code=e[norm('Código')],min=num(eqv(e,'Mínimo')),h=hoursFor(code,selMonth),dd=detDays(code,selMonth);
+    const tar=(num(pick(e,'Ingreso Mensual'))||0)/min,proj=h.proj??h.hrs,cobro=Math.max(proj,min)*tar;totCobro+=cobro;
+    const scale=Math.max(min,proj,h.hrs)*1.08;
+    return`<div class="card"><div style="display:flex;justify-content:space-between;gap:8px"><div><h3>${esc(e.patente)}</h3><div class="meta">${esc(eqv(e,'Tipo'))} · ${esc(pick(e,'Proyecto'))}</div></div><span class="chip ${proj>=min?'c-ok':'c-warn'}">${proj>=min?'Sobre mínimo':'Bajo mínimo'}</span></div>
+    <div class="bar" role="img" aria-label="${n0(h.hrs)} horas de ${min}"><em style="width:${(proj/scale*100).toFixed(1)}%"></em><i style="width:${(h.hrs/scale*100).toFixed(1)}%"></i><u style="left:${(min/scale*100).toFixed(1)}%"></u></div>
+    <div class="row"><span>Horas registradas</span><span class="v">${n0(h.hrs)} h</span></div>
+    <div class="row"><span>Proyección a fin de mes</span><span class="v">${h.proj==null?'—':n0(h.proj)+' h'}</span></div>
+    <div class="row"><span>Última lectura</span><span class="v">${h.last?n0(h.last.l)+' · '+fd(h.last.f):'—'}</span></div>
+    ${dd?`<div class="row"><span>Días detenidos a descontar</span><span class="v c-warn">${n1(dd)}</span></div>`:''}
+    <div class="row"><span>Cobro proyectado (neto)</span><span class="v">${tar?clp(cobro):'—'}</span></div></div>`}).join('');
+  const oth=others.map(e=>{const h=hoursFor(e[norm('Código')],selMonth);return`<div class="hbar"><span>${esc(e.patente)}</span><span class="meta">${esc(eqv(e,'Tipo'))}</span><span class="n">${h.n?'+'+n0(h.hrs):'sin lectura'}</span></div>`}).join('');
+  return`<div class="lead"><h2>Horas contra el mínimo</h2><p>Horómetro · proyección simple al ritmo actual</p></div>
+  <div class="tools"><label for="mSel" class="meta">Mes</label><select id="mSel">${months.map(m=>`<option value="${m}"${m===selMonth?' selected':''}>${mname(m)}</option>`).join('')}</select></div>
+  <div class="kpis"><div class="kpi"><b>${clp(totCobro)}</b><span>cobro proyectado de equipos por hora (neto, ${esc(mname(selMonth).toLowerCase())})</span></div></div>
+  <div class="legend"><span>Horas registradas</span><span class="p">Proyección</span><span class="m">Mínimo mensual</span></div>
+  <div class="grid">${cards||'<p class="meta">No hay equipos con mínimo de horas.</p>'}</div>
+  ${oth?`<div class="group"><h3>Otros equipos (lectura del mes)</h3><span class="meta">camionetas: el valor puede ser km</span></div><div class="card">${oth}</div>`:''}
+  ${S.det.length?`<div class="group"><h3>Detenciones y fallas</h3></div><div class="scroll"><table class="stack"><thead><tr><th>Equipo</th><th>Desde</th><th>Hasta</th><th class="n">Horas</th><th class="n">Días a descontar</th><th>Causa</th><th>Responsable</th></tr></thead><tbody>${S.det.map(d=>`<tr><td>${esc(d.pat||d.c)}</td><td>${fd(d.d)}</td><td>${d.h?fd(d.h):'<b class="c-bad">Sigue detenido</b>'}</td><td class="n">${n1(d.hrs)}</td><td class="n">${n1(d.dias)}</td><td>${esc(d.causa)}</td><td>${esc(d.resp)}</td></tr>`).join('')}</tbody></table></div>`:''}`}
+function vComb(){
+  const months=[...new Set(S.comb.map(c=>mkey(c.f)).concat(mkey(today)))].sort().reverse();
+  const rows=S.comb.filter(c=>mkey(c.f)===selFuel);
+  const sum=(k)=>{const m={};for(const r of rows){const key=r[k]||'—';m[key]=m[key]||{lt:0,tot:0,n:0};m[key].lt+=r.lt;m[key].tot+=r.tot;m[key].n++}return Object.entries(m).sort((a,b)=>b[1].lt-a[1].lt)};
+  const bars=(list)=>{const mx=Math.max(1,...list.map(x=>x[1].lt));return list.map(([k,v])=>`<div class="hbar"><span>${esc(k)}</span><span class="t"><i style="width:${(v.lt/mx*100).toFixed(1)}%"></i></span><span class="n">${n0(v.lt)} L · ${clp(v.tot)}</span></div>`).join('')};
+  const byP=sum('proy');
+  const cobro=byP.map(([p,v])=>{const r=S.rec.find(x=>norm(x.p)===norm(p));return{p,v,si:r&&r.si,rec:r?r.rec:0}});
+  const lt=rows.reduce((s,r)=>s+r.lt,0),tot=rows.reduce((s,r)=>s+r.tot,0);
+  return`<div class="lead"><h2>Combustible</h2><p>Hoja Gastos, categoría Combustible</p></div>
+  <div class="tools"><label for="fSel" class="meta">Mes</label><select id="fSel">${months.map(m=>`<option value="${m}"${m===selFuel?' selected':''}>${mname(m)}</option>`).join('')}</select></div>
+  <div class="kpis"><div class="kpi"><b>${n0(lt)} L</b><span>${rows.length} cargas</span></div><div class="kpi"><b>${clp(tot)}</b><span>gastado</span></div><div class="kpi"><b>${lt?clp(tot/lt):'—'}</b><span>precio promedio por litro</span></div></div>
+  <div class="grid"><div class="card"><h3>Por equipo (patente)</h3>${bars(sum('pat'))||'<p class="meta">Sin cargas.</p>'}</div><div class="card"><h3>Por chofer</h3>${bars(sum('ch'))||'<p class="meta">Sin cargas.</p>'}</div>
+  <div class="card"><h3>Cobro al cliente</h3>${cobro.map(c=>`<div class="row"><span>${esc(c.p)}<br><small class="meta">${c.si?'+'+clp(c.rec)+' por litro':'No se cobra (costo propio)'}</small></span><span class="v">${c.si?clp(c.v.tot+c.rec*c.v.lt):'—'}</span></div>`).join('')||'<p class="meta">Sin cargas.</p>'}<p class="meta">Como lo calcula la planilla: total boleta + recargo por litro (IVA incluido).</p></div></div>`}
+function vProy(){
+  const P=S.proy.filter(p=>(num(pick(p,'Venta'))||0)>0);
+  const tot=P.reduce((s,p)=>s+(num(pick(p,'Venta'))||0),0);
+  return`<div class="lead"><h2>Avance de proyectos</h2><p>Resumen de la planilla · montos netos</p></div>
+  <div class="grid">${P.map(p=>{const v=num(pick(p,'Venta'))||0,f=num(pick(p,'Facturado'))||0,c=num(pick(p,'Cobrado'))||0,co=num(pick(p,'Costo total'))||0,pg=num(pick(p,'Ya pagado'))||0,mg=num(pick(p,'Margen'));
+    const pc=x=>v?Math.min(100,x/v*100):0;
+    return`<div class="card"><h3>${esc(p.proyecto)}</h3><div class="meta">${esc(p.cliente)}${mg!=null?' · margen '+n0(mg*100)+'%':''}</div>
+    <div class="hbar"><span>Facturado</span><span class="t"><i style="width:${pc(f).toFixed(1)}%"></i></span><span class="n">${n0(pc(f))}%</span></div>
+    <div class="hbar"><span>Cobrado</span><span class="t"><i style="width:${pc(c).toFixed(1)}%;background:var(--sky)"></i></span><span class="n">${n0(pc(c))}%</span></div>
+    <div class="row"><span>Venta</span><span class="v">${clp(v)}</span></div><div class="row"><span>Costo estimado</span><span class="v">${clp(co)}</span></div>
+    <div class="row"><span>Pagado a proveedores</span><span class="v">${clp(pg)}</span></div><div class="row"><span>Pendiente de pago</span><span class="v">${clp(num(pick(p,'Pendiente de pago')))}</span></div>
+    ${num(pick(p,'Adicionales'))?`<div class="row"><span>Adicionales en negociación</span><span class="v">${clp(num(pick(p,'Adicionales')))}</span></div>`:''}</div>`}).join('')||'<p class="meta">Sin proyectos con montos.</p>'}</div>
+  ${S.cob.length?`<div class="group"><h3>Próximos cobros</h3><span class="meta">con IVA</span></div><div class="scroll"><table class="stack"><thead><tr><th>Glosa</th><th>EP</th><th>Cliente</th><th>Fecha</th><th>Estado</th><th class="n">Monto</th></tr></thead><tbody>${S.cob.map(c=>`<tr><td>${esc(c.glosa)}</td><td>${esc(c[norm('N° EP')])}</td><td>${esc(String(c.cliente||'').replace(/Comercial, Maquinarias y Construcciones /,''))}</td><td>${esc(fd(toDate(pick(c,'Fecha cobro')))||'')}</td><td>${esc(c.estado)}</td><td class="n">${clp(num(pick(c,'Por cobrar')))}</td></tr>`).join('')}</tbody></table></div>`:''}
+  <div class="group"><h3>Licitaciones</h3><span class="meta">${src.lic?esc(src.lic.title):esc(src.licErr||'Sin planilla de licitaciones')}</span></div>
+  ${S.lic&&S.lic.length?`<div class="scroll"><table class="stack"><thead><tr><th>Nombre</th><th>Cliente</th><th>Estado</th><th>Entrega</th><th class="n">Ofertado</th><th>Próxima acción</th></tr></thead><tbody>${S.lic.map(l=>`<tr><td>${esc(l.nombre)}</td><td>${esc(String(l.cliente||'').replace(/ Energía Construcción SpA.*/,''))}</td><td>${esc(l.estado)}</td><td>${fd(toDate(pick(l,'Entrega oferta')))}</td><td class="n">${num(pick(l,'Monto ofertado'))?clp(num(pick(l,'Monto ofertado'))):'—'}</td><td>${esc(pick(l,'Próxima acción'))}</td></tr>`).join('')}</tbody></table></div>`:''}`}
+function vPersonal(){
+  const ch={};for(const c of S.comb){if(c.ch==='Sin chofer')continue;const o=ch[c.ch]=ch[c.ch]||{pats:new Set(),proy:new Set(),last:null};o.pats.add(c.pat);o.proy.add(c.proy);if(!o.last||c.f>o.last)o.last=c.f}
+  const docs=['Contrato y anexos','RIOHS y EPP','Alcohol y drogas','Preocupacional','Psicosensotécnico','Curso de riesgos','CV','Licencia de conducir','Certificación de operador'];
+  let per='';
+  if(S.per){per=`<div class="grid">${S.per.map(p=>{const dc=Object.entries(p).filter(([k])=>/venc|examen|curso|licencia|contrato|riohs|epp|psico|preocup|alcohol|cert|cv/.test(k));
+    return`<div class="card"><h3>${esc(p.nombre)}</h3><div class="meta">${esc(pick(p,'Rol','Cargo')||'')} · ${esc(pick(p,'Obra','Proyecto')||'Sin obra')}</div>${dc.map(([k,v])=>{const d=toDate(v)||parseDT(v),dt=daysTo(d),ok=v!=null&&v!=='';
+      return`<div class="row"><span>${esc(k)}</span><span class="v ${!ok?'c-warn':d?(dt<0?'c-bad':dt<=30?'c-warn':'c-ok'):'c-ok'}">${!ok?'Falta':d?(dt<0?'Vencido ':'')+fd(d):esc(v)}</span></div>`}).join('')}</div>`}).join('')}</div>`}
+  return`<div class="lead"><h2>Personal</h2><p>Quién está, en qué obra y con qué equipo</p></div>
+  ${per||todo('No hay hoja de personal en la planilla','Crea una hoja <i>Personal</i> en SIGPER_SPA con una fila por persona y estas columnas: <i>Nombre, Rol, Obra, Equipo</i>, más una columna con la fecha de vencimiento de cada documento ('+docs.map(esc).join(', ')+'). El visor la lee sola y arma el semáforo.')}
+  <div class="group"><h3>Choferes según cargas de combustible</h3><span class="meta">dato real, desde Gastos</span></div>
+  <div class="scroll"><table class="stack"><thead><tr><th>Nombre</th><th>Patentes</th><th>Obras</th><th>Última carga</th></tr></thead><tbody>${Object.entries(ch).sort((a,b)=>b[1].last-a[1].last).map(([k,o])=>`<tr><td>${esc(k)}</td><td>${esc([...o.pats].join(', '))}</td><td>${esc([...o.proy].join(', '))}</td><td>${fd(o.last)}</td></tr>`).join('')}</tbody></table></div>`}
+
+const views={hoy:vHoy,equipos:vEquipos,horas:vHoras,combustible:vComb,proyectos:vProy,personal:vPersonal};
+function current(){const h=location.hash.slice(1);return views[h]?h:'hoy'}
+function render(){if(!S.eq)return;const v=current();
+  for(const a of document.querySelectorAll('#tabs a'))a.toggleAttribute('aria-current',a.getAttribute('href')==='#'+v);
+  for(const k in views){const el=$('#v-'+k);el.hidden=k!==v}
+  try{$('#v-'+v).innerHTML=views[v]()}catch(e){$('#v-'+v).innerHTML=`<div class="state"><h2>Esta sección no se pudo armar</h2><p>${esc(e.message)}. Puede que una hoja haya cambiado de formato.</p></div>`}
+  const ms=$('#mSel');if(ms)ms.onchange=()=>{selMonth=ms.value;render()};
+  const fs=$('#fSel');if(fs)fs.onchange=()=>{selFuel=fs.value;render()};
+  const cp=$('#copyA');if(cp)cp.onclick=async()=>{const t=alerts().map(a=>`- [${a.lvl==='bad'?'Alta':a.lvl==='warn'?'Media':'Baja'}] ${a.t}${a.proy?' — '+a.proy:''} — ${a.s}`).join('\n');
+    try{await navigator.clipboard.writeText(t);$('#copyMsg').textContent='Copiado.'}catch{$('#copyMsg').textContent='No se pudo copiar en esta vista.'}}}
+function show(){$('#state').hidden=true;const m=src.main||{};
+  $('#srcInfo').textContent=`${m.title||''}${m.modifiedTime?' · modificada '+new Date(m.modifiedTime).toLocaleString('es-CL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):''} · leída ${src.at.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})}`;render()}
+addEventListener('hashchange',render);
+$('#reload').onclick=()=>load(true);
+if(typeof XLSX==='undefined')fail('No cargó el lector de Excel. Revisa tu conexión y recarga.');else load(false);
+}
+</script>
+</body>
+</html>
