@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SIGPER · Catálogo 3D</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/environments/RoomEnvironment.js"></script>
+<script src="modelos.js"></script>
+<style>
+/* VOICE: catálogo de muestras para elegir. IDEA: la mesa de maquetas con las piezas candidatas en filas, una por paquete.
+   PICTURE: los modelos reales girando en un estudio gris claro. COLOUR/TYPE: azules SIGPER en la interfaz; Montserrat + Inter.
+   LAYOUT: escena arriba, filtros por paquete y ficha de licencia abajo (al costado en pantalla ancha). */
+:root{color-scheme:light dark;--bg:light-dark(#f6f8fb,#0f1620);--card:light-dark(#fff,#18222f);--ink:light-dark(#1B191A,#eef2f7);--mute:light-dark(#5b6470,#9aa7b6);--line:light-dark(#e3e8ef,#2a3647);--deep:#255A9B;--mid:#347CB1;--sky:#279DCA}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Inter,Arial,sans-serif}
+h1,h2,h3{font-family:Montserrat,Arial,sans-serif;margin:0;line-height:1.1}
+.top{background:var(--deep);color:#fff;padding:10px max(3vw,12px);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.top b{font:800 20px Montserrat}.top span{font-size:13px;opacity:.85}
+.app{display:grid;grid-template-columns:minmax(0,1fr) 360px;height:calc(100vh - 48px);min-height:520px}
+.stage{position:relative;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,#f7f5f1,#dedad2)}
+:root[data-theme=dark] .stage{background:radial-gradient(ellipse at 50% 30%,#2a3038,#12161b)}
+canvas{display:block;width:100%;height:100%;touch-action:none}
+.lbl{position:absolute;left:0;top:0;transform:translate(-50%,0);background:var(--card);border:1px solid var(--line);border-radius:8px;padding:2px 7px;font:600 12px Inter;white-space:nowrap;pointer-events:none;box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.row{position:absolute;left:0;top:0;transform:translate(-100%,-50%);font:800 13px Montserrat;color:var(--deep);white-space:nowrap;pointer-events:none}
+.panel{overflow-y:auto;border-left:1px solid var(--line);padding:16px}
+.tools{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0}
+button{font:600 14px Inter;min-height:44px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:0 12px;cursor:pointer}
+button[aria-pressed=true]{background:var(--deep);color:#fff;border-color:var(--deep)}
+button:focus-visible{outline:3px solid var(--sky);outline-offset:2px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:10px}
+.card h3{font-size:16px}.meta{font-size:13px;color:var(--mute)}
+.ok{color:light-dark(#1f8a4c,#4cc584);font-weight:600}.no{color:light-dark(#b7791f,#f0b44c);font-weight:600}
+ul{margin:6px 0 0;padding-left:18px;font-size:14px}
+#load[hidden]{display:none}#load{position:absolute;inset:0;display:grid;place-content:center;font-size:14px;color:var(--mute)}
+@media(max-width:860px){.app{grid-template-columns:1fr;height:auto}.stage{height:62vh;min-height:380px}.panel{border-left:0;border-top:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<header class="top"><b>SIGPER</b><span>Catálogo 3D para el visor de obras · v2</span></header>
+<div class="app">
+  <div class="stage"><canvas id="c"></canvas><div id="tags"></div><div id="load">Cargando modelos…</div></div>
+  <aside class="panel">
+    <h2>Catálogo de elementos</h2>
+    <p class="meta">Modelos de Majadroid (CC0) más los que armamos en su mismo estilo. Escala real en metros, salvo las grúas, que van reducidas. Arrastra para girar y pellizca para acercar.</p>
+    <div class="tools" id="f"><button type="button" data-p="todos" aria-pressed="true">Todos</button><button type="button" data-p="maja">Majadroid</button><button type="button" data-p="maq">Maquinaria</button><button type="button" data-p="cam">Camiones especiales</button><button type="button" data-p="fae">Equipos y faena</button><button type="button" data-p="per">Personas</button></div>
+    <div class="card"><h3>Majadroid (14)</h3><ul><li>Tolva, mixer, tractocamión, camión 3/4, grúa móvil, grúa torre</li><li>Contenedor oficina y bodega, baño químico, barril, pallets, cajas, tablones, bloques</li></ul></div>
+    <div class="card"><h3>Propios: maquinaria (8)</h3><ul><li>Camioneta 4x4 (con y sin mochila de combustible), retro JCB 3CX, excavadora de orugas (balde y martillo), motoniveladora, rodillo, minicargador</li></ul></div>
+    <div class="card"><h3>Propios: camiones especiales (5)</h3><ul><li>Camión pluma, aljibe, bomba de hormigón, alzahombre, cama baja (con la retro cargada)</li></ul></div>
+    <div class="card"><h3>Propios: equipos y faena (9)</h3><ul><li>Compresor, generador, estanque de combustible, toldo, bodega Suspel, cerco de patio energizado, andamio, moldaje, enfierradura</li></ul></div>
+    <div class="card"><h3>Personas (12)</h3><ul><li>Casco y chaleco por rol: supervisor (blanco), capataz (azul), prevencionista (verde), maestro (naranja), jornal (amarillo), operador (rojo), chofer (gris), rigger, topógrafo, soldador</li><li>Con herramienta: perforista, vibrador, placa compactadora, trípode, máquina de soldar</li><li class="no">Colores de casco provisorios: SIGPER define los suyos</li></ul></div>
+  </aside>
+</div>
+<script>
+{
+const $=s=>document.querySelector(s);
+if(typeof THREE==='undefined'||!THREE.GLTFLoader){$('#load').textContent='No cargó el motor 3D. Revisa tu conexión y recarga.'}else{
+const X=window.SIGPER3D.M;
+const M=[
+ ['maja','m/maja_tolva.json','Camión tolva'],['maja','m/maja_mixer.json','Camión mixer'],['maja','m/maja_camion.json','Tractocamión'],['maja','m/maja_camion_chico.json','Camión 3/4'],['maja','m/maja_grua_movil.json','Grúa móvil',null,.35],['maja','m/maja_grua.json','Grúa torre',null,.35],
+ ['maja','m/maja_oficina.json','Contenedor oficina'],['maja','m/maja_contenedor.json','Contenedor bodega'],['maja','m/maja_bano.json','Baño químico'],['maja','m/maja_barril.json','Barril'],['maja','m/maja_pallets.json','Pallets'],['maja','m/maja_cajas.json','Cajas'],['maja','m/maja_tablones.json','Tablones'],['maja','m/maja_bloques.json','Bloques'],
+ ['maq',null,'Camioneta 4x4',()=>X.camioneta()],['maq',null,'Camioneta + mochila',()=>X.camioneta({mochila:true})],['maq',null,'Retro JCB 3CX',()=>X.retro()],['maq',null,'Excavadora',()=>X.excavadora()],['maq',null,'Excavadora + martillo',()=>X.excavadora({martillo:true})],['maq',null,'Motoniveladora',()=>X.motoniveladora()],['maq',null,'Rodillo',()=>X.rodillo()],['maq',null,'Minicargador',()=>X.minicargador()],
+ ['cam',null,'Camión pluma',()=>X.pluma()],['cam',null,'Camión aljibe',()=>X.aljibe()],['cam',null,'Bomba de hormigón',()=>X.bomba()],['cam',null,'Alzahombre',()=>X.alzahombre()],['cam',null,'Cama baja + retro',()=>X.camaBaja()],
+ ['fae',null,'Compresor',()=>X.compresor()],['fae',null,'Generador',()=>X.generador()],['fae',null,'Estanque combustible',()=>X.estanque()],['fae',null,'Toldo',()=>X.toldo()],['fae',null,'Bodega Suspel',()=>X.bodega()],['fae',null,'Cerco patio energizado',()=>X.cercoPatio()],['fae',null,'Andamio',()=>X.andamio()],['fae',null,'Moldaje',()=>X.moldaje()],['fae',null,'Enfierradura',()=>X.enfierradura()],
+ ['per',null,'Supervisor',()=>X.persona('supervisor','supervisor')],['per',null,'Capataz',()=>X.persona('capataz')],['per',null,'Prevencionista',()=>X.persona('prevencionista')],['per',null,'Maestro',()=>X.persona('maestro')],['per',null,'Jornal',()=>X.persona('jornal')],['per',null,'Operador',()=>X.persona('operador')],['per',null,'Chofer',()=>X.persona('chofer')],['per',null,'Rigger',()=>X.persona('rigger','rigger')],['per',null,'Topógrafo',()=>X.persona('topografo','topografo')],['per',null,'Soldador',()=>X.persona('soldador','soldador')],['per',null,'Perforista',()=>X.persona('jornal','perforadora')],['per',null,'Vibrador',()=>X.persona('maestro','vibrador')],['per',null,'Placa compactadora',()=>X.persona('jornal','placa')]];
+const ROWS={maja:['Majadroid',0],maq:['Maquinaria',1],cam:['Camiones especiales',2],fae:['Equipos y faena',3],per:['Personas',4]};
+const cv=$('#c'),R=new THREE.WebGLRenderer({canvas:cv,antialias:true,alpha:true});R.setPixelRatio(Math.min(devicePixelRatio,2));R.shadowMap.enabled=true;R.shadowMap.type=THREE.PCFSoftShadowMap;R.outputEncoding=THREE.sRGBEncoding;R.toneMapping=THREE.ACESFilmicToneMapping;R.toneMappingExposure=.95;
+const scene=new THREE.Scene(),cam=new THREE.PerspectiveCamera(28,1,.5,800);
+if(THREE.RoomEnvironment){const pm=new THREE.PMREMGenerator(R);scene.environment=pm.fromScene(new THREE.RoomEnvironment(),.04).texture}
+scene.add(new THREE.HemisphereLight(0xffffff,0x9c8a70,.3));const sun=new THREE.DirectionalLight(0xfff1dc,1.3);sun.position.set(-30,60,40);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-60,right:60,top:60,bottom:-60,far:200});sun.shadow.normalBias=.03;scene.add(sun);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStandardMaterial({color:0xe6e2da,roughness:.9}));floor.rotation.x=-Math.PI/2;floor.receiveShadow=true;scene.add(floor);
+const ctl=new THREE.OrbitControls(cam,cv);ctl.enableDamping=true;ctl.maxPolarAngle=1.4;
+const tags=[],TG=$('#tags'),items=[];
+const tag=(t,cls)=>{const d=document.createElement('div');d.className=cls;d.textContent=t;TG.appendChild(d);return d};
+const loader=new THREE.GLTFLoader();let done=0;
+const rowX={};
+const prep=(o,p,name,i,sc)=>{o.traverse(c=>{if(c.isMesh){c.castShadow=c.receiveShadow=true;if(c.material)c.material.envMapIntensity=.5}});if(sc)o.scale.setScalar(sc);
+  const b2=new THREE.Box3().setFromObject(o),c=new THREE.Vector3();b2.getCenter(c);o.position.sub(new THREE.Vector3(c.x,b2.min.y,c.z));
+  const w=new THREE.Group();w.add(o);w.userData={p,name,w:Math.max(b2.max.x-b2.min.x,b2.max.z-b2.min.z),i};items.push(w);scene.add(w);step()};
+M.forEach(([p,url,name,fn,sc],i)=>{if(fn){try{prep(fn(),p,name,i,sc)}catch(e){console.error(name,e);step()}return}
+  fetch(url).then(r=>r.text()).then(t=>loader.parse(t,'',g=>prep(g.scene,p,name,i,sc),()=>step())).catch(()=>step())});
+function step(){if(++done<M.length)return;$('#load').hidden=true;
+  items.sort((a,b)=>a.userData.i-b.userData.i);const x={};
+  items.forEach(w=>{const r=ROWS[w.userData.p][1];x[r]=(x[r]??0);const ww=w.userData.w;w.position.set(x[r]+ww/2,0,r*-16);x[r]+=ww+(w.userData.p==='per'?.8:2.5);w.userData.tag=tag(w.userData.name,'lbl')});
+  items.forEach(w=>{const r=ROWS[w.userData.p][1];w.position.x-=x[r]/2});
+  Object.entries(ROWS).forEach(([p,[n,r]])=>{const first=items.filter(w=>w.userData.p===p)[0];if(first)rowX[p]={d:tag(n,'row'),pos:new THREE.Vector3(-x[r]/2-2,0,r*-16)}});
+  frame('todos')}
+function frame(p){const vis=items.filter(w=>p==='todos'||w.userData.p===p);items.forEach(w=>{w.visible=vis.includes(w);w.userData.tag.hidden=!w.visible});Object.entries(rowX).forEach(([k,v])=>v.d.hidden=!(p==='todos'||p===k));
+  const b=new THREE.Box3();vis.forEach(w=>b.expandByObject(w));const c=new THREE.Vector3(),s=new THREE.Vector3();b.getCenter(c);b.getSize(s);const d=Math.max(s.x*1.2,s.z*1.5,6)*(cv.clientWidth<cv.clientHeight?2.2:1.35);
+  ctl.target.set(c.x,s.y*.25,c.z);cam.position.set(c.x+d*.35,d*.55,c.z+d*.85)}
+$('#f').onclick=e=>{const b=e.target.closest('button');if(!b)return;document.querySelectorAll('#f button').forEach(x=>x.setAttribute('aria-pressed',x===b));frame(b.dataset.p)};
+function size(){const r=cv.parentElement.getBoundingClientRect();R.setSize(r.width,r.height,false);cam.aspect=r.width/r.height;cam.updateProjectionMatrix()}
+new ResizeObserver(size).observe(cv.parentElement);size();
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches,v=new THREE.Vector3(),clk=new THREE.Clock();
+(function loop(){const t=clk.getElapsedTime();if(!reduce)items.forEach(w=>{if(!/Grúa|Cama baja/.test(w.userData.name))w.rotation.y=t*.35});ctl.update();R.render(scene,cam);
+  const r=cv.getBoundingClientRect();const put=(d,p)=>{if(!d||d.hidden)return;v.copy(p).project(cam);d.style.display=v.z>1?'none':'';d.style.left=((v.x+1)/2*r.width)+'px';d.style.top=((1-v.y)/2*r.height)+'px'};
+  items.forEach(w=>put(w.userData.tag,new THREE.Vector3(w.position.x,-.2,w.position.z+w.userData.w/2+.8)));Object.values(rowX).forEach(o=>put(o.d,o.pos));
+  requestAnimationFrame(loop)})();
+}}
+</script>
+</body>
+</html>
