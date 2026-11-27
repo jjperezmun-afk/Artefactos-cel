@@ -37,7 +37,9 @@ h1,h2,h3{font-family:Montserrat,Arial,sans-serif;margin:0;line-height:1.1;text-w
 @media(prefers-color-scheme:dark){:root:not([data-theme=light]) .stage{background:radial-gradient(ellipse at 50% 30%,#2a3038,#12161b)}}
 canvas{display:block;width:100%;height:100%;touch-action:none}
 .lbl{position:absolute;left:0;top:0;transform:translate(-50%,-100%);pointer-events:auto;cursor:pointer;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:5px 9px;font:600 13px Inter,sans-serif;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.15)}
-.lbl b{font-family:Montserrat;color:var(--deep)}:root[data-theme=dark] .lbl b{color:var(--sky)}
+.lbl b{font-family:Montserrat;color:var(--ink)}
+.st{display:inline-block;padding:1px 9px;border-radius:99px;font:700 12px Inter,sans-serif;color:#fff;white-space:nowrap;vertical-align:1px}.st-ter{background:#1f8a4c}.st-lic{background:#1a9bd1}.st-eje{background:#d97706}.st-adj{background:#6d4fc2}.st-otro{background:#6b7280}
+.pct{font:800 14px Montserrat,sans-serif;color:var(--ink)}
 .lbl.sec{transform:translate(-50%,-100%);font-size:12px;pointer-events:none}.lbl small{display:block;font-weight:500;color:var(--mute)}
 .lbl[hidden]{display:none!important}
 .lbl .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
@@ -55,18 +57,18 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--sky);outline-of
 .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-top:10px}
 .ob{cursor:pointer;display:block;width:100%;text-align:left;min-height:auto;padding:12px 14px;margin-top:10px}
 .ob:hover{border-color:var(--mid)}
-.bar{height:10px;background:var(--soft);border-radius:6px;overflow:hidden;margin:6px 0 2px}.bar i{display:block;height:100%;background:var(--mid);border-radius:6px}
+.bar{height:10px;background:var(--soft);border-radius:6px;overflow:hidden;margin:6px 0 2px}.bar i{display:block;height:100%;background:#e08a12;border-radius:6px}.bar i.ok{background:#1f8a4c}
 .row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:14px}
 .row:first-child{border-top:0}.row .v{font-weight:600;white-space:nowrap;text-align:right}
 .chip{display:inline-flex;align-items:center;gap:5px;font:600 12px Inter;padding:2px 9px;border-radius:99px;background:var(--soft);white-space:nowrap}
 .chip::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
 .c-ok{color:var(--ok)}.c-warn{color:var(--warn)}.c-bad{color:var(--bad)}.c-info{color:var(--mid)}
 .kpis{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
-.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px}.kpi b{display:block;font:700 20px Montserrat;color:var(--deep)}:root[data-theme=dark] .kpi b{color:var(--sky)}.kpi span{font-size:12px;color:var(--mute)}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 10px}.kpi b{display:block;font:800 20px Montserrat;color:var(--ink)}.kpi span{font-size:12px;color:var(--mute)}
 .hito{display:grid;grid-template-columns:22px 1fr auto;gap:8px;align-items:center;padding:6px 0;border-top:1px solid var(--line);font-size:14px}
 .hito:first-child{border-top:0}
 .hito .ck{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:12px;color:#fff}
-.hito.done .ck{background:var(--ok);border-color:var(--ok)}.hito.now .ck{border-color:var(--sky);background:conic-gradient(var(--sky) var(--p),transparent 0)}
+.hito.done .ck{background:var(--ok);border-color:var(--ok)}.hito.now .ck{border-color:#e08a12;background:conic-gradient(#e08a12 var(--p),transparent 0)}
 input[type=range]{width:100%;height:44px;accent-color:var(--deep)}
 .sec{margin-top:18px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .sec h3{font-size:16px}
@@ -333,7 +335,9 @@ function initWorld(){
   const k=far(),dist=Math.max(Wmax*1.05,Dt*1.25,90);MAPGOAL={t:new T.Vector3(0,0,0),p:new T.Vector3(0,dist*k,dist*.6*k)};
   const sz=Math.max(Wmax,Dt)/2+30;Object.assign(sun.shadow.camera,{left:-sz,right:sz,top:sz,bottom:-sz,far:400});sun.shadow.camera.updateProjectionMatrix();select(null)}
 function labelHTML(o){const a=alertsOf(o),c=a.some(x=>x[0]==='bad')?'var(--bad)':a.some(x=>x[0]==='warn')?'var(--warn)':o.lic?'#9aa3ad':'var(--ok)';
-  return`<span class="dot" style="background:${c}"></span>${esc(o.nombre)} · <b>${o.lic?'Licitación':/^terminado/i.test(o.estado)?'Terminada':o.avance+'%'}</b>`}
+  return`<span class="dot" style="background:${c}"></span>${esc(o.nombre)} ${stPill(o)}${o.lic||/^terminado/i.test(o.estado)?'':` <span class="pct">${o.avance}%</span>`}`}
+const stCls=e=>{e=norm(e);return/^terminado|^cerrado/.test(e)?'st-ter':/^licitacion/.test(e)?'st-lic':/ejecucion/.test(e)?'st-eje':/^adjudicado/.test(e)?'st-adj':'st-otro'};
+const stPill=o=>`<span class="st ${stCls(o.estado)}">${esc(/^terminado/i.test(o.estado)?'Terminada':o.estado)}</span>`;
 /* ---------- cámara, selección y toque ---------- */
 const far=()=>{const r=cv.parentElement;return r.clientWidth<r.clientHeight?1.8:1};let cur=null,goal=MAPGOAL,flying=0;
 cam.position.set(0,220,140);
@@ -356,7 +360,7 @@ function showEq(e){const c=e.est==='Operativo'?'c-ok':'c-bad';$('#pop').hidden=f
   ${e.ult?`<div class="row"><span>Última lectura</span><span class="v">${Math.round(e.ult.l).toLocaleString('es-CL')} · ${fd(e.ult.f)}</span></div>`:''}
   ${e.min&&e.hrs!=null?`<div class="row"><span>Horas del mes</span><span class="v">${Math.round(e.hrs)} / ${e.min} h</span></div><div class="bar"><i style="width:${Math.min(100,e.hrs/e.min*100)}%"></i></div>`:''}`}
 function obCard(o){const a=alertsOf(o).filter(x=>x[0]!=='info');return`<button type="button" class="card ob" data-id="${esc(o.id)}"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(o.nombre)}</b><span class="meta">${esc(o.comuna||'sin comuna')}</span></div>
-  <div class="meta">${esc(o.id)} · ${esc(o.cliente)} · ${esc(o.estado)}</div>${o.lic?`<div class="meta">${(o.fr||[]).length} frentes previstos</div>`:`<div class="bar"><i style="width:${o.avance}%"></i></div><div class="meta">${/^terminado/i.test(o.estado)?'Terminada':'Avance '+o.avance+'%'} · ${(o.fr||[]).length} frentes · ${o.equipos.length} equipos${a.length?' · '+a.length+' alerta'+(a.length>1?'s':''):''}</div>`}</button>`}
+  <div class="meta" style="margin:2px 0 4px">${esc(o.id)} · ${esc(o.cliente)} ${stPill(o)}</div>${o.lic?`<div class="meta">${(o.fr||[]).length} frentes previstos</div>`:`<div class="bar"><i class="${o.avance>=100?'ok':''}" style="width:${o.avance}%"></i></div><div class="meta">${/^terminado/i.test(o.estado)?'':`<span class="pct">${o.avance}%</span> avance · `}${(o.fr||[]).length} frentes · ${o.equipos.length} equipos${a.length?' · '+a.length+' alerta'+(a.length>1?'s':''):''}</div>`}</button>`}
 function panel(){const P=$('#panel');
   if(!cur){if(!OBRAS.length){P.innerHTML='<h2>Obras</h2><p class="meta">Cargando datos de Drive…</p>';return}
     const act=OBRAS.filter(o=>!o.lic),lic=OBRAS.filter(o=>o.lic);
@@ -370,14 +374,14 @@ function panel(){const P=$('#panel');
   const sinTipo=o.hitos.filter(h=>h.tA!=null&&h.tF==='nombre').length;
   const fin=[['Facturado',R.facturado],['Cobrado',R.cobrado],['Por cobrar',R.porCobrar],['Costo estimado',R.costoEst],['Costo real a la fecha',R.costoReal]].filter(x=>x[1]!=null);
   P.innerHTML=`<div class="meta">${esc(o.id)} · ${esc(ESCENA_N[o.tipo])}${o.escFuente!=='Maestros'?' (escena propuesta)':''} · terreno ${esc(BASES[baseDe(o,o.fr)][0].toLowerCase())}</div><h2>${esc(o.nombre)}</h2>
-  <div class="meta">${esc(o.cliente)} · ${esc(o.comuna||'sin comuna')} · <span class="chip ${o.lic?'':'c-info'}">${esc(o.estado)}</span></div>
+  <div class="meta">${esc(o.cliente)} · ${esc(o.comuna||'sin comuna')} · ${stPill(o)}</div>
   <div class="kpis"><div class="kpi"><b>${o.lic?'—':term?'Terminada':o.avance+'%'}</b><span>avance físico${term&&o.avPlan!=null?' (planilla: '+o.avPlan+'%)':''}</span></div><div class="kpi"><b>${R.porCobrar!=null?clp(R.porCobrar):'—'}</b><span>por cobrar (neto)</span></div><div class="kpi"><b>${pct(R.margenReal)}</b><span>margen real (est. ${pct(R.margenEst)})</span></div></div>
   ${a.map(x=>`<div class="alert"><span class="chip c-${x[0]}"></span><span>${esc(x[1])}</span></div>`).join('')}
   <div class="sec"><h3>Frentes de trabajo</h3><span class="meta" id="simLbl">${o.lic?'Simulación':'Avance real'}</span></div>
   <input type="range" id="sim" min="0" max="100" value="${o.lic?0:o.avance}" aria-label="Simular el avance de toda la obra">
   ${o.fr.map(f=>{const md=MOD.find(m=>m.id===f.mod);return`<div class="card"><div style="display:flex;justify-content:space-between;gap:8px"><b>${esc(f.k)}</b><span class="meta">${esc(md.n)}</span></div>
-    ${f.acts.length?`<div class="bar"><i style="width:${Math.round((o.lic?0:f.p)*100)}%"></i></div><div class="meta">${Math.round((o.lic?0:f.p)*100)}% · ${esc(etapa(md,o.lic?0:f.p))}</div>`:`<div class="meta">${f.mod==='arriendo'?o.equipos.length+' equipos asignados en SIGPER_Equipos':'Sin actividades de este frente en la planilla'}</div>`}
-    ${f.acts.map(h=>`<div class="hito ${h.pct>=1?'done':h.pct>0?'now':''}" style="--p:${Math.round((h.pct||0)*100)}%"><span class="ck">${h.pct>=1?'✓':''}</span><span>${esc(h.n)}<br><small class="meta">A${h.tA}${h.tF==='nombre'?' (deducido del nombre)':''} · ${fd(h.ini)} → ${fd(h.fin)}</small></span><span class="meta">${Math.round((h.pct||0)*100)}%</span></div>`).join('')}</div>`}).join('')}
+    ${f.acts.length?`<div class="bar"><i class="${(o.lic?0:f.p)>=1?'ok':''}" style="width:${Math.round((o.lic?0:f.p)*100)}%"></i></div><div class="meta"><span class="pct">${Math.round((o.lic?0:f.p)*100)}%</span> · ${esc(etapa(md,o.lic?0:f.p))}</div>`:`<div class="meta">${f.mod==='arriendo'?o.equipos.length+' equipos asignados en SIGPER_Equipos':'Sin actividades de este frente en la planilla'}</div>`}
+    ${f.acts.map(h=>`<div class="hito ${h.pct>=1?'done':h.pct>0?'now':''}" style="--p:${Math.round((h.pct||0)*100)}%"><span class="ck">${h.pct>=1?'✓':''}</span><span>${esc(h.n)}<br><small class="meta">A${h.tA}${h.tF==='nombre'?' (deducido del nombre)':''} · ${fd(h.ini)} → ${fd(h.fin)}</small></span><span class="pct">${Math.round((h.pct||0)*100)}%</span></div>`).join('')}</div>`}).join('')}
   ${sinTipo?`<p class="meta">${sinTipo} actividad${sinTipo>1?'es':''} sin "Tipo de actividad": su módulo se dedujo del nombre.</p>`:''}
   <div class="sec"><h3>Equipos asignados</h3><span class="meta">toca uno en la escena</span></div>
   <div class="card">${o.equipos.map(e=>`<div class="row"><span>${esc(e.tipoN)}<br><small class="meta">${esc(e.pat)} · ${esc(e.prov||'')}</small></span><span class="v">${e.min&&e.hrs!=null?Math.round(e.hrs)+'/'+e.min+' h ':''}<span class="chip ${e.est==='Operativo'?'c-ok':'c-bad'}">${esc(e.estTxt)}</span></span></div>`).join('')||'<p class="meta">Sin equipos asignados en SIGPER_Equipos.</p>'}</div>
