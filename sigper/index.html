@@ -331,7 +331,8 @@ function show(){$('#state').hidden=true;const m=src.main||{};
   $('#srcInfo').textContent=`${m.title||''}${m.modifiedTime?' · modificada '+new Date(m.modifiedTime).toLocaleString('es-CL',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):''} · leída ${src.at.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})}`;render()}
 addEventListener('hashchange',render);
 $('#reload').onclick=()=>load(true);
-if(typeof XLSX==='undefined')fail('No cargó el lector de Excel. Revisa tu conexión y recarga.');else load(false);
+/* EN PAUSA desde 27-11-2026: la v20 quedó congelada. Para reactivar, volver a: if(typeof XLSX==='undefined')fail(...);else load(false); */
+$('#srcInfo').textContent='En pausa';$('#reload').hidden=true;$('#state').innerHTML='<h2>Visor en pausa</h2><p>Este visor leía la planilla SIGPER_SPA_v20, que quedó congelada el 25-11-2026. Se reactivará cuando lea el sistema nuevo (SIGPER_Finanzas, SIGPER_Equipos y las planillas PRY).</p>';
 }
 </script>
 </body>
